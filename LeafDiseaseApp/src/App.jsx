@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import ImageUpload from "./components/ImageUpload/ImageUpload";
 import Auth from "./components/Auth/Auth";
-import Chatbot from "./components/Chatbot/Chatbot";
 import api from "./api/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -1177,7 +1176,6 @@ function App() {
       )}
 
       {/* ======================== CHATBOT WIDGET ======================== */}
-      <Chatbot currentDisease={prediction?.disease} />
 
       {/* ======================== FOOTER ======================== */}
       <footer className="footer">
