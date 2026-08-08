@@ -269,7 +269,6 @@ function ImageUpload({ setPrediction }) {
             hidden
             ref={fileInputRef}
             accept="image/*"
-            capture="environment"
             onChange={handleImage}
           />
         </label>

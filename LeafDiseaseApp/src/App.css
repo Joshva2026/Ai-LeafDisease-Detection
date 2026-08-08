@@ -792,7 +792,24 @@ section {
   .section-title { font-size: 32px; }
   .features-grid { grid-template-columns: 1fr; }
   .crops-grid { grid-template-columns: repeat(4, 1fr); }
-  .nav-links { display: none; }
+  
+  /* Make navbar visible on mobile by stacking it */
+  .navbar {
+    flex-direction: column;
+    padding: 15px 5%;
+    gap: 15px;
+  }
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+  }
+  .nav-links a, .nav-links button {
+    font-size: 13px !important;
+  }
+  
   section { padding: 70px 5%; }
   .footer { flex-direction: column; text-align: center; }
   .footer-info { text-align: center; }
