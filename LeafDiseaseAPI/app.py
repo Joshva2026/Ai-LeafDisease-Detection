@@ -231,6 +231,8 @@ def predict():
 
         disease = primary_match["disease"]
 
+        scheme = request.headers.get('X-Forwarded-Proto', request.scheme)
+
         # Generate Grad-CAM image
         try:
             last_conv_layer = find_last_conv_layer(model)
@@ -238,7 +240,7 @@ def predict():
             gradcam_filename = f"gradcam_{file.filename}"
             gradcam_path = os.path.join(UPLOAD_FOLDER, gradcam_filename)
             save_and_display_gradcam(filepath, heatmap, gradcam_path)
-            gradcam_url = f"http://{request.host}/uploads/{gradcam_filename}"
+            gradcam_url = f"{scheme}://{request.host}/uploads/{gradcam_filename}"
         except Exception as cam_err:
             print("Grad-CAM generation failed:", cam_err)
             gradcam_url = None
@@ -263,7 +265,7 @@ def predict():
             "confidence": confidence,
             "top_predictions": top_predictions,
             "gradcam_url": gradcam_url,
-            "original_url": f"http://{request.host}/uploads/{file.filename}"
+            "original_url": f"{scheme}://{request.host}/uploads/{file.filename}"
         })
     except Exception as e:
         return jsonify({"success": False, "error": f"Error processing image: {str(e)}"}), 500
@@ -555,6 +557,6 @@ def chat():
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=7860,
-        debug=False
+        port=5000,
+        debug=True
     )
