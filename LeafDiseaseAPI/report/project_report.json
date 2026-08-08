@@ -1,0 +1,13 @@
+{
+    "Project Name": "Leaf Disease Detection Using Deep Learning",
+    "Model": "MobileNetV2 Transfer Learning",
+    "Input Size": "224x224x3",
+    "Number of Classes": 38,
+    "Training Images": 37982,
+    "Validation Images": 8126,
+    "Testing Images": 8176,
+    "Test Accuracy (%)": 95.54,
+    "Test Loss": 0.13,
+    "Framework": "TensorFlow + Keras",
+    "Explainability": "Grad-CAM"
+}

@@ -1,0 +1,11 @@
+{
+    "Train Accuracy (%)": 94.61,
+    "Validation Accuracy (%)": 95.4,
+    "Train Loss": 0.1606,
+    "Validation Loss": 0.1403,
+    "Epochs": 30,
+    "Classes": 38,
+    "Training Images": 37982,
+    "Validation Images": 8126,
+    "Test Images": 8176
+}

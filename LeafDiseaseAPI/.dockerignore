@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.git
+.github
+database.db
+convert_to_tflite.py
+uploads/
+results/

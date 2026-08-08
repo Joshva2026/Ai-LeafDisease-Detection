@@ -1,0 +1,270 @@
+/* =====================================================
+   IMAGE UPLOAD SECTION
+===================================================== */
+
+.upload-section{
+    padding:100px 8%;
+    background:#081c15;
+    text-align:center;
+}
+
+.upload-section h2{
+    font-size:50px;
+    color:#fff;
+    margin-bottom:15px;
+}
+
+.upload-section p{
+    color:#d5d5d5;
+    font-size:18px;
+    margin-bottom:40px;
+}
+
+/* =====================================================
+   UPLOAD BOX
+===================================================== */
+
+.upload-box{
+    width:700px;
+    max-width:100%;
+    min-height:420px;
+
+    margin:0 auto;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    gap:18px;
+
+    padding:40px;
+
+    border:3px dashed #39ff88;
+    border-radius:30px;
+
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(15px);
+
+    cursor:pointer;
+    transition:.4s;
+}
+
+.upload-box:hover{
+    transform:translateY(-8px);
+    border-color:#00ff99;
+    box-shadow:0 20px 40px rgba(57,255,136,.25);
+}
+
+/* =====================================================
+   ICON
+===================================================== */
+
+.upload-icon{
+    font-size:80px;
+    animation:leafFloat 3s ease-in-out infinite;
+}
+
+@keyframes leafFloat{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-12px);
+    }
+
+}
+
+/* =====================================================
+   TITLE
+===================================================== */
+
+.upload-box h3{
+    color:white;
+    font-size:34px;
+    margin:0;
+}
+
+.upload-box span{
+    color:#cfcfcf;
+    font-size:18px;
+}
+
+/* =====================================================
+   IMAGE PREVIEW
+===================================================== */
+
+.preview-image{
+    width:300px;
+    height:300px;
+    object-fit:cover;
+    border-radius:20px;
+    border:4px solid #39ff88;
+    box-shadow:0 20px 40px rgba(0,0,0,.3);
+}
+
+/* =====================================================
+   BUTTON
+===================================================== */
+
+.predict-btn{
+
+    margin-top:35px;
+
+    padding:16px 40px;
+
+    background:#22c55e;
+
+    color:white;
+
+    border:none;
+
+    border-radius:40px;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.predict-btn:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 15px 35px rgba(34,197,94,.4);
+
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:768px){
+
+.upload-section h2{
+    font-size:38px;
+}
+
+.upload-box{
+    min-height:350px;
+    padding:25px;
+}
+
+.upload-box h3{
+    font-size:28px;
+}
+
+.preview-image{
+    width:220px;
+    height:220px;
+}
+
+.predict-btn{
+    width:100%;
+}
+
+}
+
+/* =====================================================
+   BUTTON DISABLED
+===================================================== */
+
+.predict-btn:disabled{
+
+    background:#666;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+    box-shadow:none;
+
+}
+
+.browse-btn{
+
+    margin-top:15px;
+
+    padding:12px 28px;
+
+    background:#22c55e;
+
+    color:white;
+
+    border-radius:30px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.browse-btn:hover{
+
+    transform:scale(1.05);
+
+}
+.prediction-result{
+
+margin-top:50px;
+
+}
+
+.result-card{
+
+background:rgba(255,255,255,.08);
+
+padding:30px;
+
+border-radius:20px;
+
+border:1px solid rgba(255,255,255,.1);
+
+backdrop-filter:blur(15px);
+
+color:white;
+
+width:650px;
+
+max-width:100%;
+
+margin:auto;
+
+}
+
+.result-card p{
+
+font-size:22px;
+
+margin:18px 0;
+
+}
+
+.progress{
+
+height:12px;
+
+background:#444;
+
+border-radius:30px;
+
+overflow:hidden;
+
+margin-top:25px;
+
+}
+
+.progress-fill{
+
+height:100%;
+
+background:linear-gradient(90deg,#22c55e,#39ff88);
+
+transition:1s;
+
+}

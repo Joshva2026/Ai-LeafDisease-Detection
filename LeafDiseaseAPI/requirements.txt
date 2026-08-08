@@ -1,0 +1,17 @@
+tensorflow
+numpy
+matplotlib
+pandas
+scikit-learn
+pillow
+opencv-python
+flask
+flask-cors
+flask-limiter
+seaborn
+jupyter
+notebook
+ipykernel
+h5py
+
+gunicorn

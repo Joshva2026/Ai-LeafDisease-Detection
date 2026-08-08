@@ -1,0 +1,27 @@
+# Node
+node_modules/
+dist/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+.env.local
+
+# Databases
+*.db
+*.sqlite3
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Data & Uploads
+uploads/
+results/
+dataset/
