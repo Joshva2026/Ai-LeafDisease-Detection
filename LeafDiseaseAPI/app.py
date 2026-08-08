@@ -231,7 +231,17 @@ def predict():
 
         disease = primary_match["disease"]
 
-        scheme = request.headers.get('X-Forwarded-Proto', request.scheme)
+        import base64
+        def get_base64_encoded_image(image_path):
+            try:
+                with open(image_path, "rb") as image_file:
+                    encoded = base64.b64encode(image_file.read()).decode('utf-8')
+                    # determine mime type simply by extension or default to jpeg
+                    ext = os.path.splitext(image_path)[1].lower().replace('.', '')
+                    mime = f"image/{ext}" if ext in ['png', 'jpg', 'jpeg', 'webp'] else "image/jpeg"
+                    return f"data:{mime};base64,{encoded}"
+            except Exception as e:
+                return None
 
         # Generate Grad-CAM image
         try:
@@ -240,7 +250,7 @@ def predict():
             gradcam_filename = f"gradcam_{file.filename}"
             gradcam_path = os.path.join(UPLOAD_FOLDER, gradcam_filename)
             save_and_display_gradcam(filepath, heatmap, gradcam_path)
-            gradcam_url = f"{scheme}://{request.host}/uploads/{gradcam_filename}"
+            gradcam_url = get_base64_encoded_image(gradcam_path)
         except Exception as cam_err:
             print("Grad-CAM generation failed:", cam_err)
             gradcam_url = None
@@ -265,7 +275,7 @@ def predict():
             "confidence": confidence,
             "top_predictions": top_predictions,
             "gradcam_url": gradcam_url,
-            "original_url": f"{scheme}://{request.host}/uploads/{file.filename}"
+            "original_url": get_base64_encoded_image(filepath)
         })
     except Exception as e:
         return jsonify({"success": False, "error": f"Error processing image: {str(e)}"}), 500
@@ -274,6 +284,21 @@ def predict():
 @app.route("/uploads/<filename>")
 def serve_upload(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+@app.route("/api/image/get_base64/<filename>")
+def get_image_base64(filename):
+    import base64
+    path = os.path.join(UPLOAD_FOLDER, filename)
+    if os.path.exists(path):
+        try:
+            with open(path, "rb") as f:
+                encoded = base64.b64encode(f.read()).decode('utf-8')
+                ext = os.path.splitext(filename)[1].lower().replace('.', '')
+                mime = f"image/{ext}" if ext in ['png', 'jpg', 'jpeg', 'webp'] else "image/jpeg"
+                return jsonify({"success": True, "base64": f"data:{mime};base64,{encoded}"})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+    return jsonify({"success": False, "error": "File not found"}), 404
 
 
 # ==========================================
@@ -450,11 +475,28 @@ def history():
 
         history_list = []
         for row in rows:
+            filename = row[1]
+            orig_path = os.path.join(UPLOAD_FOLDER, filename)
+            grad_path = os.path.join(UPLOAD_FOLDER, f"gradcam_{filename}")
+            
+            # Use the helper function defined in /predict (we'll move it or redefine it)
+            import base64
+            def get_b64(path):
+                try:
+                    with open(path, "rb") as f:
+                        enc = base64.b64encode(f.read()).decode('utf-8')
+                        ext = os.path.splitext(path)[1].lower().replace('.', '')
+                        mime = f"image/{ext}" if ext in ['png', 'jpg', 'jpeg', 'webp'] else "image/jpeg"
+                        return f"data:{mime};base64,{enc}"
+                except: return None
+                
             history_list.append({
                 "timestamp": row[0],
-                "filename": row[1],
+                "filename": filename,
                 "disease": row[2],
-                "confidence": row[3]
+                "confidence": row[3],
+                "thumbnail_base64": get_b64(orig_path),
+                "gradcam_base64": get_b64(grad_path)
             })
         return jsonify({"success": True, "history": history_list})
     except Exception as e:

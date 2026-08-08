@@ -675,8 +675,8 @@ function App() {
                         padding: "8px"
                       }}>
                         <img
-                          src={`http://${window.location.hostname}:5000/uploads/${item.filename}`}
-                          alt="Scanned Leaf"
+                          src={item.thumbnail_base64}
+                          alt="Historical scan"
                           style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "6px" }}
                           onError={(e) => {
                             e.target.onerror = null;
@@ -702,8 +702,8 @@ function App() {
                             success: true,
                             disease: item.disease,
                             confidence: item.confidence,
-                            original_url: `${import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`}/uploads/${item.filename}`,
-                            gradcam_url: `${import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`}/uploads/gradcam_${item.filename}`,
+                            original_url: item.thumbnail_base64,
+                            gradcam_url: item.gradcam_base64,
                             description: info.description,
                             symptoms: info.symptoms,
                             treatment: info.treatment,
