@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import api from "../../api/api";
 import diseaseData from "../../data/diseaseData";
 import { UploadCloud, Search, Loader2, ImageIcon, Camera, Video, AlertCircle } from "lucide-react";
@@ -22,6 +22,13 @@ function ImageUpload({ setPrediction }) {
     setPrediction(null);
   };
 
+  // Attach stream when video element mounts
+  useEffect(() => {
+    if (useCamera && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [useCamera]);
+
   // Start live camera stream
   const startCamera = async () => {
     setCameraError("");
@@ -31,9 +38,6 @@ function ImageUpload({ setPrediction }) {
         video: { facingMode: "environment" } // default to back camera on phones
       });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
       setUseCamera(true);
     } catch (err) {
       console.error(err);
