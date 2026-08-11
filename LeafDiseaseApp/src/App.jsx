@@ -8,7 +8,7 @@ import MyPlants from "./pages/MyPlants/MyPlants";
 import History from "./pages/History/History";
 import PlantGuide from "./pages/PlantGuide/PlantGuide";
 import Profile from "./pages/Profile/Profile";
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/Navbar/navbar";
 import Chatbot from "./components/Chatbot/Chatbot";
 import { Loader2 } from "lucide-react";
 
