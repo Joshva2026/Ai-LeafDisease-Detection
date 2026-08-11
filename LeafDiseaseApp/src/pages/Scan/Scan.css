@@ -1,0 +1,328 @@
+/* =====================================================
+   SCAN PAGE SPECIFIC STYLES
+ ===================================================== */
+
+.scan-title-container {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* Add desktop spacing */
+@media (min-width: 769px) {
+  .scan-title-container {
+    margin-top: 10px;
+    margin-bottom: 32px;
+  }
+}
+
+.scan-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+@media (min-width: 769px) {
+  .scan-title {
+    font-size: 36px;
+  }
+}
+
+.scan-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Upload & Camera Mode Tabs */
+.scan-mode-tabs {
+  display: flex;
+  background-color: var(--bg-secondary);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  border: var(--border-style);
+  margin-bottom: 24px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.scan-mode-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 11px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+
+.scan-mode-btn.active {
+  background-color: var(--card-bg);
+  color: var(--primary-dark);
+  box-shadow: var(--shadow-pill);
+}
+
+.theme-dark .scan-mode-btn.active {
+  color: #060c09;
+  background-color: #e9efea;
+}
+
+/* Capture / Upload Zone */
+.scan-area-card {
+  position: relative;
+  background-color: var(--card-bg);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 20px auto;
+}
+
+@media (min-width: 769px) {
+  .scan-area-card {
+    height: 380px;
+    border-radius: var(--radius-xl);
+  }
+}
+
+.scan-area-card:hover {
+  border-color: var(--border-color-hover);
+  background-color: var(--card-hover-bg);
+}
+
+.scan-placeholder-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-md);
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  transition: var(--transition-bounce);
+}
+
+.theme-dark .scan-placeholder-icon {
+  color: var(--primary);
+}
+
+.scan-area-card:hover .scan-placeholder-icon {
+  transform: scale(1.05);
+}
+
+.scan-area-card h4 {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.scan-area-card p {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+/* Camera Stream Styles */
+.camera-stream-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-overlay-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.camera-btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  font-family: var(--font-display);
+}
+
+.camera-btn-capture {
+  background-color: var(--primary-dark);
+  color: var(--bg-primary);
+}
+.theme-dark .camera-btn-capture {
+  color: #060c09;
+  background-color: #e9efea;
+}
+
+.camera-btn-cancel {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #111;
+}
+
+/* Image Preview */
+.preview-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-img-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background-color: rgba(28, 56, 43, 0.85);
+  color: var(--text-white);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.remove-img-btn:hover {
+  background-color: var(--color-danger);
+}
+
+/* Animated Scanner Laser Effect */
+.laser-scanner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary-hover);
+  animation: laserScan 2s infinite ease-in-out;
+  z-index: 10;
+}
+
+@keyframes laserScan {
+  0% { top: 0%; }
+  50% { top: 100%; }
+  100% { top: 0%; }
+}
+
+/* Status Indicator */
+.image-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--primary-light);
+  border: var(--border-style);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  max-width: 600px;
+  margin: 16px auto 0 auto;
+  font-size: 14px;
+  color: var(--primary-dark);
+}
+.theme-dark .image-status-bar {
+  color: var(--primary);
+}
+
+.image-status-bar span {
+  font-weight: 600;
+}
+
+/* Error State */
+.scan-error-card {
+  background-color: var(--color-danger-light);
+  border: 1px solid rgba(197, 94, 87, 0.2);
+  color: var(--color-danger);
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  max-width: 600px;
+  margin: 16px auto 0 auto;
+  line-height: 1.5;
+}
+
+.scan-error-card button {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Analyzing State Container */
+.analyzing-box {
+  text-align: center;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.analyzing-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.analyzing-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.scanner-loader {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--primary-light);
+  border-top-color: var(--primary-dark);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-top: 8px;
+}
+.theme-dark .scanner-loader {
+  border-top-color: var(--primary);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

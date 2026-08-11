@@ -1,0 +1,434 @@
+/* =====================================================
+   HOME PAGE SPECIFIC STYLES
+ ===================================================== */
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Hide header on desktop since navbar is visible */
+@media (min-width: 769px) {
+  .home-header {
+    display: none;
+  }
+}
+
+.home-user {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.home-greeting {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.home-username {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.home-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notif-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+.notif-btn:hover {
+  background-color: var(--bg-secondary);
+  color: var(--primary-dark);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-light);
+  box-shadow: var(--shadow-pill);
+}
+
+.avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary-dark);
+  color: var(--text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Botanical Hero Card */
+.hero-card {
+  position: relative;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--primary-light) 100%);
+  border: var(--border-style);
+  border-radius: var(--radius-lg);
+  padding: 30px 24px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 24px;
+  transition: background-color 0.3s ease;
+}
+
+.hero-tag {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  max-width: 65%;
+  line-height: 1.5;
+}
+
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary-dark);
+  color: var(--bg-primary);
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow-pill);
+  transition: var(--transition-smooth);
+}
+.theme-dark .hero-button {
+  color: #060c09;
+  background-color: #e9efea;
+}
+.hero-button:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.hero-ill {
+  position: absolute;
+  right: -10px;
+  bottom: -20px;
+  width: 140px;
+  height: auto;
+  opacity: 0.95;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 15px rgba(28, 56, 43, 0.08));
+}
+
+@media (min-width: 769px) {
+  .hero-card {
+    padding: 60px 48px;
+    margin-top: 10px;
+  }
+  .hero-title {
+    font-size: 40px;
+    max-width: 600px;
+  }
+  .hero-subtitle {
+    font-size: 16px;
+    max-width: 500px;
+    margin-bottom: 28px;
+  }
+  .hero-ill {
+    right: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    bottom: auto;
+    width: 200px;
+  }
+}
+
+/* Quick Actions Grid */
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  margin-top: 10px;
+}
+
+.section-heading {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.see-all-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-display);
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 480px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.action-card {
+  background-color: var(--card-bg);
+  border: var(--border-style);
+  border-radius: var(--radius-md);
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-soft);
+}
+
+.action-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-medium);
+}
+
+.action-icon-wrap {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-sm);
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.theme-dark .action-icon-wrap {
+  color: var(--primary);
+}
+
+.action-card:nth-child(2) .action-icon-wrap {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+.action-card:nth-child(3) .action-icon-wrap {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}
+.action-card:nth-child(4) .action-icon-wrap {
+  background-color: var(--accent-light);
+  color: var(--accent-dark);
+}
+
+.action-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Recent Diagnoses List */
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 769px) {
+  .recent-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+.recent-item {
+  background-color: var(--card-bg);
+  border: var(--border-style);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-soft);
+}
+.recent-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-medium);
+}
+
+.recent-img {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.recent-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.recent-plant-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.recent-disease {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.recent-date {
+  font-size: 10px;
+  color: var(--text-light);
+}
+
+.recent-confidence {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.recent-empty-state {
+  background-color: var(--card-bg);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  text-align: center;
+  color: var(--text-light);
+  margin-bottom: 24px;
+}
+
+.recent-empty-state p {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* Plant Health Tips Grid */
+.tips-scroll-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 769px) {
+  .tips-scroll-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+.tip-card {
+  background-color: var(--card-bg);
+  border: var(--border-style);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+}
+.tip-card:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-medium);
+}
+
+.tip-img-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background-color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-dark);
+  flex-shrink: 0;
+}
+.theme-dark .tip-img-wrap {
+  color: var(--primary);
+}
+
+.tip-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tip-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.tip-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}

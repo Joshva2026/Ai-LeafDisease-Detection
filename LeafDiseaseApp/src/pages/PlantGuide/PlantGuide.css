@@ -1,0 +1,285 @@
+/* =====================================================
+   PLANT GUIDE SPECIFIC STYLES
+ ===================================================== */
+
+.guide-title {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+@media (min-width: 769px) {
+  .guide-title {
+    font-size: 32px;
+    margin-top: 10px;
+  }
+}
+
+.guide-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Category Scroller */
+.guide-categories-row {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding-bottom: 6px;
+}
+.guide-categories-row::-webkit-scrollbar {
+  height: 4px;
+}
+.guide-categories-row::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: var(--radius-pill);
+}
+
+.guide-cat-btn {
+  background-color: var(--card-bg);
+  border: var(--border-style);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition-smooth);
+}
+
+.guide-cat-btn:hover {
+  border-color: var(--border-color-hover);
+  background-color: var(--card-hover-bg);
+}
+
+.guide-cat-btn.active {
+  background-color: var(--primary-dark);
+  color: var(--bg-primary);
+  border-color: var(--primary-dark);
+}
+.theme-dark .guide-cat-btn.active {
+  color: #060c09;
+  background-color: #e9efea;
+  border-color: #e9efea;
+}
+
+/* Disease Cards List */
+.guide-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+@media (min-width: 769px) {
+  .guide-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+.disease-item-card {
+  background-color: var(--card-bg);
+  border: var(--border-style);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+}
+
+.disease-item-card:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.disease-card-img {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.disease-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.disease-card-plant {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.disease-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.disease-card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.disease-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Detail view styling */
+.detail-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (min-width: 769px) {
+  .detail-header-row {
+    margin-top: 10px;
+  }
+}
+
+.detail-back-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+}
+.detail-back-btn:hover {
+  background-color: var(--bg-secondary);
+}
+
+/* Detail desktop split layout */
+.guide-detail-desktop-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 769px) {
+  .guide-detail-desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 30px;
+    align-items: start;
+  }
+}
+
+.detail-img-card {
+  height: 200px;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  border: var(--border-style);
+}
+
+@media (min-width: 769px) {
+  .detail-img-card {
+    height: 360px;
+    border-radius: var(--radius-xl);
+  }
+}
+
+.detail-img-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-img-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  background: linear-gradient(to top, rgba(13, 22, 18, 0.9), transparent);
+  color: #fff;
+}
+
+.detail-plant-type {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.detail-title {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.detail-scroll-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-info-block {
+  background-color: var(--card-bg);
+  border: var(--border-style);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+}
+
+.detail-info-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.theme-dark .detail-info-title {
+  color: var(--primary);
+}
+
+.detail-info-body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.detail-symptoms-list {
+  padding-left: 20px;
+  margin-top: 6px;
+}
+
+.detail-symptoms-list li {
+  margin-bottom: 6px;
+}

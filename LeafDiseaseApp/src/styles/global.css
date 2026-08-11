@@ -1,0 +1,334 @@
+@import "./variables.css";
+
+/* Reset & Base Styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow: hidden; /* Lock body scrolling to handle scrolling purely inside scroll-container */
+}
+
+/* Root Layout Container */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* App Container - Fits the full viewport */
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* =====================================================
+   AMBIENT GLOW SYSTEM
+ ===================================================== */
+.ambient-glow-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.glow-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  -webkit-filter: blur(120px);
+  opacity: 0.32;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Light mode glows */
+.glow-blob-1 {
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(78, 135, 106, 0.4) 0%, rgba(78, 135, 106, 0) 70%);
+}
+
+.glow-blob-2 {
+  top: 10%;
+  right: -5%;
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(circle, rgba(229, 179, 176, 0.28) 0%, rgba(229, 179, 176, 0) 70%);
+}
+
+.glow-blob-3 {
+  top: 45%;
+  left: 20%;
+  width: 55vw;
+  height: 55vw;
+  background: radial-gradient(circle, rgba(140, 162, 149, 0.25) 0%, rgba(140, 162, 149, 0) 70%);
+}
+
+.glow-blob-4 {
+  bottom: -15%;
+  right: 5%;
+  width: 48vw;
+  height: 48vw;
+  background: radial-gradient(circle, rgba(78, 135, 106, 0.35) 0%, rgba(78, 135, 106, 0) 70%);
+}
+
+/* Dark mode overrides (reduce neon brightness, soft midnight tones) */
+.theme-dark .glow-blob-1 {
+  background: radial-gradient(circle, rgba(133, 163, 146, 0.15) 0%, rgba(133, 163, 146, 0) 70%);
+}
+.theme-dark .glow-blob-2 {
+  background: radial-gradient(circle, rgba(224, 159, 154, 0.08) 0%, rgba(224, 159, 154, 0) 70%);
+}
+.theme-dark .glow-blob-3 {
+  background: radial-gradient(circle, rgba(110, 142, 126, 0.12) 0%, rgba(110, 142, 126, 0) 70%);
+}
+.theme-dark .glow-blob-4 {
+  background: radial-gradient(circle, rgba(133, 163, 146, 0.16) 0%, rgba(133, 163, 146, 0) 70%);
+}
+
+/* Mobile responsive blurs & sizes for peak performance */
+@media (max-width: 768px) {
+  .glow-blob {
+    filter: blur(80px);
+    -webkit-filter: blur(80px);
+    opacity: 0.2;
+  }
+  .glow-blob-1 { width: 70vw; height: 70vw; top: -15%; left: -20%; }
+  .glow-blob-2 { width: 60vw; height: 60vw; top: 5%; right: -20%; }
+  .glow-blob-3 { display: none; } /* Disable heavy center blobs on mobile browsers */
+  .glow-blob-4 { width: 85vw; height: 85vw; bottom: -20%; right: -20%; }
+}
+
+/* =====================================================
+   SCROLL FADE-IN TRANSITIONS
+ ===================================================== */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-section {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Scroll Container: Scrollable viewport */
+.scroll-container {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  z-index: 1;
+  padding-bottom: 40px; /* Safe padding for footers */
+}
+
+/* Offset for fixed desktop top Navbar */
+.scroll-container {
+  padding-top: 96px; /* Space for the floating navbar */
+}
+
+/* Layout Centering Wrapper for Page Contents */
+.page-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Scrollbar Customization */
+.scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-container::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-pill);
+}
+
+/* Typography styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+h1 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+}
+
+p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Cards Layout Style (Premium Rounded Floating Surfaces) */
+.card {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--radius-lg);
+  border: var(--border-style);
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+}
+.card:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-medium);
+  background-color: var(--card-hover-bg);
+}
+
+/* Custom Buttons styling */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 26px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  width: 100%;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background-color: var(--primary-dark);
+  color: var(--bg-primary);
+  box-shadow: var(--shadow-pill);
+}
+
+.theme-dark .btn-primary {
+  color: #060c09;
+  background-color: #e9efea;
+}
+.theme-dark .btn-primary:hover {
+  background-color: #ffffff;
+}
+
+.btn-primary:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-active);
+}
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  background-color: var(--primary-light);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+.btn-secondary:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-1px);
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: var(--primary-dark);
+  box-shadow: var(--shadow-pill);
+}
+.btn-accent:hover {
+  filter: brightness(0.95);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Standardizing Form Inputs */
+.input-field {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  border: var(--border-style);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+.input-field:focus {
+  border-color: var(--primary);
+  background-color: var(--card-bg);
+  box-shadow: 0 0 0 3px rgba(78, 135, 106, 0.1);
+}
+
+/* Severity pill styles */
+.severity-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.severity-pill.healthy {
+  background-color: var(--color-healthy-light);
+  color: var(--color-healthy);
+}
+.severity-pill.warning {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+.severity-pill.danger {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}

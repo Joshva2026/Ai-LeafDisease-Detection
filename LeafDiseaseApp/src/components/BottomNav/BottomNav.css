@@ -1,0 +1,8 @@
+/* =====================================================
+   BOTTOM NAVIGATION BAR DEACTIVATION
+   Hidden in favor of responsive top navbar + hamburger menu drawer
+ ===================================================== */
+
+.bottom-nav {
+  display: none !important;
+}

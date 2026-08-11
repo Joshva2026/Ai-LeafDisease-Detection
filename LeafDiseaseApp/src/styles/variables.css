@@ -1,0 +1,105 @@
+/* =====================================================
+   DESIGN SYSTEM VARIABLE TOKENS
+   LeafGuard AI - Premium Light Theme (Cinematic Botanical)
+ ===================================================== */
+
+:root {
+  /* Colors (Light Theme Defaults) */
+  --bg-primary: #F8FAF7;      /* Warm off-white with subtle green tint */
+  --bg-secondary: #EFF3EF;    /* Very soft sage-tinted background */
+  --primary: #4E876A;         /* Fresh Emerald / Leaf Green Accent */
+  --primary-hover: #3D6B53;
+  --primary-light: #EBF2ED;   /* Faint green background for tags */
+  --primary-dark: #16221D;    /* Deep Forest Green / Charcoal (Typography) */
+  --secondary: #5A6A64;       /* Muted gray-green */
+  --accent: #E5B3B0;          /* Subtle Dusty Pink */
+  --accent-light: #F9ECEB;
+  --accent-dark: #A57370;
+  --card-bg: rgba(255, 255, 255, 0.82); /* Semi-transparent glass surface */
+  --card-hover-bg: rgba(255, 255, 255, 0.9);
+  
+  /* Status Colors */
+  --color-healthy: #3D8C61;   /* Natural Emerald Green */
+  --color-healthy-light: rgba(61, 140, 97, 0.08);
+  --color-warning: #D1893F;   /* Warm Ochre */
+  --color-warning-light: rgba(209, 137, 63, 0.08);
+  --color-danger: #C55E57;    /* Rust Red / Severe Risk */
+  --color-danger-light: rgba(197, 94, 87, 0.08);
+  
+  /* Typography Colors */
+  --text-primary: #16221D;    /* Deep Forest charcoal for high contrast */
+  --text-secondary: #5A6A64;  /* Muted Sage text */
+  --text-light: #8CA295;      /* Light Sage Text */
+  --text-white: #FFFFFF;
+  
+  /* Borders */
+  --border-color: rgba(110, 142, 126, 0.16);
+  --border-color-hover: rgba(110, 142, 126, 0.3);
+  --border-style: 1px solid var(--border-color);
+  
+  /* Shadows */
+  --shadow-soft: 0 10px 30px rgba(28, 56, 43, 0.04);
+  --shadow-medium: 0 16px 40px rgba(28, 56, 43, 0.08);
+  --shadow-pill: 0 4px 15px rgba(110, 142, 126, 0.08);
+  --shadow-active: 0 8px 24px rgba(110, 142, 126, 0.16);
+
+  /* Fonts */
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Outfit', -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+
+  /* Border Radii (matching user requested 20-28px range for cards) */
+  --radius-xs: 8px;
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 26px;
+  --radius-xl: 32px;
+  --radius-pill: 100px;
+
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* =====================================================
+   DARK THEME OVERRIDES (Midnight Forest)
+ ===================================================== */
+.theme-dark {
+  /* Colors */
+  --bg-primary: #060C09;      /* Midnight forest black */
+  --bg-secondary: #0D1612;    /* Dark forest charcoal */
+  --primary: #85A392;         /* Lighter Sage for dark contrast */
+  --primary-hover: #9BB8A7;
+  --primary-light: rgba(110, 142, 126, 0.16);
+  --primary-dark: #EAEFEA;    /* Cream-white for headers */
+  --secondary: #6E8275;
+  --accent: #E09F9A;          /* Soft rose tint */
+  --accent-light: rgba(224, 159, 154, 0.12);
+  --accent-dark: #F0C3C0;
+  --card-bg: rgba(16, 26, 21, 0.85); /* Darker green-gray translucent card */
+  --card-hover-bg: rgba(21, 36, 29, 0.9);
+  
+  /* Status Colors */
+  --color-healthy: #6CB88F;   /* Bright emerald */
+  --color-healthy-light: rgba(108, 184, 143, 0.12);
+  --color-warning: #E5B273;
+  --color-warning-light: rgba(229, 178, 115, 0.12);
+  --color-danger: #E27D76;
+  --color-danger-light: rgba(226, 125, 118, 0.12);
+  
+  /* Typography Colors */
+  --text-primary: #EAEFEA;    /* Off-white primary text */
+  --text-secondary: #A0B2A6;  /* Muted sage secondary text */
+  --text-light: #5F7467;      /* Darker sage for metadata */
+  --text-white: #FFFFFF;
+  
+  /* Borders */
+  --border-color: rgba(110, 142, 126, 0.2);
+  --border-color-hover: rgba(110, 142, 126, 0.35);
+  
+  /* Shadows */
+  --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.35);
+  --shadow-medium: 0 12px 35px rgba(0, 0, 0, 0.5);
+  --shadow-pill: 0 4px 15px rgba(0, 0, 0, 0.25);
+  --shadow-active: 0 8px 20px rgba(110, 142, 126, 0.2);
+}

@@ -1,0 +1,316 @@
+/* =====================================================
+   MY PLANTS SPECIFIC STYLES
+ ===================================================== */
+
+.plants-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+@media (min-width: 769px) {
+  .plants-header-row {
+    margin-top: 10px;
+  }
+}
+
+.plants-title {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  color: var(--text-primary);
+}
+
+@media (min-width: 769px) {
+  .plants-title {
+    font-size: 32px;
+  }
+}
+
+/* Tab filters */
+.plants-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.plants-tab-btn {
+  background: none;
+  border: none;
+  padding: 8px 4px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.plants-tab-btn.active {
+  color: var(--primary-dark);
+}
+.theme-dark .plants-tab-btn.active {
+  color: var(--primary);
+}
+
+.plants-tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--primary-dark);
+  border-radius: var(--radius-pill);
+}
+
+.theme-dark .plants-tab-btn.active::after {
+  background-color: var(--primary);
+}
+
+/* Search bar wrapper */
+.search-bar-wrap {
+  position: relative;
+  width: 100%;
+  margin-bottom: 24px;
+  max-width: 480px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  background-color: var(--card-bg);
+  border: var(--border-style);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+}
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-medium);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-light);
+}
+
+/* Plants List Grid */
+.plants-list-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 40px;
+}
+
+@media (min-width: 769px) {
+  .plants-list-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+.plant-item-card {
+  background-color: var(--card-bg);
+  border: var(--border-style);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+}
+
+.plant-item-card:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.plant-avatar-img {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.plant-detail-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.plant-item-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.plant-item-location {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.plant-health-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.plant-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.plant-btn-action {
+  background-color: var(--primary-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.plant-btn-action:hover {
+  background-color: var(--primary-dark);
+  color: var(--bg-primary);
+  transform: translateY(-1px);
+}
+.theme-dark .plant-btn-action:hover {
+  color: #060c09;
+  background-color: #e9efea;
+}
+
+/* Add Plant Modal overlay */
+.modal-overlay {
+  position: fixed; /* Switch to fixed for desktop-wide modal overlays */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(28, 56, 43, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Mobile drawer style */
+  z-index: 1500;
+}
+
+.modal-content-card {
+  background-color: var(--card-bg);
+  width: 100%;
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+  padding: 28px 24px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@media (min-width: 769px) {
+  .modal-overlay {
+    align-items: center; /* Centered modal on desktop */
+  }
+  .modal-content-card {
+    max-width: 480px;
+    border-radius: var(--radius-lg);
+    animation: fadeInModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    border: var(--border-style);
+  }
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+}
+.modal-close-btn:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.modal-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-form-group label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.modal-select-field {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: var(--border-style);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.modal-select-field:focus {
+  border-color: var(--primary);
+  background-color: var(--card-bg);
+}
