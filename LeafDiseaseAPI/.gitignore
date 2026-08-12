@@ -1,0 +1,41 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Secrets
+.env
+.env.*
+
+# User uploads
+uploads/*
+
+# Training dataset
+dataset/
+
+# Training results
+report/
+results/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Training / utility files not required by production API
+train.ipynb
+convert_to_tflite.py
+test_api.py
+
+# Alternative models not used by app.py
+model/best_leaf_model.keras
+model/final_leaf_model.keras
+model/leaf_disease_model.tflite
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
