@@ -11,6 +11,7 @@ import Profile from "./pages/Profile/Profile";
 import Navbar from "./components/Navbar/navbar";
 import Chatbot from "./components/Chatbot/Chatbot";
 import { Loader2 } from "lucide-react";
+import SlideIndicator from "./components/SlideIndicator/SlideIndicator";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -303,6 +304,9 @@ function App() {
 
       {/* Dynamic chat helper widget */}
       <Chatbot currentDisease={prediction?.disease || null} />
+
+      {/* Slide Indicator (only shows if multiple slides are detected) */}
+      <SlideIndicator />
     </div>
   );
 }

@@ -55,7 +55,7 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
       </header>
 
       {/* Hero section */}
-      <section className="hero-card fade-in-section">
+      <section id="hero" className="hero-card slide-section fade-in-section">
         <span className="hero-tag">Botanical AI</span>
         <h1 className="hero-title">{t("detectDiseases", lang)}</h1>
         <p className="hero-subtitle">{t("heroSubtitle", lang)}</p>
@@ -80,7 +80,7 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
       </section>
 
       {/* Quick Actions Grid */}
-      <section className="fade-in-section">
+      <section id="quick-actions" className="slide-section fade-in-section">
         <div className="section-title-row">
           <h3 className="section-heading">{t("quickActions", lang)}</h3>
         </div>
@@ -113,7 +113,7 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
       </section>
 
       {/* Recent Diagnoses section */}
-      <section className="fade-in-section">
+      <section id="recent" className="slide-section fade-in-section">
         <div className="section-title-row">
           <h3 className="section-heading">{t("recentDiagnoses", lang)}</h3>
           {history.length > 0 && (
@@ -165,7 +165,7 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
       </section>
 
       {/* Plant health tips */}
-      <section className="fade-in-section" style={{ marginBottom: "20px" }}>
+      <section id="tips" className="slide-section fade-in-section">
         <h3 className="section-heading" style={{ marginBottom: "12px" }}>{t("plantCareTips", lang)}</h3>
         <div className="tips-scroll-container">
           {tips.map((tip, i) => (

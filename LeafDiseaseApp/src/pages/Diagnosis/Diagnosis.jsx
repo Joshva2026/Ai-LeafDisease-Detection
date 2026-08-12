@@ -68,7 +68,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const treatmentCards = getTreatmentCards();
 
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper slide-section">
       {/* Header (visible on mobile only) */}
       <div className="diag-header">
         <button className="back-btn" onClick={() => onViewChange("scan")} title="Back to Scan">

@@ -146,6 +146,17 @@ body {
   }
 }
 
+/* Slide Section - Premium 100vh Presentation */
+.slide-section {
+  min-height: calc(100vh - 96px); /* Full height minus navbar */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  padding: 40px 0;
+}
+
 /* Scroll Container: Scrollable viewport */
 .scroll-container {
   flex: 1;
@@ -154,6 +165,8 @@ body {
   box-sizing: border-box;
   z-index: 1;
   padding-bottom: 40px; /* Safe padding for footers */
+  scroll-snap-type: y mandatory; /* Enable vertical slide snapping */
+  scroll-behavior: smooth;
 }
 
 /* Offset for fixed desktop top Navbar */

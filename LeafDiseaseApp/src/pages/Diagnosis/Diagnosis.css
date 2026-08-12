@@ -63,10 +63,26 @@
   border: var(--border-style);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 10px 40px rgba(78, 135, 106, 0.15); /* Subtle green lighting */
+  transition: var(--transition-smooth);
+}
+
+.diag-image-card::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(78, 135, 106, 0.2) 0%, rgba(78, 135, 106, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .diag-images-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;

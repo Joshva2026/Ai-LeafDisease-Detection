@@ -131,7 +131,7 @@ function Scan({ onPredictionSuccess, lang }) {
   };
 
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper slide-section">
       <div className="scan-title-container">
         <h2 className="scan-title">{t("plantDoctor", lang)}</h2>
         <p className="scan-subtitle">{t("scanSubtitle", lang)}</p>

@@ -1,0 +1,31 @@
+.slide-indicator-container {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.slide-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-dot.active {
+  background-color: var(--primary);
+  transform: scale(1.5);
+  box-shadow: 0 0 10px var(--primary-light);
+}
+
+@media (max-width: 768px) {
+  .slide-indicator-container {
+    display: none; /* Hide on mobile to keep interface clean */
+  }
+}
