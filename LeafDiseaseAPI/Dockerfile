@@ -13,8 +13,5 @@ COPY . .
 # Create uploads directories just in case
 RUN mkdir -p uploads
 
-# Hugging Face Spaces expose port 7860 by default
-EXPOSE 7860
-
-# Command to run the gunicorn server on port 7860 with a longer timeout for ML models
-CMD ["gunicorn", "-b", "0.0.0.0:7860", "--timeout", "120", "--workers", "1", "--threads", "2", "app:app"]
+# Command to run the gunicorn server on Render port with a longer timeout for ML models
+CMD gunicorn -b 0.0.0.0:${PORT:-10000} --timeout 120 --workers 1 --threads 2 app:app
