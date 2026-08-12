@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Bell, ChevronRight, Camera, Leaf, History, BookOpen, Sun, Wind, CloudRain, Activity, CheckCircle, Search, Droplet, Sprout } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
-import { t } from "../../data/translationHelper";
+import { t } from "../../data/translations";
 import Footer from "../../components/Footer/Footer";
 import "./Home.css";
 
@@ -18,19 +18,19 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
   const recentScans = history.slice(0, 2);
 
   const steps = [
-    { num: "01", title: "Capture", desc: "Upload or capture a clear image of a plant leaf.", icon: <Camera size={24} /> },
-    { num: "02", title: "Analyze", desc: "Our deep learning model analyzes visual patterns in the leaf.", icon: <Search size={24} /> },
-    { num: "03", title: "Detect", desc: "LeafGuard identifies the most likely disease or healthy condition.", icon: <Activity size={24} /> },
-    { num: "04", title: "Understand", desc: "View confidence information and visual heatmap analysis.", icon: <CheckCircle size={24} /> }
+    { num: "01", title: t("captureStep", lang), desc: t("captureDesc", lang), icon: <Camera size={24} /> },
+    { num: "02", title: t("analyzeStep", lang), desc: t("analyzeDesc", lang), icon: <Search size={24} /> },
+    { num: "03", title: t("detectStep", lang), desc: t("detectDesc", lang), icon: <Activity size={24} /> },
+    { num: "04", title: t("understandStep", lang), desc: t("understandDesc", lang), icon: <CheckCircle size={24} /> }
   ];
 
   const features = [
-    { title: "AI Disease Detection", desc: "Fast image-based disease classification.", icon: <Activity size={24}/> },
-    { title: "Visual Heatmap", desc: "Understand which areas of the leaf influenced the prediction.", icon: <Search size={24}/> },
-    { title: "38 Disease Classes", desc: "Support for a wide range of crop and plant conditions.", icon: <Leaf size={24}/> },
-    { title: "Simple Workflow", desc: "Upload → Analyze → Diagnose.", icon: <ChevronRight size={24}/> },
-    { title: "Mobile Ready", desc: "Designed to work naturally on phones, tablets and desktops.", icon: <BookOpen size={24}/> },
-    { title: "Farmer Friendly", desc: "Clear results instead of complicated technical output.", icon: <Sun size={24}/> }
+    { title: t("aiDetection", lang), desc: t("aiDetectionDesc", lang), icon: <Activity size={24}/> },
+    { title: t("visualHeatmap", lang), desc: t("visualHeatmapDesc", lang), icon: <Search size={24}/> },
+    { title: t("diseaseClasses", lang), desc: t("diseaseClassesDesc", lang), icon: <Leaf size={24}/> },
+    { title: t("simpleWorkflow", lang), desc: t("simpleWorkflowDesc", lang), icon: <ChevronRight size={24}/> },
+    { title: t("mobileReady", lang), desc: t("mobileReadyDesc", lang), icon: <BookOpen size={24}/> },
+    { title: t("farmerFriendly", lang), desc: t("farmerFriendlyDesc", lang), icon: <Sun size={24}/> }
   ];
 
   return (
@@ -160,45 +160,45 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
             <div className="mobile-stats-grid">
               <div className="m-stat">
                 <span className="m-stat-val">{history.length}</span>
-                <span className="m-stat-lbl">Total Scans</span>
+                <span className="m-stat-lbl">{t("totalScans", lang)}</span>
               </div>
               <div className="m-stat">
                 <span className="m-stat-val" style={{color: "var(--color-healthy)"}}>
                   {history.filter(h => mapClassName(h.disease).isHealthy).length}
                 </span>
-                <span className="m-stat-lbl">Healthy</span>
+                <span className="m-stat-lbl">{t("healthyStatus", lang)}</span>
               </div>
               <div className="m-stat">
                 <span className="m-stat-val" style={{color: "var(--color-danger)"}}>
                   {history.filter(h => !mapClassName(h.disease).isHealthy).length}
                 </span>
-                <span className="m-stat-lbl">Diseases</span>
+                <span className="m-stat-lbl">{t("diseasedStatus", lang)}</span>
               </div>
             </div>
           </div>
 
           <div className="mobile-how-it-works">
-            <h3 className="mobile-section-title">How LeafGuard Works</h3>
+            <h3 className="mobile-section-title">{t("howItWorks", lang)}</h3>
             <div className="m-steps-vertical">
               <div className="m-step-card glass-card">
                 <div className="m-step-num">01</div>
                 <div className="m-step-info">
-                  <h4>Capture</h4>
-                  <p>Upload a clear leaf image.</p>
+                  <h4>{t("captureStep", lang)}</h4>
+                  <p>{t("captureDesc", lang)}</p>
                 </div>
               </div>
               <div className="m-step-card glass-card">
                 <div className="m-step-num">02</div>
                 <div className="m-step-info">
-                  <h4>AI Analysis</h4>
-                  <p>Deep learning detects patterns.</p>
+                  <h4>{t("analyzeStep", lang)}</h4>
+                  <p>{t("analyzeDesc", lang)}</p>
                 </div>
               </div>
               <div className="m-step-card glass-card">
                 <div className="m-step-num">03</div>
                 <div className="m-step-info">
-                  <h4>Plant Care</h4>
-                  <p>Get actionable treatment steps.</p>
+                  <h4>{t("detectStep", lang)}</h4>
+                  <p>{t("detectDesc", lang)}</p>
                 </div>
               </div>
             </div>
@@ -212,7 +212,15 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
                   const details = mapClassName(scan.disease);
                   return (
                     <div key={idx} className="m-recent-item glass-card" onClick={() => onSelectPrediction(scan)}>
-                      <img src={scan.image_url} alt="scan" className="m-recent-img" />
+                      <img 
+                        src={scan.image_url} 
+                        alt={details.name} 
+                        className="m-recent-img" 
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=100";
+                        }}
+                      />
                       <div className="m-recent-info">
                         <h5>{details.name}</h5>
                         <span className={`severity-pill ${details.isHealthy ? 'healthy' : 'danger'}`}>
@@ -237,8 +245,8 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
         {/* How It Works (Desktop) */}
         <section className="slide-section fade-in-section desktop-only-block">
           <div className="section-header-center">
-            <h2 className="section-heading-large">How LeafGuard AI Works</h2>
-            <p className="section-subtext">A simple, effective workflow to secure your plant's health.</p>
+            <h2 className="section-heading-large">{t("howItWorks", lang)}</h2>
+            <p className="section-subtext">{t("builtSubtext", lang)}</p>
           </div>
           
           <div className="steps-grid">
@@ -256,8 +264,8 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
         {/* Why LeafGuard (Features) (Desktop) */}
         <section className="slide-section fade-in-section desktop-only-block">
           <div className="section-header-center">
-            <h2 className="section-heading-large">Built for Smarter Plant Health</h2>
-            <p className="section-subtext">Powerful features designed to make disease identification fast and accessible.</p>
+            <h2 className="section-heading-large">{t("builtForSmarter", lang)}</h2>
+            <p className="section-subtext">{t("builtSubtext", lang)}</p>
           </div>
           
           <div className="features-grid">
@@ -293,8 +301,8 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
         {/* Explore Crops Grid (Desktop) */}
         <section className="slide-section fade-in-section desktop-only-block">
            <div className="section-header-center">
-            <h2 className="section-heading-large">Explore Supported Plant Conditions</h2>
-            <p className="section-subtext">LeafGuard currently supports 38 specific plant diseases and healthy classes across 14 major crops.</p>
+            <h2 className="section-heading-large">{t("exploreConditions", lang)}</h2>
+            <p className="section-subtext">{t("exploreSubtext", lang)}</p>
           </div>
           
           <div className="crops-grid-display">

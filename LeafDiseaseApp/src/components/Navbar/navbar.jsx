@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Leaf, Sun, Moon, LogOut, Menu, X, Home, Camera, Library, History, User2 } from "lucide-react";
-import { t } from "../../data/translationHelper";
+import { t } from "../../data/translations";
 import "./navbar.css";
 
 function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang, onLangChange }) {

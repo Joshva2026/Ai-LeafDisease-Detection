@@ -21,9 +21,9 @@ function App() {
   const [user, setUser] = useState(null);
   const [prediction, setPrediction] = useState(null);
   const [history, setHistory] = useState([]);
-  const [lang, setLang] = useState("en"); // "en" or "ta"
-  const [translatedPred, setTranslatedPred] = useState(null);
-  const [translating, setTranslating] = useState(false);
+  const [lang, setLang] = useState(() => {
+    return localStorage.getItem("lang") || "en";
+  });
   const [view, setView] = useState("home"); // "home", "myplants", "scan", "history", "profile", "diagnosis"
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "light";
@@ -39,6 +39,11 @@ function App() {
     }
     localStorage.setItem("theme", theme);
   }, [theme]);
+
+  // Persist Language
+  useEffect(() => {
+    localStorage.setItem("lang", lang);
+  }, [lang]);
 
   // Check user session on load
   useEffect(() => {
@@ -120,56 +125,7 @@ function App() {
     }
   }, [user, prediction]);
 
-  // Translate prediction details
-  useEffect(() => {
-    const translatePrediction = async () => {
-      if (!prediction || !prediction.success) {
-        setTranslatedPred(null);
-        return;
-      }
 
-      if (lang === "ta") {
-        setTranslating(true);
-        try {
-          const translateText = async (text) => {
-            const res = await api.post("/api/chat", {
-              message: `Translate the following text to Tamil. Output ONLY the translated Tamil text. Do not add any introductory message, chat text, or quotes:\n\n${text}`
-            });
-            return res.data.success ? res.data.reply.trim() : text;
-          };
-
-          const transDisease = await translateText(prediction.disease);
-          const transDesc = await translateText(prediction.description);
-          const transTreatment = await translateText(prediction.treatment);
-          const transPrevention = await translateText(prediction.prevention);
-
-          const transSymptoms = [];
-          for (const sym of prediction.symptoms) {
-            const ts = await translateText(sym);
-            transSymptoms.push(ts);
-          }
-
-          setTranslatedPred({
-            ...prediction,
-            disease: transDisease,
-            description: transDesc,
-            treatment: transTreatment,
-            prevention: transPrevention,
-            symptoms: transSymptoms
-          });
-        } catch (err) {
-          console.error("Auto translation failed:", err);
-          setTranslatedPred(prediction);
-        } finally {
-          setTranslating(false);
-        }
-      } else {
-        setTranslatedPred(null);
-      }
-    };
-
-    translatePrediction();
-  }, [lang, prediction]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -187,7 +143,7 @@ function App() {
     return <Auth onLoginSuccess={(u) => setUser(u)} />;
   }
 
-  const activePred = (lang === "ta" && translatedPred) ? translatedPred : prediction;
+  const activePred = prediction;
 
   return (
     <div className="app-container">
@@ -225,29 +181,7 @@ function App() {
         lang={lang} 
       />
 
-      {/* Dynamic Translation Progress Overlay */}
-      {translating && (
-        <div style={{
-          position: "fixed",
-          top: "96px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "rgba(22, 34, 29, 0.95)",
-          padding: "8px 18px",
-          borderRadius: "30px",
-          boxShadow: "var(--shadow-medium)",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          color: "var(--text-white)",
-          fontSize: "12px",
-          fontWeight: "600",
-          zIndex: 9999
-        }}>
-          <Loader2 size={14} className="spin-icon" style={{ animation: "spin 1s linear infinite" }} />
-          <span>ஆவணங்கள் மொழியாக்கம் செய்யப்படுகிறது... (Translating...)</span>
-        </div>
-      )}
+
 
       {/* Main Pages scroll viewport container */}
       <div className="scroll-container">

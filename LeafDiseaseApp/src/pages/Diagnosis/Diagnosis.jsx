@@ -1,6 +1,6 @@
 import { ArrowLeft, CheckCircle, AlertTriangle, ShieldCheck, RefreshCw, BookmarkCheck } from "lucide-react";
 import { mapClassName, getSeverityStyle } from "../../data/diseaseHelper";
-import { t } from "../../data/translationHelper";
+import { t } from "../../data/translations";
 import diseaseData from "../../data/diseaseData";
 import { useState } from "react";
 import "./Diagnosis.css";

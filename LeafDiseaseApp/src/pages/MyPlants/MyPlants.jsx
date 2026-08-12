@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, MapPin, Plus, Trash2, Camera, X, PlusCircle, Leaf } from "lucide-react";
-import { t } from "../../data/translationHelper";
+import { t } from "../../data/translations";
 import "./MyPlants.css";
 
 function MyPlants({ user, onViewChange, lang }) {

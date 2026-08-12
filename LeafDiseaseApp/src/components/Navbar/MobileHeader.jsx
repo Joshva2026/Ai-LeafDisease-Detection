@@ -1,5 +1,5 @@
 import { Leaf, Sun, Moon, User2 } from "lucide-react";
-import { t } from "../../data/translationHelper";
+import { t } from "../../data/translations";
 
 function MobileHeader({ theme, onToggleTheme, onViewChange, lang }) {
   return (

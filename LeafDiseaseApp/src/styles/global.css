@@ -161,9 +161,12 @@ body {
   width: 100%;
   box-sizing: border-box;
   z-index: 1;
-  /* Desktop defaults */
   padding-top: 96px; 
-  padding-bottom: 60px; 
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px));
 }
 
 /* Mobile responsive padding */

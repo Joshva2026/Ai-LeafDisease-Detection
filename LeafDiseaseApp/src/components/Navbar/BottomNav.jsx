@@ -1,5 +1,5 @@
 import { Home, Camera, Library, History } from "lucide-react";
-import { t } from "../../data/translationHelper";
+import { t } from "../../data/translations";
 
 function BottomNav({ activeView, onViewChange, lang }) {
   return (

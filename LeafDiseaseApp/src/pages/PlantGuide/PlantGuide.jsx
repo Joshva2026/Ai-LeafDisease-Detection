@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, ArrowLeft, Info, HelpCircle, Activity, Stethoscope, ShieldCheck, AlertOctagon } from "lucide-react";
 import { mapClassName, getSeverityStyle } from "../../data/diseaseHelper";
-import { t } from "../../data/translationHelper";
+import { t } from "../../data/translations";
 import diseaseData from "../../data/diseaseData";
 import "./PlantGuide.css";
 

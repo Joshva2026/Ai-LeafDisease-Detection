@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { FileText, Search, ArrowUpDown, Eye } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
-import { t } from "../../data/translationHelper";
+import { t } from "../../data/translations";
 import diseaseData from "../../data/diseaseData";
 import "./History.css";
 

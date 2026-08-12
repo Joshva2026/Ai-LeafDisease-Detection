@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Camera, UploadCloud, ImageIcon, Video, AlertCircle, X, Check, Loader2 } from "lucide-react";
-import { t } from "../../data/translationHelper";
+import { t } from "../../data/translations";
 import api from "../../api/api";
 import "./Scan.css";
 
@@ -134,20 +134,20 @@ function Scan({ onPredictionSuccess, lang }) {
       console.error("Diagnosis request error:", err);
       if (err.response) {
         if (err.response.status === 400) {
-          setErrorMsg(lang === "ta" ? "செல்லாத படம். சரியான இலையின் படத்தைப் பதிவேற்றவும்." : "Please upload a valid leaf image.");
+          setErrorMsg(t("err400", lang));
         } else if (err.response.status === 413) {
-          setErrorMsg(lang === "ta" ? "படம் மிகப் பெரியது. 10 MB-க்கு குறைவான படத்தைப் பதிவேற்றவும்." : "Image is too large. Please upload an image below 10 MB.");
+          setErrorMsg(t("err413", lang));
         } else if (err.response.status === 422) {
-          setErrorMsg(lang === "ta" ? "இந்தப் படத்தைப் பகுப்பாய்வு செய்ய முடியவில்லை. வேறொரு இலையின் படத்தைப் பதிவேற்றவும்." : "We couldn't process this image. Try another clear leaf photo.");
+          setErrorMsg(t("err422", lang));
         } else if (err.response.status === 500) {
-          setErrorMsg(lang === "ta" ? "சர்வரில் பிழை ஏற்பட்டுள்ளது. சிறிது நேரம் கழித்து முயற்சிக்கவும்." : "The analysis service encountered a problem. Please try again.");
+          setErrorMsg(t("err500", lang));
         } else {
           setErrorMsg(err.response.data.error || "An unexpected error occurred.");
         }
       } else if (err.code === 'ECONNABORTED' || (err.message && err.message.toLowerCase().includes("timeout"))) {
-        setErrorMsg(lang === "ta" ? "பகுப்பாய்வு அதிக நேரம் எடுக்கிறது. மீண்டும் முயற்சிக்கவும்." : "Analysis is taking longer than expected. Please try again.");
+        setErrorMsg(t("errTimeout", lang));
       } else if (err.request) {
-        setErrorMsg(lang === "ta" ? "பகுப்பாய்வு சர்வரைத் தொடர்புகொள்ள முடியவில்லை. இணைய இணைப்பைச் சரிபார்க்கவும்." : "Unable to reach the analysis service. Please check your connection.");
+        setErrorMsg(t("errNetwork", lang));
       } else {
         setErrorMsg(err.message);
       }
@@ -213,14 +213,14 @@ function Scan({ onPredictionSuccess, lang }) {
                 <h4>{t("uploadPrompt", lang)}</h4>
                 <p style={{ textAlign: "center", marginBottom: "16px", color: "var(--text-secondary)" }}>{t("dragDropPrompt", lang)}</p>
                 <div className="scan-tips-list" style={{ fontSize: "13px", color: "var(--text-secondary)", textAlign: "left", display: "inline-block", lineHeight: "1.8" }}>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Use good lighting</div>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Keep the leaf visible</div>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Avoid extreme blur</div>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Capture the affected area clearly</div>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Avoid multiple overlapping leaves</div>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipLighting", lang)}</div>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipVisible", lang)}</div>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipBlur", lang)}</div>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipArea", lang)}</div>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipOverlap", lang)}</div>
                 </div>
                 <div style={{ marginTop: "24px", fontSize: "12px", color: "var(--text-light)" }}>
-                  Supported formats: JPG, PNG, WEBP (Max 10MB)
+                  {t("supportedFormats", lang)}
                 </div>
                 <input
                   type="file"

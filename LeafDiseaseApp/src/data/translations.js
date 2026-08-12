@@ -80,6 +80,52 @@ export const translations = {
     allCrops: "All Crops",
     healthyStatus: "Healthy",
     diseasedStatus: "Diseased",
+
+    // New additions
+    totalScans: "Total Scans",
+    howItWorks: "How LeafGuard Works",
+    captureStep: "Capture",
+    captureDesc: "Upload or capture a clear image of a plant leaf.",
+    analyzeStep: "Analyze",
+    analyzeDesc: "Our deep learning model analyzes visual patterns in the leaf.",
+    detectStep: "Detect",
+    detectDesc: "LeafGuard identifies the most likely disease or healthy condition.",
+    understandStep: "Understand",
+    understandDesc: "View confidence information and visual heatmap analysis.",
+    
+    builtForSmarter: "Built for Smarter Plant Health",
+    builtSubtext: "Powerful features designed to make disease identification fast and accessible.",
+    aiDetection: "AI Disease Detection",
+    aiDetectionDesc: "Fast image-based disease classification.",
+    visualHeatmap: "Visual Heatmap",
+    visualHeatmapDesc: "Understand which areas of the leaf influenced the prediction.",
+    diseaseClasses: "38 Disease Classes",
+    diseaseClassesDesc: "Support for a wide range of crop and plant conditions.",
+    simpleWorkflow: "Simple Workflow",
+    simpleWorkflowDesc: "Upload → Analyze → Diagnose.",
+    mobileReady: "Mobile Ready",
+    mobileReadyDesc: "Designed to work naturally on phones, tablets and desktops.",
+    farmerFriendly: "Farmer Friendly",
+    farmerFriendlyDesc: "Clear results instead of complicated technical output.",
+    
+    exploreConditions: "Explore Supported Plant Conditions",
+    exploreSubtext: "LeafGuard currently supports 38 specific plant diseases and healthy classes across 14 major crops.",
+
+    // Scan Tips
+    tipLighting: "Use good lighting",
+    tipVisible: "Keep the leaf visible",
+    tipBlur: "Avoid extreme blur",
+    tipArea: "Capture the affected area clearly",
+    tipOverlap: "Avoid multiple overlapping leaves",
+    supportedFormats: "Supported formats: JPG, PNG, WEBP (Max 10MB)",
+    
+    // Errors
+    err400: "Please upload a valid leaf image.",
+    err413: "Image is too large. Please upload an image below 10 MB.",
+    err422: "We couldn't process this image. Try another clear leaf photo.",
+    err500: "The analysis service encountered a problem. Please try again.",
+    errTimeout: "Analysis is taking longer than expected. Please try again.",
+    errNetwork: "Unable to reach the analysis service. Please check your connection."
   },
   ta: {
     // Navigation / General
@@ -157,6 +203,52 @@ export const translations = {
     allCrops: "அனைத்துப் பயிர்கள்",
     healthyStatus: "ஆரோக்கியமானது",
     diseasedStatus: "பாதிக்கப்பட்டது",
+
+    // New additions
+    totalScans: "மொத்த ஸ்கேன்கள்",
+    howItWorks: "லீஃப்கார்ட் எவ்வாறு செயல்படுகிறது",
+    captureStep: "படம் எடுத்தல்",
+    captureDesc: "பயிர் இலையின் தெளிவான படத்தை பதிவேற்றவும் அல்லது புகைப்படம் எடுக்கவும்.",
+    analyzeStep: "பகுப்பாய்வு",
+    analyzeDesc: "எங்கள் AI மாடல் இலையில் உள்ள நோய்க்கான அறிகுறிகளை ஆராய்கிறது.",
+    detectStep: "கண்டறிதல்",
+    detectDesc: "லீஃப்கார்ட் மிக நெருக்கமான நோயையோ அல்லது ஆரோக்கியமான நிலையையோ கண்டறிகிறது.",
+    understandStep: "புரிந்துகொள்ளுதல்",
+    understandDesc: "முடிவுகளின் நம்பகத்தன்மை மற்றும் கவன வரைபடத்தைப் பார்க்கவும்.",
+    
+    builtForSmarter: "சிறந்த பயிர் ஆரோக்கியத்திற்காக உருவாக்கப்பட்டது",
+    builtSubtext: "நோய் கண்டறிதலை விரைவாகவும் எளிதாகவும் செய்ய வடிவமைக்கப்பட்ட சக்திவாய்ந்த அம்சங்கள்.",
+    aiDetection: "AI நோய் கண்டறிதல்",
+    aiDetectionDesc: "படத்தின் அடிப்படையில் விரைவான நோய் வகைப்பாடு.",
+    visualHeatmap: "கவன வரைபடம்",
+    visualHeatmapDesc: "இலையின் எந்தப் பகுதிகள் முடிவை பாதித்தன என்பதைப் புரிந்து கொள்ளுங்கள்.",
+    diseaseClasses: "38 நோய் வகைகள்",
+    diseaseClassesDesc: "பல்வேறு பயிர் மற்றும் தாவர நிலைமைகளுக்கு ஆதரவு.",
+    simpleWorkflow: "எளிய பணிப்பாய்வு",
+    simpleWorkflowDesc: "பதிவேற்றவும் → பகுப்பாய்வு செய்யவும் → நோயறிதல்.",
+    mobileReady: "மொபைல் ரெடி",
+    mobileReadyDesc: "போன்கள், டேப்லெட்டுகள் மற்றும் கணினிகளில் தடையின்றி செயல்பட வடிவமைக்கப்பட்டுள்ளது.",
+    farmerFriendly: "விவசாயிகளுக்கு ஏற்றது",
+    farmerFriendlyDesc: "சிக்கலான தொழில்நுட்ப முடிவுகளுக்குப் பதிலாக தெளிவான முடிவுகள்.",
+    
+    exploreConditions: "ஆதரவு உள்ள பயிர் நோய்களை ஆராயுங்கள்",
+    exploreSubtext: "லீஃப்கார்ட் தற்போது 14 முக்கிய பயிர்களில் 38 நோய்கள் மற்றும் ஆரோக்கியமான நிலைகளை ஆதரிக்கிறது.",
+
+    // Scan Tips
+    tipLighting: "நல்ல வெளிச்சத்தைப் பயன்படுத்தவும்",
+    tipVisible: "இலை முழுமையாகத் தெரிவதை உறுதி செய்யவும்",
+    tipBlur: "படம் மங்கலாக இல்லாமல் தெளிவாக எடுக்கவும்",
+    tipArea: "பாதிக்கப்பட்ட பகுதியைத் தெளிவாகக் காட்டவும்",
+    tipOverlap: "ஒன்றின்மேல் ஒன்றாக உள்ள இலைகளைத் தவிர்க்கவும்",
+    supportedFormats: "ஆதரவு வடிவங்கள்: JPG, PNG, WEBP (அதிகபட்சம் 10MB)",
+    
+    // Errors
+    err400: "சரியான இலையின் படத்தைப் பதிவேற்றவும்.",
+    err413: "படம் மிகப் பெரியது. 10 MB-க்கு குறைவான படத்தைப் பதிவேற்றவும்.",
+    err422: "இந்தப் படத்தைப் பகுப்பாய்வு செய்ய முடியவில்லை. வேறொரு தெளிவான இலையின் படத்தைப் பதிவேற்றவும்.",
+    err500: "சர்வரில் பிழை ஏற்பட்டுள்ளது. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.",
+    errTimeout: "பகுப்பாய்வு அதிக நேரம் எடுக்கிறது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
+    errNetwork: "பகுப்பாய்வு சர்வரைத் தொடர்புகொள்ள முடியவில்லை. உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்."
   }
 };
 
