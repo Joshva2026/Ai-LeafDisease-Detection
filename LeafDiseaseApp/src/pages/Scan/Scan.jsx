@@ -8,6 +8,7 @@ function Scan({ onPredictionSuccess, lang }) {
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isWakingUp, setIsWakingUp] = useState(false);
   const [useCamera, setUseCamera] = useState(false);
   const [cameraError, setCameraError] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -113,6 +114,7 @@ function Scan({ onPredictionSuccess, lang }) {
   const handleDiagnose = async () => {
     if (!file) return;
     setLoading(true);
+    setIsWakingUp(false);
     setErrorMsg("");
 
     const formData = new FormData();
@@ -122,13 +124,46 @@ function Scan({ onPredictionSuccess, lang }) {
     const username = savedUser ? JSON.parse(savedUser).username : "testuser";
     formData.append("username", username);
 
-    try {
-      const response = await api.post("/predict", formData);
+    const wakeUpServer = async (retries = 2) => {
+      for (let i = 0; i <= retries; i++) {
+        try {
+          await api.get("/", { timeout: 15000 });
+          return;
+        } catch (err) {
+          if (i === retries) return; // If ping fails entirely, let the POST handle the error naturally
+          setIsWakingUp(true);
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+      }
+    };
 
-      if (response.data.success) {
+    try {
+      await wakeUpServer();
+
+      let response;
+      let attempt = 0;
+      const MAX_PREDICT_RETRIES = 1;
+      
+      while (attempt <= MAX_PREDICT_RETRIES) {
+        try {
+          response = await api.post("/predict", formData);
+          break; // success
+        } catch (err) {
+          if (err.response && [400, 413, 422].includes(err.response.status)) {
+            throw err; // client error, do not retry
+          }
+          if (attempt === MAX_PREDICT_RETRIES) throw err;
+          
+          setIsWakingUp(true);
+          attempt++;
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+      }
+
+      if (response && response.data.success) {
         onPredictionSuccess(response.data);
       } else {
-        setErrorMsg(response.data.error || (lang === "ta" ? "இலை நோயைக் கண்டறிய முடியவில்லை." : "Unable to analyze leaf. Please verify image details."));
+        setErrorMsg(response?.data?.error || (lang === "ta" ? "இலை நோயைக் கண்டறிய முடியவில்லை." : "Unable to analyze leaf. Please verify image details."));
       }
     } catch (err) {
       console.error("Diagnosis request error:", err);
@@ -153,6 +188,7 @@ function Scan({ onPredictionSuccess, lang }) {
       }
     } finally {
       setLoading(false);
+      setIsWakingUp(false);
     }
   };
 
@@ -280,8 +316,16 @@ function Scan({ onPredictionSuccess, lang }) {
               {loading ? (
                 <div className="card analyzing-box">
                   <div className="scanner-loader"></div>
-                  <span className="analyzing-title">{t("analyzing", lang)}</span>
-                  <span className="analyzing-sub">{t("analyzingSub", lang)}</span>
+                  {isWakingUp ? (
+                    <>
+                      <span className="analyzing-title" style={{color: "var(--color-healthy)", fontSize: "14px"}}>{t("wakingUpMsg", lang)}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="analyzing-title">{t("analyzing", lang)}</span>
+                      <span className="analyzing-sub">{t("analyzingSub", lang)}</span>
+                    </>
+                  )}
                 </div>
               ) : (
                 <>

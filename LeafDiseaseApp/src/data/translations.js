@@ -125,7 +125,8 @@ export const translations = {
     err422: "We couldn't process this image. Try another clear leaf photo.",
     err500: "The analysis service encountered a problem. Please try again.",
     errTimeout: "Analysis is taking longer than expected. Please try again.",
-    errNetwork: "Unable to reach the analysis service. Please check your connection."
+    errNetwork: "Unable to reach the analysis service. Please check your connection.",
+    wakingUpMsg: "Waking up the AI analysis server… Please wait."
   },
   ta: {
     // Navigation / General
@@ -248,7 +249,8 @@ export const translations = {
     err422: "இந்தப் படத்தைப் பகுப்பாய்வு செய்ய முடியவில்லை. வேறொரு தெளிவான இலையின் படத்தைப் பதிவேற்றவும்.",
     err500: "சர்வரில் பிழை ஏற்பட்டுள்ளது. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.",
     errTimeout: "பகுப்பாய்வு அதிக நேரம் எடுக்கிறது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
-    errNetwork: "பகுப்பாய்வு சர்வரைத் தொடர்புகொள்ள முடியவில்லை. உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்."
+    errNetwork: "பகுப்பாய்வு சர்வரைத் தொடர்புகொள்ள முடியவில்லை. உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்.",
+    wakingUpMsg: "AI பகுப்பாய்வு சேவையகம் தயாராகிறது… சிறிது நேரம் காத்திருக்கவும்."
   }
 };
 
