@@ -345,3 +345,16 @@ p {
   background-color: var(--color-danger-light);
   color: var(--color-danger);
 }
+
+/* =====================================================
+   RESPONSIVE UTILITIES
+ ===================================================== */
+.mobile-only { display: none !important; }
+.mobile-only-block { display: none !important; }
+.desktop-only { display: flex !important; }
+
+@media (max-width: 768px) {
+  .mobile-only { display: flex !important; }
+  .mobile-only-block { display: block !important; }
+  .desktop-only { display: none !important; }
+}

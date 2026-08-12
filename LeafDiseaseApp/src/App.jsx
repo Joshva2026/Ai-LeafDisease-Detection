@@ -101,11 +101,16 @@ function App() {
     if (!user) return;
     try {
       const response = await api.get(`/api/history?username=${user.username}`);
-      if (response.data.success) {
+      if (response.data.success && response.data.history && response.data.history.length > 0) {
         setHistory(response.data.history);
+      } else {
+        const localHist = JSON.parse(localStorage.getItem(`history_${user.username}`) || "[]");
+        setHistory(localHist);
       }
     } catch (err) {
       console.error("Failed to fetch history:", err);
+      const localHist = JSON.parse(localStorage.getItem(`history_${user.username}`) || "[]");
+      setHistory(localHist);
     }
   };
 
@@ -262,6 +267,16 @@ function App() {
         {view === "scan" && (
           <Scan 
             onPredictionSuccess={(result) => {
+              if (user) {
+                const localHist = JSON.parse(localStorage.getItem(`history_${user.username}`) || "[]");
+                const newEntry = {
+                  ...result,
+                  date: new Date().toISOString()
+                };
+                localHist.unshift(newEntry);
+                localStorage.setItem(`history_${user.username}`, JSON.stringify(localHist.slice(0, 50)));
+                setHistory(localHist);
+              }
               setPrediction(result);
               setView("diagnosis");
             }}

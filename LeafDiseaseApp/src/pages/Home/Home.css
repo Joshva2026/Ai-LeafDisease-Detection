@@ -762,3 +762,221 @@
   font-size: 11px;
   color: var(--text-secondary);
 }
+
+/* =====================================================
+   MOBILE PREMIUM HOME (APP UX)
+ ===================================================== */
+.mobile-premium-home {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mobile-brand-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.mobile-brand-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.mobile-brand-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+.mobile-hero-3d {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.mobile-3d-leaf-container {
+  width: 180px;
+  height: 200px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mobile-3d-leaf {
+  width: 100%;
+  height: 100%;
+  animation: float 6s ease-in-out infinite;
+  filter: drop-shadow(0 15px 25px rgba(16, 185, 129, 0.2));
+}
+
+.pulse-node {
+  animation: node-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes node-pulse {
+  0% { transform: scale(1); opacity: 0.6; filter: brightness(1); }
+  100% { transform: scale(1.3); opacity: 1; filter: brightness(1.5); }
+}
+
+.mobile-primary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: var(--primary-dark);
+  color: var(--bg-primary);
+  padding: 16px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  border: none;
+  box-shadow: 0 8px 20px rgba(6, 95, 70, 0.3);
+}
+
+.mobile-btn-secondary {
+  background: transparent;
+  color: var(--primary-dark);
+  border: 1px solid var(--primary-dark);
+  padding: 14px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+}
+.theme-dark .mobile-btn-secondary {
+  color: var(--text-white);
+  border-color: var(--border-color);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.theme-dark .glass-card {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mobile-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-family: var(--font-display);
+}
+
+.mobile-stats-grid {
+  display: flex;
+  justify-content: space-around;
+}
+
+.m-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.m-stat-val {
+  font-size: 24px;
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+
+.m-stat-lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.m-steps-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.m-step-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.m-step-num {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+  opacity: 0.8;
+  font-family: var(--font-display);
+}
+
+.m-step-info h4 {
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.m-step-info p {
+  font-size: 12px;
+}
+
+.m-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.m-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+}
+
+.m-recent-img {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.m-recent-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.m-recent-info h5 {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.m-recent-conf {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.m-empty-history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+  gap: 8px;
+}

@@ -67,6 +67,16 @@
   transition: var(--transition-smooth);
 }
 
+@media (max-width: 1023px) {
+  .diag-image-card {
+    margin-left: -24px;
+    margin-right: -24px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}
+
 .diag-image-card::before {
   content: "";
   position: absolute;

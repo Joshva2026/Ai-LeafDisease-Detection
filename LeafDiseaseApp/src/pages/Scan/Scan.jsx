@@ -176,7 +176,12 @@ function Scan({ onPredictionSuccess, lang }) {
         {/* Left Column: Capture / Preview Zone */}
         <div className="scan-left-col">
           <div className="scan-area-card">
-            {loading && <div className="laser-scanner"></div>}
+            {loading && (
+              <>
+                <div className="laser-scanner"></div>
+                <div className="scan-ring"></div>
+              </>
+            )}
 
             {useCamera ? (
               <div className="camera-stream-wrapper">
