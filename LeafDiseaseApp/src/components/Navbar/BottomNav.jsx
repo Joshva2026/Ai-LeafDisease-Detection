@@ -13,14 +13,6 @@ function BottomNav({ activeView, onViewChange, lang }) {
       </div>
       
       <div 
-        className={`bottom-nav-item ${activeView === "myplants" || activeView === "guide" ? "active" : ""}`}
-        onClick={() => onViewChange("myplants")}
-      >
-        <Library size={20} />
-        <span>{t("myPlants", lang)}</span>
-      </div>
-
-      <div 
         className="bottom-nav-item scan-btn-wrapper"
         onClick={() => onViewChange("scan")}
       >
@@ -36,6 +28,14 @@ function BottomNav({ activeView, onViewChange, lang }) {
       >
         <History size={20} />
         <span>{t("history", lang)}</span>
+      </div>
+
+      <div 
+        className={`bottom-nav-item ${activeView === "about" ? "active" : ""}`}
+        onClick={() => onViewChange("about")}
+      >
+        <Library size={20} />
+        <span>About</span>
       </div>
     </nav>
   );

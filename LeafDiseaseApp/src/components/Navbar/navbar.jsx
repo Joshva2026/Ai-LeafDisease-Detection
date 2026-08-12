@@ -9,9 +9,9 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
 
   const links = [
     { id: "home", label: t("home", lang), icon: Home },
-    { id: "myplants", label: t("myPlants", lang), icon: Library },
     { id: "scan", label: t("scan", lang), icon: Camera },
     { id: "history", label: t("history", lang), icon: History },
+    { id: "about", label: "About", icon: Library },
     { id: "profile", label: t("profile", lang), icon: User2 }
   ];
 

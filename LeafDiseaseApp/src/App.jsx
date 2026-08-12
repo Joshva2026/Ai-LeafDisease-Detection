@@ -8,6 +8,7 @@ import MyPlants from "./pages/MyPlants/MyPlants";
 import History from "./pages/History/History";
 import PlantGuide from "./pages/PlantGuide/PlantGuide";
 import Profile from "./pages/Profile/Profile";
+import About from "./pages/About/About";
 import Navbar from "./components/Navbar/navbar";
 import Chatbot from "./components/Chatbot/Chatbot";
 import { Loader2 } from "lucide-react";
@@ -301,6 +302,10 @@ function App() {
             onViewChange={setView} 
             lang={lang}
           />
+        )}
+
+        {view === "about" && (
+          <About />
         )}
 
         {view === "profile" && (
