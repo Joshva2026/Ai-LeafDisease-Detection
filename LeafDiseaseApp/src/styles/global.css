@@ -15,7 +15,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
-  overflow: hidden; /* Lock body scrolling to handle scrolling purely inside scroll-container */
+  overflow-x: hidden; /* Allow natural vertical scrolling */
 }
 
 /* Root Layout Container */
@@ -34,14 +34,14 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* =====================================================
    AMBIENT GLOW SYSTEM
  ===================================================== */
 .ambient-glow-container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -152,30 +152,25 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   padding: 40px 0;
 }
 
-/* Scroll Container: Scrollable viewport */
+/* Scroll Container: Standard flow wrapper */
 .scroll-container {
   flex: 1;
   width: 100%;
-  overflow-y: auto;
   box-sizing: border-box;
   z-index: 1;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
   /* Desktop defaults */
   padding-top: 96px; 
-  padding-bottom: 40px; 
+  padding-bottom: 60px; 
 }
 
 /* Mobile responsive padding */
 @media (max-width: 768px) {
   .scroll-container {
     padding-top: 60px; /* Space for MobileHeader */
-    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); /* Space for BottomNav */
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px)); /* Ensure ample space for BottomNav so nothing is hidden */
   }
 }
 

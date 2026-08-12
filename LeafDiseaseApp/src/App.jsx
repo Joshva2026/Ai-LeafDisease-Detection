@@ -49,14 +49,11 @@ function App() {
 
   // Parallax background glows & IntersectionObserver scroll triggers
   useEffect(() => {
-    const scrollContainer = document.querySelector(".scroll-container");
-    if (!scrollContainer) return;
-
     let tick = false;
     const handleScroll = () => {
       if (!tick) {
         requestAnimationFrame(() => {
-          const y = scrollContainer.scrollTop;
+          const y = window.scrollY;
           const blob1 = document.querySelector(".glow-blob-1");
           const blob2 = document.querySelector(".glow-blob-2");
           const blob4 = document.querySelector(".glow-blob-4");
@@ -69,7 +66,7 @@ function App() {
       }
     };
 
-    scrollContainer.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
     // Fade-in sections Intersection Observer
     const observer = new IntersectionObserver(
@@ -92,7 +89,7 @@ function App() {
     const timer = setTimeout(observeSections, 150);
 
     return () => {
-      scrollContainer.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
       clearTimeout(timer);
       observer.disconnect();
     };

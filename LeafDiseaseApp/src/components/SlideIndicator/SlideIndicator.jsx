@@ -26,7 +26,6 @@ function SlideIndicator({ containerSelector = '.scroll-container', sectionSelect
           });
         },
         { 
-          root: scrollContainer,
           threshold: 0.5 // Section is considered active when 50% visible
         }
       );
