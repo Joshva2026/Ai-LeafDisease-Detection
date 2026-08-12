@@ -1,6 +1,7 @@
 import { ArrowLeft, CheckCircle, AlertTriangle, ShieldCheck, RefreshCw, BookmarkCheck } from "lucide-react";
 import { mapClassName, getSeverityStyle } from "../../data/diseaseHelper";
 import { t } from "../../data/translationHelper";
+import diseaseData from "../../data/diseaseData";
 import { useState } from "react";
 import "./Diagnosis.css";
 
@@ -31,6 +32,13 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     setSaved(true);
   };
 
+  const diseaseInfo = diseaseData[prediction.disease] || {
+    description: lang === "ta" ? "இந்த பயிரின் நிலைக்கான விரிவான தகவல் தற்போது இல்லை." : "Detailed information for this specific crop condition is currently unavailable.",
+    symptoms: lang === "ta" ? ["தெரியாத அறிகுறிகள்"] : ["Symptoms vary. Please monitor the plant for changes in leaf color or texture."],
+    treatment: lang === "ta" ? "பொதுவான பயிர் பராமரிப்பு வழிகாட்டுதல்களைப் பின்பற்றவும்." : "Follow general crop care guidelines and monitor for spreading.",
+    prevention: lang === "ta" ? "பயிர்களுக்கு இடையே நல்ல காற்று ஓட்டத்தை உறுதி செய்யவும்." : "Ensure good airflow between plants and avoid overwatering."
+  };
+
   const getTreatmentCards = () => {
     if (isHealthy) {
       return [
@@ -51,16 +59,12 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
     return [
       { 
-        title: lang === "ta" ? "உடனடி கவாத்து (Pruning)" : "Immediate Pruning", 
-        text: lang === "ta" ? "நோய் பரவுவதைத் தடுக்க பாதிக்கப்பட்ட இலைகளை உடனடியாக கவாத்து செய்து அகற்றவும்." : "Prune and dispose of diseased leaves immediately to prevent spore dispersal." 
+        title: lang === "ta" ? "சிகிச்சை மற்றும் பரிந்துரை" : "Recommended Treatment", 
+        text: diseaseInfo.treatment 
       },
       { 
-        title: lang === "ta" ? "நீர்ப்பாசன முறை மாற்றம்" : "Irrigation Adjustment", 
-        text: lang === "ta" ? "நீர் வேர்களில் மட்டுமே பாய வேண்டும். இலைகளின் மேல் தண்ணீர் தெளிப்பதைத் தவிர்க்கவும்." : "Water directly at the root base. Avoid overhead watering to keep foliage dry." 
-      },
-      { 
-        title: lang === "ta" ? "சிகிச்சை முறை" : "Treatment Application", 
-        text: prediction.treatment || (lang === "ta" ? "குறிப்பிட்ட சிகிச்சைகளுக்கு ஒரு வேளாண் நிபுணரை அணுகவும்." : "Consult an agronomist for targeted treatments.") 
+        title: lang === "ta" ? "கண்காணிப்பு" : "Monitoring", 
+        text: lang === "ta" ? "மேலும் பரவாமல் இருக்க அடுத்த சில நாட்களுக்கு பயிர்களைத் தொடர்ந்து கண்காணிக்கவும்." : "Monitor the crop closely over the next few days to ensure the condition does not spread." 
       }
     ];
   };
@@ -182,15 +186,15 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           {/* About description */}
           <h3 className="info-section-title">{t("aboutCondition", lang)}</h3>
           <div className="info-desc-card">
-            {prediction.description}
+            {diseaseInfo.description}
           </div>
 
           {/* Symptoms List */}
-          {!isHealthy && prediction.symptoms && (
+          {!isHealthy && diseaseInfo.symptoms && (
             <>
               <h3 className="info-section-title">{t("commonSymptoms", lang)}</h3>
               <div className="symptoms-list">
-                {prediction.symptoms.map((symptom, i) => (
+                {diseaseInfo.symptoms.map((symptom, i) => (
                   <div key={i} className="symptom-item">
                     <div className="symptom-bullet"></div>
                     <div>{symptom}</div>
@@ -218,7 +222,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
               </div>
               <div className="treatment-info">
                 <span className="treatment-title">{t("preventionTips", lang)}</span>
-                <p className="treatment-text">{prediction.prevention}</p>
+                <p className="treatment-text">{diseaseInfo.prevention}</p>
               </div>
             </div>
           </div>

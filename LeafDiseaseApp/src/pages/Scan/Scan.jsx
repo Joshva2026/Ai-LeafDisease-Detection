@@ -134,18 +134,20 @@ function Scan({ onPredictionSuccess, lang }) {
       console.error("Diagnosis request error:", err);
       if (err.response) {
         if (err.response.status === 400) {
-          setErrorMsg(err.response.data.error || (lang === "ta" ? "செல்லாத படம். சரியான இலையின் படத்தைப் பதிவேற்றவும்." : "Invalid image. Please upload a clear crop leaf image (JPG/PNG/WEBP)."));
+          setErrorMsg(lang === "ta" ? "செல்லாத படம். சரியான இலையின் படத்தைப் பதிவேற்றவும்." : "Please upload a valid leaf image.");
         } else if (err.response.status === 413) {
           setErrorMsg(lang === "ta" ? "படம் மிகப் பெரியது. 10 MB-க்கு குறைவான படத்தைப் பதிவேற்றவும்." : "Image is too large. Please upload an image below 10 MB.");
         } else if (err.response.status === 422) {
-          setErrorMsg(err.response.data.error || (lang === "ta" ? "இந்தப் படத்தைப் பகுப்பாய்வு செய்ய முடியவில்லை. வேறொரு இலையின் படத்தைப் பதிவேற்றவும்." : "Unable to process this image. Please try another clear leaf image."));
+          setErrorMsg(lang === "ta" ? "இந்தப் படத்தைப் பகுப்பாய்வு செய்ய முடியவில்லை. வேறொரு இலையின் படத்தைப் பதிவேற்றவும்." : "We couldn't process this image. Try another clear leaf photo.");
         } else if (err.response.status === 500) {
-          setErrorMsg(lang === "ta" ? "சர்வரில் பிழை ஏற்பட்டுள்ளது. சிறிது நேரம் கழித்து முயற்சிக்கவும்." : "Internal server error. Please try again later.");
+          setErrorMsg(lang === "ta" ? "சர்வரில் பிழை ஏற்பட்டுள்ளது. சிறிது நேரம் கழித்து முயற்சிக்கவும்." : "The analysis service encountered a problem. Please try again.");
         } else {
           setErrorMsg(err.response.data.error || "An unexpected error occurred.");
         }
+      } else if (err.code === 'ECONNABORTED' || (err.message && err.message.toLowerCase().includes("timeout"))) {
+        setErrorMsg(lang === "ta" ? "பகுப்பாய்வு அதிக நேரம் எடுக்கிறது. மீண்டும் முயற்சிக்கவும்." : "Analysis is taking longer than expected. Please try again.");
       } else if (err.request) {
-        setErrorMsg(lang === "ta" ? "பகுப்பாய்வு சர்வர் தொடங்குகிறது. சிறிது நேரம் கழித்து முயற்சிக்கவும்." : "Analysis server is waking up or unreachable. Please try again in a few seconds.");
+        setErrorMsg(lang === "ta" ? "பகுப்பாய்வு சர்வரைத் தொடர்புகொள்ள முடியவில்லை. இணைய இணைப்பைச் சரிபார்க்கவும்." : "Unable to reach the analysis service. Please check your connection.");
       } else {
         setErrorMsg(err.message);
       }
@@ -199,12 +201,22 @@ function Scan({ onPredictionSuccess, lang }) {
                 )}
               </div>
             ) : (
-              <div onClick={() => fileInputRef.current.click()} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px" }}>
+              <div onClick={() => fileInputRef.current.click()} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px", cursor: "pointer" }}>
                 <div className="scan-placeholder-icon">
                   <UploadCloud size={28} />
                 </div>
                 <h4>{t("uploadPrompt", lang)}</h4>
-                <p>{t("dragDropPrompt", lang)}</p>
+                <p style={{ textAlign: "center", marginBottom: "16px", color: "var(--text-secondary)" }}>{t("dragDropPrompt", lang)}</p>
+                <div className="scan-tips-list" style={{ fontSize: "13px", color: "var(--text-secondary)", textAlign: "left", display: "inline-block", lineHeight: "1.8" }}>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Use good lighting</div>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Keep the leaf visible</div>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Avoid extreme blur</div>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Capture the affected area clearly</div>
+                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> Avoid multiple overlapping leaves</div>
+                </div>
+                <div style={{ marginTop: "24px", fontSize: "12px", color: "var(--text-light)" }}>
+                  Supported formats: JPG, PNG, WEBP (Max 10MB)
+                </div>
                 <input
                   type="file"
                   ref={fileInputRef}
