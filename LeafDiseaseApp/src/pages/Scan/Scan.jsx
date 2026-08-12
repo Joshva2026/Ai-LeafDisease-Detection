@@ -105,9 +105,7 @@ function Scan({ onPredictionSuccess, lang }) {
     formData.append("username", username);
 
     try {
-      const response = await api.post("/predict", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      const response = await api.post("/predict", formData);
 
       if (response.data.success) {
         onPredictionSuccess(response.data);
@@ -116,7 +114,23 @@ function Scan({ onPredictionSuccess, lang }) {
       }
     } catch (err) {
       console.error("Diagnosis request error:", err);
-      setErrorMsg(lang === "ta" ? "சர்வரைத் தொடர்பு கொள்ள முடியவில்லை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்." : "Unable to connect to the analysis server. Please try again.");
+      if (err.response) {
+        if (err.response.status === 400) {
+          setErrorMsg(err.response.data.error || (lang === "ta" ? "செல்லாத படம். சரியான இலையின் படத்தைப் பதிவேற்றவும்." : "Invalid image. Please upload a clear crop leaf image (JPG/PNG/WEBP)."));
+        } else if (err.response.status === 413) {
+          setErrorMsg(lang === "ta" ? "படம் மிகப் பெரியது. 10 MB-க்கு குறைவான படத்தைப் பதிவேற்றவும்." : "Image is too large. Please upload an image below 10 MB.");
+        } else if (err.response.status === 422) {
+          setErrorMsg(err.response.data.error || (lang === "ta" ? "இந்தப் படத்தைப் பகுப்பாய்வு செய்ய முடியவில்லை. வேறொரு இலையின் படத்தைப் பதிவேற்றவும்." : "Unable to process this image. Please try another clear leaf image."));
+        } else if (err.response.status === 500) {
+          setErrorMsg(lang === "ta" ? "சர்வரில் பிழை ஏற்பட்டுள்ளது. சிறிது நேரம் கழித்து முயற்சிக்கவும்." : "Internal server error. Please try again later.");
+        } else {
+          setErrorMsg(err.response.data.error || "An unexpected error occurred.");
+        }
+      } else if (err.request) {
+        setErrorMsg(lang === "ta" ? "பகுப்பாய்வு சர்வர் தொடங்குகிறது. சிறிது நேரம் கழித்து முயற்சிக்கவும்." : "Analysis server is waking up or unreachable. Please try again in a few seconds.");
+      } else {
+        setErrorMsg(err.message);
+      }
     } finally {
       setLoading(false);
     }
