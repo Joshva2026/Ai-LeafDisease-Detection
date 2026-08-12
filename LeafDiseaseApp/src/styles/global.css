@@ -164,14 +164,19 @@ body {
   overflow-y: auto;
   box-sizing: border-box;
   z-index: 1;
-  padding-bottom: 40px; /* Safe padding for footers */
-  scroll-snap-type: y mandatory; /* Enable vertical slide snapping */
+  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
+  /* Desktop defaults */
+  padding-top: 96px; 
+  padding-bottom: 40px; 
 }
 
-/* Offset for fixed desktop top Navbar */
-.scroll-container {
-  padding-top: 96px; /* Space for the floating navbar */
+/* Mobile responsive padding */
+@media (max-width: 768px) {
+  .scroll-container {
+    padding-top: 60px; /* Space for MobileHeader */
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); /* Space for BottomNav */
+  }
 }
 
 /* Layout Centering Wrapper for Page Contents */

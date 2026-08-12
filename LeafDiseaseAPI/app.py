@@ -15,6 +15,7 @@ import matplotlib.cm as cm
 
 # Initialize Flask App
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 MB limit
 CORS(app)
 
 # Initialize Rate Limiter
@@ -30,6 +31,13 @@ def ratelimit_handler(e):
         "success": False,
         "error": "Rate limit exceeded. Please wait a moment before sending more requests."
     }), 429
+
+@app.errorhandler(413)
+def request_entity_too_large(e):
+    return jsonify({
+        "success": False,
+        "error": "File too large. Maximum size is 10MB."
+    }), 413
 
 # Load .env file natively if it exists
 if os.path.exists(".env"):
@@ -188,12 +196,22 @@ def predict():
         return jsonify({"success": False, "error": "No image uploaded"}), 400
 
     file = request.files["image"]
+    if file.filename == '':
+        return jsonify({"success": False, "error": "No image selected"}), 400
+        
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
+        return jsonify({"success": False, "error": "Unsupported file format. Please upload JPG, PNG, or WEBP."}), 400
+
     filepath = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(filepath)
 
     try:
         # Load and verify image
-        img = Image.open(filepath).convert("RGB")
+        try:
+            img = Image.open(filepath).convert("RGB")
+        except Exception as e:
+            return jsonify({"success": False, "error": "Invalid or corrupted image file."}), 400
         
         # Leaf Heuristics Validation
         if not is_likely_leaf(img):

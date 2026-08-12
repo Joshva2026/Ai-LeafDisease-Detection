@@ -82,6 +82,24 @@ function Scan({ onPredictionSuccess, lang }) {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      // Validate file type
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+      if (!validTypes.includes(selectedFile.type)) {
+        setErrorMsg(lang === "ta" ? "செல்லாத படம். JPG, PNG அல்லது WEBP படத்தைப் பதிவேற்றவும்." : "Invalid file type. Please upload a JPG, PNG, or WEBP image.");
+        setImage(null);
+        setFile(null);
+        return;
+      }
+
+      // Validate file size (max 10MB)
+      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      if (selectedFile.size > maxSize) {
+        setErrorMsg(lang === "ta" ? "படம் மிகப் பெரியது. 10 MB-க்கு குறைவான படத்தைப் பதிவேற்றவும்." : "Image is too large. Please upload an image below 10 MB.");
+        setImage(null);
+        setFile(null);
+        return;
+      }
+
       setFile(selectedFile);
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -151,113 +169,121 @@ function Scan({ onPredictionSuccess, lang }) {
         <p className="scan-subtitle">{t("scanSubtitle", lang)}</p>
       </div>
 
-      <div className="fade-in-section" style={{ width: "100%", display: "flex", flexDirection: "column", gap: "10px" }}>
-        {/* Tabs */}
-        <div className="scan-mode-tabs">
-          <button
-            className={`scan-mode-btn ${!useCamera ? "active" : ""}`}
-            onClick={() => { stopCamera(); setUseCamera(false); }}
-          >
-            <ImageIcon size={16} />
-            {t("uploadImage", lang)}
-          </button>
-          <button
-            className={`scan-mode-btn ${useCamera ? "active" : ""}`}
-            onClick={startCamera}
-          >
-            <Camera size={16} />
-            {t("useCamera", lang)}
-          </button>
+      <div className="fade-in-section scan-layout-container">
+        
+        {/* Left Column: Capture / Preview Zone */}
+        <div className="scan-left-col">
+          <div className="scan-area-card">
+            {loading && <div className="laser-scanner"></div>}
+
+            {useCamera ? (
+              <div className="camera-stream-wrapper">
+                <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
+                <div className="camera-overlay-controls">
+                  <button className="camera-btn camera-btn-capture" onClick={capturePhoto}>
+                    <Video size={14} style={{ marginRight: "4px", verticalAlign: "middle" }} />
+                    {lang === "ta" ? "படம் எடு" : "Capture"}
+                  </button>
+                  <button className="camera-btn camera-btn-cancel" onClick={stopCamera}>
+                    {lang === "ta" ? "ரத்துசெய்" : "Cancel"}
+                  </button>
+                </div>
+              </div>
+            ) : image ? (
+              <div className="preview-img-wrapper">
+                <img src={image} alt="Preview" className="preview-img" />
+                {!loading && (
+                  <button className="remove-img-btn" onClick={resetAll} title="Clear Image">
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div onClick={() => fileInputRef.current.click()} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px" }}>
+                <div className="scan-placeholder-icon">
+                  <UploadCloud size={28} />
+                </div>
+                <h4>{t("uploadPrompt", lang)}</h4>
+                <p>{t("dragDropPrompt", lang)}</p>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  hidden
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Render Camera or Upload Zone */}
-        <div className="scan-area-card">
-          {loading && <div className="laser-scanner"></div>}
+        {/* Right Column: Controls & Actions */}
+        <div className="scan-right-col">
+          {/* Tabs */}
+          <div className="scan-mode-tabs">
+            <button
+              className={`scan-mode-btn ${!useCamera ? "active" : ""}`}
+              onClick={() => { stopCamera(); setUseCamera(false); }}
+            >
+              <ImageIcon size={16} />
+              {t("uploadImage", lang)}
+            </button>
+            <button
+              className={`scan-mode-btn ${useCamera ? "active" : ""}`}
+              onClick={startCamera}
+            >
+              <Camera size={16} />
+              {t("useCamera", lang)}
+            </button>
+          </div>
 
-          {useCamera ? (
-            <div className="camera-stream-wrapper">
-              <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
-              <div className="camera-overlay-controls">
-                <button className="camera-btn camera-btn-capture" onClick={capturePhoto}>
-                  <Video size={14} style={{ marginRight: "4px", verticalAlign: "middle" }} />
-                  {lang === "ta" ? "படம் எடு" : "Capture"}
-                </button>
-                <button className="camera-btn camera-btn-cancel" onClick={stopCamera}>
-                  {lang === "ta" ? "ரத்துசெய்" : "Cancel"}
-                </button>
+          {/* Camera Errors */}
+          {cameraError && (
+            <div className="scan-error-card">
+              <AlertCircle size={18} style={{ flexShrink: 0 }} />
+              <div>{cameraError}</div>
+            </div>
+          )}
+
+          {/* Error state */}
+          {errorMsg && (
+            <div className="scan-error-card">
+              <AlertCircle size={18} style={{ flexShrink: 0 }} />
+              <div>
+                <p style={{ color: "var(--color-danger)", fontWeight: "bold", marginBottom: "4px" }}>{t("analysisFailed", lang)}</p>
+                <p style={{ color: "var(--color-danger)" }}>{errorMsg}</p>
+                <button onClick={resetAll} style={{ marginTop: "6px" }}>{t("tryAnother", lang)}</button>
               </div>
             </div>
-          ) : image ? (
-            <div className="preview-img-wrapper">
-              <img src={image} alt="Preview" className="preview-img" />
-              {!loading && (
-                <button className="remove-img-btn" onClick={resetAll} title="Clear Image">
-                  <X size={16} />
-                </button>
+          )}
+
+          {/* Image Ready / Analyzing state UI */}
+          {image && !errorMsg && (
+            <div className="scan-action-container">
+              {loading ? (
+                <div className="card analyzing-box">
+                  <div className="scanner-loader"></div>
+                  <span className="analyzing-title">{t("analyzing", lang)}</span>
+                  <span className="analyzing-sub">{t("analyzingSub", lang)}</span>
+                </div>
+              ) : (
+                <>
+                  <div className="image-status-bar">
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <Check size={16} color="var(--color-healthy)" />
+                      <span>{t("readyScan", lang)}</span>
+                    </div>
+                  </div>
+                  <div className="analyze-btn-wrapper">
+                    <button className="btn btn-primary btn-analyze" onClick={handleDiagnose}>
+                      {t("analyzeLeaf", lang)}
+                    </button>
+                  </div>
+                </>
               )}
-            </div>
-          ) : (
-            <div onClick={() => fileInputRef.current.click()} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px" }}>
-              <div className="scan-placeholder-icon">
-                <UploadCloud size={28} />
-              </div>
-              <h4>{t("uploadPrompt", lang)}</h4>
-              <p>{t("dragDropPrompt", lang)}</p>
-              <input
-                type="file"
-                ref={fileInputRef}
-                hidden
-                accept="image/*"
-                onChange={handleFileChange}
-              />
             </div>
           )}
         </div>
-
-        {/* Camera Errors */}
-        {cameraError && (
-          <div className="scan-error-card">
-            <AlertCircle size={18} style={{ flexShrink: 0 }} />
-            <div>{cameraError}</div>
-          </div>
-        )}
-
-        {/* Error state */}
-        {errorMsg && (
-          <div className="scan-error-card">
-            <AlertCircle size={18} style={{ flexShrink: 0 }} />
-            <div>
-              <p style={{ color: "var(--color-danger)", fontWeight: "bold", marginBottom: "4px" }}>{t("analysisFailed", lang)}</p>
-              <p style={{ color: "var(--color-danger)" }}>{errorMsg}</p>
-              <button onClick={resetAll} style={{ marginTop: "6px" }}>{t("tryAnother", lang)}</button>
-            </div>
-          </div>
-        )}
-
-        {/* Image Ready / Analyzing state UI */}
-        {image && !errorMsg && (
-          <>
-            {loading ? (
-              <div className="card analyzing-box">
-                <div className="scanner-loader"></div>
-                <span className="analyzing-title">{t("analyzing", lang)}</span>
-                <span className="analyzing-sub">{t("analyzingSub", lang)}</span>
-              </div>
-            ) : (
-              <div style={{ maxWidth: "600px", width: "100%", margin: "0 auto" }}>
-                <div className="image-status-bar" style={{ margin: "0 0 12px 0" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Check size={16} color="var(--color-healthy)" />
-                    <span>{t("readyScan", lang)}</span>
-                  </div>
-                </div>
-                <button className="btn btn-primary" onClick={handleDiagnose} style={{ width: "100%" }}>
-                  {t("analyzeLeaf", lang)}
-                </button>
-              </div>
-            )}
-          </>
-        )}
       </div>
     </div>
   );

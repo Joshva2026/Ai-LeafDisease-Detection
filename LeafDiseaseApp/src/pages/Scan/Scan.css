@@ -33,6 +33,31 @@
   color: var(--text-secondary);
 }
 
+/* Scan Layout Container */
+.scan-layout-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .scan-layout-container {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 40px;
+  }
+  .scan-left-col {
+    flex: 1.5;
+  }
+  .scan-right-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
 /* Upload & Camera Mode Tabs */
 .scan-mode-tabs {
   display: flex;
@@ -40,10 +65,8 @@
   padding: 4px;
   border-radius: var(--radius-pill);
   border: var(--border-style);
-  margin-bottom: 24px;
-  max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-bottom: 0;
+  width: 100%;
 }
 
 .scan-mode-btn {
@@ -80,25 +103,28 @@
   position: relative;
   background-color: var(--card-bg);
   border: 1px dashed var(--border-color);
-  border-radius: var(--radius-lg);
-  height: 280px;
+  border-radius: 0;
+  height: 60vh;
+  min-height: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
-  transition: var(--transition-smooth);
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto 20px auto;
+  width: calc(100% + 48px);
+  margin-left: -24px;
+  margin-right: -24px;
+  margin-top: -10px;
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1024px) {
   .scan-area-card {
-    height: 380px;
+    height: 500px;
     border-radius: var(--radius-xl);
+    width: 100%;
+    margin: 0;
+    box-shadow: var(--shadow-soft);
   }
 }
 

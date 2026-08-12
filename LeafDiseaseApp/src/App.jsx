@@ -13,6 +13,9 @@ import Chatbot from "./components/Chatbot/Chatbot";
 import { Loader2 } from "lucide-react";
 import SlideIndicator from "./components/SlideIndicator/SlideIndicator";
 
+import MobileHeader from "./components/Navbar/MobileHeader";
+import BottomNav from "./components/Navbar/BottomNav";
+
 function App() {
   const [user, setUser] = useState(null);
   const [prediction, setPrediction] = useState(null);
@@ -193,7 +196,7 @@ function App() {
         <div className="glow-blob glow-blob-4"></div>
       </div>
 
-      {/* Floating Header Navbar */}
+      {/* Desktop Navbar (hidden on mobile via CSS) */}
       <Navbar 
         activeView={view} 
         onViewChange={setView} 
@@ -202,6 +205,21 @@ function App() {
         onLogout={handleLogout} 
         lang={lang}
         onLangChange={setLang}
+      />
+
+      {/* Mobile Header (hidden on desktop via CSS) */}
+      <MobileHeader 
+        theme={theme} 
+        onToggleTheme={toggleTheme} 
+        onViewChange={setView} 
+        lang={lang} 
+      />
+
+      {/* Mobile Bottom Navigation (hidden on desktop via CSS) */}
+      <BottomNav 
+        activeView={view} 
+        onViewChange={setView} 
+        lang={lang} 
       />
 
       {/* Dynamic Translation Progress Overlay */}

@@ -56,26 +56,46 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
 
       {/* Hero section */}
       <section id="hero" className="hero-card slide-section fade-in-section">
-        <span className="hero-tag">Botanical AI</span>
-        <h1 className="hero-title">{t("detectDiseases", lang)}</h1>
-        <p className="hero-subtitle">{t("heroSubtitle", lang)}</p>
-        <button className="hero-button" onClick={() => onViewChange("scan")}>
-          <Camera size={16} />
-          {t("scanALeaf", lang)}
-        </button>
-        {/* Bespoke Botanical Leaf SVG Illustration */}
-        <div className="hero-ill">
-          <svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
-            <path d="M50 110 C50 110, 85 80, 85 45 C85 10, 50 5, 50 5 C50 5, 15 10, 15 45 C15 80, 50 110, 50 110 Z" fill="#6E8E7E" fillOpacity="0.25"/>
-            <path d="M50 110 C50 110, 78 85, 78 50 C78 20, 50 15, 50 15 C50 15, 22 20, 22 50 C22 85, 50 110, 50 110 Z" fill="#6E8E7E" fillOpacity="0.75"/>
-            <path d="M50 15V105" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M50 35C58 40 68 42 74 40" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M50 55C58 60 70 63 76 60" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M50 75C56 80 66 83 70 82" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M50 35C42 40 32 42 26 40" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M50 55C42 60 30 63 24 60" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M50 75C44 80 34 83 30 82" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
+        <div className="hero-content-wrapper">
+          <div className="hero-text-col">
+            <span className="hero-tag">Botanical AI</span>
+            <h1 className="hero-title">{t("detectDiseases", lang)}</h1>
+            <p className="hero-subtitle">{t("heroSubtitle", lang)}</p>
+            <button className="hero-button" onClick={() => onViewChange("scan")}>
+              <Camera size={16} />
+              {t("scanALeaf", lang)}
+            </button>
+            <div className="hero-stats">
+              <div className="stat-item">
+                <span className="stat-value">38+</span>
+                <span className="stat-label">Diseases</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">95%+</span>
+                <span className="stat-label">Accuracy</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">AI</span>
+                <span className="stat-label">Powered</span>
+              </div>
+            </div>
+          </div>
+          <div className="hero-visual-col">
+            {/* Bespoke Botanical Leaf SVG Illustration */}
+            <div className="hero-ill">
+              <svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
+                <path d="M50 110 C50 110, 85 80, 85 45 C85 10, 50 5, 50 5 C50 5, 15 10, 15 45 C15 80, 50 110, 50 110 Z" fill="#6E8E7E" fillOpacity="0.25"/>
+                <path d="M50 110 C50 110, 78 85, 78 50 C78 20, 50 15, 50 15 C50 15, 22 20, 22 50 C22 85, 50 110, 50 110 Z" fill="#6E8E7E" fillOpacity="0.75"/>
+                <path d="M50 15V105" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M50 35C58 40 68 42 74 40" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M50 55C58 60 70 63 76 60" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M50 75C56 80 66 83 70 82" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M50 35C42 40 32 42 26 40" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M50 55C42 60 30 63 24 60" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M50 75C44 80 34 83 30 82" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </div>
+          </div>
         </div>
       </section>
 

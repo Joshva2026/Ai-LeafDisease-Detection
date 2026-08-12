@@ -2,6 +2,10 @@
    HISTORY LOGS SPECIFIC STYLES
  ===================================================== */
 
+.history-header-block {
+  margin-bottom: 24px;
+}
+
 .history-title {
   font-family: var(--font-serif);
   font-size: 24px;
@@ -9,7 +13,7 @@
   margin-bottom: 4px;
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1024px) {
   .history-title {
     font-size: 32px;
     margin-top: 10px;
@@ -21,21 +25,60 @@
   color: var(--text-secondary);
 }
 
+/* Controls (Search, Tabs, Sort) */
+.history-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 1024px) {
+  .history-controls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-secondary);
+  border: var(--border-style);
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-icon {
+  color: var(--text-light);
+  margin-right: 8px;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: var(--text-primary);
+  width: 100%;
+}
+
 .history-tabs-row {
   display: flex;
   background-color: var(--bg-secondary);
   padding: 4px;
   border-radius: var(--radius-pill);
   border: var(--border-style);
-  margin-bottom: 24px;
-  max-width: 480px;
 }
 
 .history-tab-btn {
   flex: 1;
   background: none;
   border: none;
-  padding: 10px 14px;
+  padding: 8px 16px;
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
   font-size: 13px;
@@ -51,35 +94,153 @@
   color: var(--primary-dark);
   box-shadow: var(--shadow-pill);
 }
+
 .theme-dark .history-tab-btn.active {
   color: #060c09;
   background-color: #e9efea;
 }
 
-/* History Group Container */
-.history-group-title {
-  font-family: var(--font-display);
+.sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: var(--border-style);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
   font-size: 13px;
-  font-weight: 700;
-  color: var(--text-light);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 14px;
-  margin-top: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  background-color: var(--card-bg);
 }
 
-.history-list-vertical {
+/* Empty State */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon {
+  margin-bottom: 16px;
+  color: var(--border-color-hover);
+}
+
+/* Desktop Table Layout */
+.history-table-container {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .history-table-container {
+    display: block;
+    background-color: var(--card-bg);
+    border: var(--border-style);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+  }
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.history-table th {
+  background-color: var(--bg-secondary);
+  padding: 16px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-light);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.history-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.history-table-row {
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.history-table-row:hover {
+  background-color: var(--bg-secondary);
+}
+
+.history-thumb-table {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+
+.history-plant-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.confidence-text {
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status-pill.healthy {
+  background-color: var(--color-healthy-light);
+  color: var(--color-healthy);
+}
+
+.status-pill.danger {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+.history-time-table {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.view-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* Mobile Vertical List */
+.history-mobile-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 24px;
 }
 
-@media (min-width: 769px) {
-  .history-list-vertical {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+@media (min-width: 1024px) {
+  .history-mobile-list {
+    display: none;
   }
 }
 
@@ -98,8 +259,6 @@
 
 .history-log-card:hover {
   border-color: var(--border-color-hover);
-  box-shadow: var(--shadow-medium);
-  transform: translateY(-2px);
 }
 
 .history-thumb {
@@ -133,20 +292,39 @@
   text-overflow: ellipsis;
 }
 
+.history-time-mobile {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
 .history-meta {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-.history-confidence-tag {
-  font-size: 11px;
+.status-pill-mobile {
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
   font-weight: 700;
+  text-transform: uppercase;
 }
 
-.history-time {
-  font-size: 10px;
-  color: var(--text-light);
+.status-pill-mobile.healthy {
+  background-color: var(--color-healthy-light);
+  color: var(--color-healthy);
+}
+
+.status-pill-mobile.danger {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+.confidence-text-mobile {
+  font-size: 12px;
+  font-weight: 700;
 }
