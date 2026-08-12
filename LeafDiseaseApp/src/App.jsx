@@ -94,6 +94,9 @@ function App() {
     // Brief delay to allow React viewport changes to mount elements
     const timer = setTimeout(observeSections, 150);
 
+    // FIX: Reset scroll position when the view changes
+    window.scrollTo(0, 0);
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       clearTimeout(timer);
@@ -264,7 +267,10 @@ function App() {
             lang={lang} 
             onLangChange={setLang} 
             onLogout={handleLogout} 
-            onProfileUpdate={(updatedUser) => setUser(updatedUser)}
+            onProfileUpdate={(updatedUser) => {
+              setUser(updatedUser);
+              localStorage.setItem("user", JSON.stringify(updatedUser));
+            }}
             theme={theme}
             onToggleTheme={toggleTheme}
           />
