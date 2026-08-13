@@ -1,0 +1,53 @@
+.botanical-bg-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: var(--bg-primary, #FAF9F5);
+}
+
+.botanical-bg-video,
+.botanical-bg-fallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.botanical-bg-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  /* Soft ivory/green transparent overlay for readability */
+  background: linear-gradient(
+    to bottom,
+    rgba(250, 249, 245, 0.75) 0%,
+    rgba(235, 240, 235, 0.85) 100%
+  );
+}
+
+/* Dark mode overlay */
+.theme-dark .botanical-bg-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 12, 9, 0.75) 0%,
+    rgba(6, 12, 9, 0.85) 100%
+  );
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .botanical-bg-video {
+    display: none;
+  }
+}

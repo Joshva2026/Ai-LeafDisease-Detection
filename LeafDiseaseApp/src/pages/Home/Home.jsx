@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, ChevronRight, Camera, Leaf, History, BookOpen, Sun, Wind, CloudRain, Activity, CheckCircle, Search, Droplet, Sprout } from "lucide-react";
+import { Camera, Search, Activity, CheckCircle, Leaf, History, ArrowRight } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
 import Footer from "../../components/Footer/Footer";
@@ -15,197 +15,65 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
     else setGreeting(lang === "ta" ? "மாலை வணக்கம்" : "Good evening");
   }, [lang]);
 
-  const recentScans = history.slice(0, 2);
-
-  const steps = [
-    { num: "01", title: t("captureStep", lang), desc: t("captureDesc", lang), icon: <Camera size={24} /> },
-    { num: "02", title: t("analyzeStep", lang), desc: t("analyzeDesc", lang), icon: <Search size={24} /> },
-    { num: "03", title: t("detectStep", lang), desc: t("detectDesc", lang), icon: <Activity size={24} /> },
-    { num: "04", title: t("understandStep", lang), desc: t("understandDesc", lang), icon: <CheckCircle size={24} /> }
-  ];
-
-  const features = [
-    { title: t("aiDetection", lang), desc: t("aiDetectionDesc", lang), icon: <Activity size={24}/> },
-    { title: t("visualHeatmap", lang), desc: t("visualHeatmapDesc", lang), icon: <Search size={24}/> },
-    { title: t("diseaseClasses", lang), desc: t("diseaseClassesDesc", lang), icon: <Leaf size={24}/> },
-    { title: t("simpleWorkflow", lang), desc: t("simpleWorkflowDesc", lang), icon: <ChevronRight size={24}/> },
-    { title: t("mobileReady", lang), desc: t("mobileReadyDesc", lang), icon: <BookOpen size={24}/> },
-    { title: t("farmerFriendly", lang), desc: t("farmerFriendlyDesc", lang), icon: <Sun size={24}/> }
-  ];
+  const recentScans = history.slice(0, 3);
 
   return (
     <>
-      <div className="page-wrapper">
-        {/* Home Header */}
-        <header className="home-header">
-          <div className="home-user">
-            <span className="home-greeting">{greeting},</span>
-            <span className="home-username">{user.username}</span>
-          </div>
-          <div className="home-header-actions">
-            <button className="notif-btn" title="Notifications">
-              <Bell size={20} />
-            </button>
+      <div className="home-page-wrapper slide-section">
+        
+        {/* =======================================
+            MOBILE HOME (App-like, compact)
+            ======================================= */}
+        <div className="mobile-home mobile-only">
+          <header className="m-header">
+            <div className="m-user-info">
+              <span className="m-greeting">{greeting}, {user.username}</span>
+              <h1 className="m-title">Your plant's health,<br/>decoded.</h1>
+            </div>
             {user.profile_image ? (
-              <img src={user.profile_image} alt={user.username} className="user-avatar" />
+              <img src={user.profile_image} alt={user.username} className="m-avatar" />
             ) : (
-              <div className="avatar-placeholder">{user.username.charAt(0).toUpperCase()}</div>
+              <div className="m-avatar-placeholder">{user.username.charAt(0).toUpperCase()}</div>
             )}
-          </div>
-        </header>
+          </header>
 
-        {/* Desktop Hero section */}
-        <section id="hero" className="hero-card slide-section fade-in-section desktop-only">
-          <div className="hero-content-wrapper">
-            <div className="hero-text-col">
-              <span className="hero-tag">Botanical AI</span>
-              <h1 className="hero-title">Protect Every Leaf with AI</h1>
-              <p className="hero-subtitle">Detect plant diseases from leaf images using deep learning and intelligent visual analysis.</p>
-              
-              <div className="hero-trust-strip">
-                <span>✓ AI Powered</span>
-                <span>✓ 38 Plant Disease Classes</span>
-                <span>✓ Deep Learning</span>
-                <span>✓ Visual Heatmap Analysis</span>
+          <div className="m-actions fade-in-section">
+            <button className="m-primary-action" onClick={() => onViewChange("scan")}>
+              <div className="m-action-icon"><Camera size={24} /></div>
+              <div className="m-action-text">
+                <span className="m-action-title">Scan a Leaf</span>
+                <span className="m-action-sub">Detect diseases instantly</span>
               </div>
-              
-              <div className="hero-buttons">
-                <button className="hero-button primary" onClick={() => onViewChange("scan")}>
-                  <Camera size={18} />
-                  Scan a Leaf
-                </button>
-                <button className="hero-button secondary" onClick={() => onViewChange("about")}>
-                  Explore LeafGuard
-                </button>
-              </div>
-            </div>
-            <div className="hero-visual-col">
-              {/* Bespoke Botanical Leaf SVG Illustration */}
-              <div className="hero-ill">
-                <svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%", animation: "float 6s ease-in-out infinite" }}>
-                  <path d="M50 110 C50 110, 85 80, 85 45 C85 10, 50 5, 50 5 C50 5, 15 10, 15 45 C15 80, 50 110, 50 110 Z" fill="#6E8E7E" fillOpacity="0.25"/>
-                  <path d="M50 110 C50 110, 78 85, 78 50 C78 20, 50 15, 50 15 C50 15, 22 20, 22 50 C22 85, 50 110, 50 110 Z" fill="#6E8E7E" fillOpacity="0.75"/>
-                  <path d="M50 15V105" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M50 35C58 40 68 42 74 40" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M50 55C58 60 70 63 76 60" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M50 75C56 80 66 83 70 82" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M50 35C42 40 32 42 26 40" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M50 55C42 60 30 63 24 60" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M50 75C44 80 34 83 30 82" stroke="#FAF9F5" strokeWidth="1.5" strokeLinecap="round"/>
-                  {/* Glowing nodes overlay */}
-                  <circle cx="50" cy="35" r="2" fill="#4ade80" />
-                  <circle cx="50" cy="55" r="2" fill="#4ade80" />
-                  <circle cx="50" cy="75" r="2" fill="#4ade80" />
-                  <circle cx="70" cy="82" r="1.5" fill="#4ade80" opacity="0.6"/>
-                  <circle cx="30" cy="82" r="1.5" fill="#4ade80" opacity="0.6"/>
-                  <circle cx="76" cy="60" r="1.5" fill="#4ade80" opacity="0.6"/>
-                  <circle cx="24" cy="60" r="1.5" fill="#4ade80" opacity="0.6"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Mobile Premium Home Section */}
-        <section className="mobile-only mobile-premium-home fade-in-section">
-          <div className="mobile-brand-header">
-            <h1 className="mobile-brand-title">Protect your plants with AI.</h1>
-            <p className="mobile-brand-subtitle">Detect leaf diseases, understand symptoms and get practical treatment guidance.</p>
-          </div>
-          
-          <div className="mobile-hero-3d">
-            <div className="mobile-3d-leaf-container">
-              <svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="mobile-3d-leaf">
-                <defs>
-                  <linearGradient id="leafGrad" x1="50" y1="5" x2="50" y2="110" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#4ade80" stopOpacity="0.8"/>
-                    <stop offset="100%" stopColor="#065f46" stopOpacity="0.9"/>
-                  </linearGradient>
-                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-                {/* 3D Depth shadows */}
-                <path d="M52 112 C52 112, 87 82, 87 47 C87 12, 52 7, 52 7 C52 7, 17 12, 17 47 C17 82, 52 112, 52 112 Z" fill="#022c22" fillOpacity="0.4" filter="url(#glow)"/>
-                <path d="M50 110 C50 110, 85 80, 85 45 C85 10, 50 5, 50 5 C50 5, 15 10, 15 45 C15 80, 50 110, 50 110 Z" fill="url(#leafGrad)"/>
-                <path d="M50 110 C50 110, 78 85, 78 50 C78 20, 50 15, 50 15 C50 15, 22 20, 22 50 C22 85, 50 110, 50 110 Z" fill="#10b981" fillOpacity="0.4"/>
-                <path d="M50 15V105" stroke="#ecfdf5" strokeWidth="2" strokeLinecap="round" opacity="0.8"/>
-                <path d="M50 35C58 40 68 42 74 40" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-                <path d="M50 55C58 60 70 63 76 60" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-                <path d="M50 75C56 80 66 83 70 82" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-                <path d="M50 35C42 40 32 42 26 40" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-                <path d="M50 55C42 60 30 63 24 60" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-                <path d="M50 75C44 80 34 83 30 82" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-                {/* Glowing Nodes */}
-                <circle cx="50" cy="35" r="2.5" fill="#a7f3d0" filter="url(#glow)" className="pulse-node" />
-                <circle cx="50" cy="55" r="2.5" fill="#a7f3d0" filter="url(#glow)" className="pulse-node" style={{animationDelay: "0.5s"}} />
-                <circle cx="50" cy="75" r="2.5" fill="#a7f3d0" filter="url(#glow)" className="pulse-node" style={{animationDelay: "1s"}} />
-              </svg>
-            </div>
-          </div>
-
-          <div className="mobile-primary-actions">
-            <button className="mobile-btn-primary" onClick={() => onViewChange("scan")}>
-              <div className="mobile-btn-icon"><Camera size={20} /></div>
-              Scan a Leaf
-            </button>
-            <button className="mobile-btn-secondary" onClick={() => onViewChange("history")}>
-              View History
+              <ArrowRight size={20} className="m-action-arrow" />
             </button>
           </div>
 
-          <div className="mobile-stats-card glass-card">
-            <h3 className="mobile-section-title">Your Plant Health</h3>
-            <div className="mobile-stats-grid">
-              <div className="m-stat">
-                <span className="m-stat-val">{history.length}</span>
-                <span className="m-stat-lbl">{t("totalScans", lang)}</span>
+          <div className="m-section fade-in-section">
+            <div className="m-section-header">
+              <h3 className="m-section-title">Plant Health Overview</h3>
+            </div>
+            <div className="m-health-cards">
+              <div className="m-health-card">
+                <span className="m-hc-value">{history.length}</span>
+                <span className="m-hc-label">Total Scans</span>
               </div>
-              <div className="m-stat">
-                <span className="m-stat-val" style={{color: "var(--color-healthy)"}}>
-                  {history.filter(h => mapClassName(h.disease).isHealthy).length}
-                </span>
-                <span className="m-stat-lbl">{t("healthyStatus", lang)}</span>
+              <div className="m-health-card healthy">
+                <span className="m-hc-value">{history.filter(h => mapClassName(h.disease).isHealthy).length}</span>
+                <span className="m-hc-label">Healthy</span>
               </div>
-              <div className="m-stat">
-                <span className="m-stat-val" style={{color: "var(--color-danger)"}}>
-                  {history.filter(h => !mapClassName(h.disease).isHealthy).length}
-                </span>
-                <span className="m-stat-lbl">{t("diseasedStatus", lang)}</span>
+              <div className="m-health-card danger">
+                <span className="m-hc-value">{history.filter(h => !mapClassName(h.disease).isHealthy).length}</span>
+                <span className="m-hc-label">Needs Care</span>
               </div>
             </div>
           </div>
 
-          <div className="mobile-how-it-works">
-            <h3 className="mobile-section-title">{t("howItWorks", lang)}</h3>
-            <div className="m-steps-vertical">
-              <div className="m-step-card glass-card">
-                <div className="m-step-num">01</div>
-                <div className="m-step-info">
-                  <h4>{t("captureStep", lang)}</h4>
-                  <p>{t("captureDesc", lang)}</p>
-                </div>
-              </div>
-              <div className="m-step-card glass-card">
-                <div className="m-step-num">02</div>
-                <div className="m-step-info">
-                  <h4>{t("analyzeStep", lang)}</h4>
-                  <p>{t("analyzeDesc", lang)}</p>
-                </div>
-              </div>
-              <div className="m-step-card glass-card">
-                <div className="m-step-num">03</div>
-                <div className="m-step-info">
-                  <h4>{t("detectStep", lang)}</h4>
-                  <p>{t("detectDesc", lang)}</p>
-                </div>
-              </div>
+          <div className="m-section fade-in-section">
+            <div className="m-section-header">
+              <h3 className="m-section-title">Recent Diagnoses</h3>
+              <button className="m-view-all" onClick={() => onViewChange("history")}>See All</button>
             </div>
-          </div>
-
-          <div className="mobile-recent-diagnosis">
-            <h3 className="mobile-section-title">Recent Diagnosis</h3>
+            
             {recentScans.length > 0 ? (
               <div className="m-recent-list">
                 {recentScans.map((scan, idx) => {
@@ -216,111 +84,160 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
                         src={scan.image_url} 
                         alt={details.name} 
                         className="m-recent-img" 
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=100";
-                        }}
+                        onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=100"; }}
                       />
                       <div className="m-recent-info">
-                        <h5>{details.name}</h5>
-                        <span className={`severity-pill ${details.isHealthy ? 'healthy' : 'danger'}`}>
-                          {details.isHealthy ? 'Healthy' : 'Diseased'}
+                        <h4 className="m-recent-name">{details.displayName}</h4>
+                        <span className={`m-recent-status ${details.isHealthy ? 'healthy' : 'danger'}`}>
+                          {details.isHealthy ? 'Healthy' : 'Condition Detected'}
                         </span>
                       </div>
-                      <div className="m-recent-conf">{(scan.confidence).toFixed(1)}%</div>
+                      <div className="m-recent-conf">
+                        {Math.round(scan.confidence)}%
+                      </div>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="m-empty-history glass-card">
-                <History size={24} color="var(--text-light)" />
-                <p>No scans yet</p>
-                <small>Your recent AI diagnoses will appear here.</small>
+              <div className="m-empty-state glass-card">
+                <History size={32} />
+                <p>No recent scans.</p>
+                <span>Tap "Scan a Leaf" to get started.</span>
               </div>
             )}
           </div>
-        </section>
+        </div>
 
-        {/* How It Works (Desktop) */}
-        <section className="slide-section fade-in-section desktop-only-block">
-          <div className="section-header-center">
-            <h2 className="section-heading-large">{t("howItWorks", lang)}</h2>
-            <p className="section-subtext">{t("builtSubtext", lang)}</p>
-          </div>
-          
-          <div className="steps-grid">
-            {steps.map((s, idx) => (
-              <div key={idx} className="step-card">
-                <div className="step-num">{s.num}</div>
-                <div className="step-icon-wrap">{s.icon}</div>
-                <h3 className="step-title">{s.title}</h3>
-                <p className="step-desc">{s.desc}</p>
+
+        {/* =======================================
+            DESKTOP HOME (Premium Cinematic)
+            ======================================= */}
+        <div className="desktop-home desktop-only">
+          <section className="d-hero fade-in-section">
+            <div className="d-hero-content">
+              <div className="d-hero-badge">
+                <span className="d-badge-dot"></span> LeafGuard Intelligence Platform
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Why LeafGuard (Features) (Desktop) */}
-        <section className="slide-section fade-in-section desktop-only-block">
-          <div className="section-header-center">
-            <h2 className="section-heading-large">{t("builtForSmarter", lang)}</h2>
-            <p className="section-subtext">{t("builtSubtext", lang)}</p>
-          </div>
-          
-          <div className="features-grid">
-            {features.map((f, i) => (
-              <div key={i} className="feature-item-card">
-                <div className="feature-icon">{f.icon}</div>
-                <h3 className="feature-title">{f.title}</h3>
-                <p className="feature-desc">{f.desc}</p>
+              <h1 className="d-hero-title">Understand<br/>Every Leaf.</h1>
+              <p className="d-hero-subtitle">
+                AI-powered plant disease detection with visual intelligence. 
+                Identify 38 distinct crop conditions instantly using deep learning and actionable heatmaps.
+              </p>
+              <div className="d-hero-actions">
+                <button className="d-btn-primary" onClick={() => onViewChange("scan")}>
+                  <Camera size={20} />
+                  Scan a Leaf
+                </button>
+                <button className="d-btn-secondary" onClick={() => onViewChange("about")}>
+                  <Leaf size={20} />
+                  Explore Plant Guide
+                </button>
               </div>
-            ))}
-          </div>
-        </section>
-        
-        {/* Visual Storytelling (Desktop) */}
-        <section className="slide-section fade-in-section desktop-only-block">
-          <div className="story-card">
-            <div className="story-text">
-              <h2 className="section-heading-large">From Leaf Image to Intelligent Diagnosis</h2>
-              <p className="section-subtext">LeafGuard leverages a deep learning MobileNetV2 architecture fine-tuned on 38 unique plant conditions. By passing your image through the convolutional neural network, we extract visual features and produce a Grad-CAM heatmap showing exactly which leaf regions triggered the AI decision.</p>
             </div>
-            <div className="story-flow">
-              <div className="story-node"><Camera size={28}/><span>Leaf Image</span></div>
-              <div className="story-arrow">→</div>
-              <div className="story-node"><Activity size={28}/><span>AI Analysis</span></div>
-              <div className="story-arrow">→</div>
-              <div className="story-node"><Search size={28}/><span>Disease Detection</span></div>
-              <div className="story-arrow">→</div>
-              <div className="story-node"><CheckCircle size={28}/><span>Actionable Understanding</span></div>
+            
+            <div className="d-hero-visual">
+              <div className="d-visual-card glass-card">
+                {/* Mockup of a scanning UI using pure SVG and CSS */}
+                <div className="d-visual-svg-container">
+                  <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg" className="d-visual-leaf-svg">
+                    <defs>
+                      <linearGradient id="leafGrad" x1="100" y1="10" x2="100" y2="230" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="#4ade80" stopOpacity="0.8"/>
+                        <stop offset="100%" stopColor="#065f46" stopOpacity="0.9"/>
+                      </linearGradient>
+                      <filter id="aiGlow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="6" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                      <filter id="heatPulse" x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur stdDeviation="10" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                    </defs>
+                    {/* Shadow for depth */}
+                    <path d="M104 234 C104 234, 174 174, 174 104 C174 34, 104 24, 104 24 C104 24, 34 34, 34 104 C34 174, 104 234, 104 234 Z" fill="#022c22" fillOpacity="0.4" filter="url(#aiGlow)"/>
+                    {/* Main Leaf Body */}
+                    <path d="M100 230 C100 230, 170 170, 170 100 C170 30, 100 20, 100 20 C100 20, 30 30, 30 100 C30 170, 100 230, 100 230 Z" fill="url(#leafGrad)"/>
+                    {/* Leaf highlight */}
+                    <path d="M100 230 C100 230, 156 180, 156 110 C156 50, 100 40, 100 40 C100 40, 44 50, 44 110 C44 180, 100 230, 100 230 Z" fill="#10b981" fillOpacity="0.3"/>
+                    {/* Leaf Veins */}
+                    <path d="M100 30V220" stroke="#ecfdf5" strokeWidth="2" strokeLinecap="round" opacity="0.7"/>
+                    <path d="M100 70C116 80 136 84 148 80" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+                    <path d="M100 110C116 120 140 126 152 120" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+                    <path d="M100 150C112 160 132 166 140 164" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+                    <path d="M100 70C84 80 64 84 52 80" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+                    <path d="M100 110C84 120 60 126 48 120" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+                    <path d="M100 150C88 160 68 166 60 164" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+                    
+                    {/* Grad-CAM Inspired Heatmap Blurbs */}
+                    <circle cx="130" cy="100" r="25" fill="#f59e0b" fillOpacity="0.6" filter="url(#heatPulse)" className="heat-pulse-1" />
+                    <circle cx="70" cy="140" r="20" fill="#ef4444" fillOpacity="0.5" filter="url(#heatPulse)" className="heat-pulse-2" />
+                    
+                    {/* AI Data Nodes */}
+                    <circle cx="130" cy="100" r="4" fill="#fef3c7" filter="url(#aiGlow)" className="ai-node" />
+                    <circle cx="70" cy="140" r="4" fill="#fee2e2" filter="url(#aiGlow)" className="ai-node" style={{animationDelay: "1s"}} />
+                    <circle cx="100" cy="70" r="4" fill="#ecfdf5" filter="url(#aiGlow)" className="ai-node" style={{animationDelay: "0.5s"}} />
+                  </svg>
+                  
+                  {/* AI Scanning Beam */}
+                  <div className="d-visual-scanner-bar"></div>
+                  
+                  {/* Floating AI Analysis Card */}
+                  <div className="floating-ai-card glass-card">
+                    <span className="fac-title">AI ANALYSIS</span>
+                    <span className="fac-desc">Leaf structure mapped</span>
+                    <div className="fac-conf">
+                      <span className="fac-dot"></span> 98.5% Confidence
+                    </div>
+                  </div>
+                </div>
+                <div className="d-visual-stats">
+                  <div className="d-stat-row">
+                    <span>Analysis Complete</span>
+                    <span className="d-stat-conf">98.5%</span>
+                  </div>
+                  <div className="d-stat-bar"><div className="d-stat-fill"></div></div>
+                </div>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Explore Crops Grid (Desktop) */}
-        <section className="slide-section fade-in-section desktop-only-block">
-           <div className="section-header-center">
-            <h2 className="section-heading-large">{t("exploreConditions", lang)}</h2>
-            <p className="section-subtext">{t("exploreSubtext", lang)}</p>
-          </div>
-          
-          <div className="crops-grid-display">
-            {/* Hardcoded sample representations of the actual 38 classes */}
-            <div className="crop-card"><Leaf size={32}/> <span>Apple</span> <small>4 conditions</small></div>
-            <div className="crop-card"><Sun size={32}/> <span>Corn</span> <small>4 conditions</small></div>
-            <div className="crop-card"><Droplet size={32}/> <span>Grape</span> <small>4 conditions</small></div>
-            <div className="crop-card"><Sprout size={32}/> <span>Tomato</span> <small>10 conditions</small></div>
-            <div className="crop-card"><Leaf size={32}/> <span>Potato</span> <small>3 conditions</small></div>
-            <div className="crop-card"><CloudRain size={32}/> <span>Cherry</span> <small>2 conditions</small></div>
-            <div className="crop-card"><Sun size={32}/> <span>Peach</span> <small>2 conditions</small></div>
-            <div className="crop-card"><Wind size={32}/> <span>Pepper</span> <small>2 conditions</small></div>
-          </div>
-        </section>
+          <section className="d-features fade-in-section">
+            <div className="d-section-header">
+              <h2>Intelligent features designed for precision</h2>
+              <p>Everything you need to monitor, diagnose, and treat your crops.</p>
+            </div>
+            
+            <div className="d-feature-grid">
+              <div className="d-feature-card glass-card">
+                <div className="d-fc-icon"><Camera /></div>
+                <h3>Visual Intelligence</h3>
+                <p>Upload or snap a photo of a leaf to instantly detect underlying health conditions.</p>
+              </div>
+              <div className="d-feature-card glass-card">
+                <div className="d-fc-icon"><Activity /></div>
+                <h3>MobileNetV2 Core</h3>
+                <p>Powered by a fine-tuned Convolutional Neural Network trained on thousands of agricultural samples.</p>
+              </div>
+              <div className="d-feature-card glass-card">
+                <div className="d-fc-icon"><Search /></div>
+                <h3>Grad-CAM Heatmaps</h3>
+                <p>Don't just get a diagnosis. See exactly which regions of the leaf triggered the AI's decision.</p>
+              </div>
+              <div className="d-feature-card glass-card">
+                <div className="d-fc-icon"><CheckCircle /></div>
+                <h3>Actionable Treatments</h3>
+                <p>Receive immediate, agronomic advice and prevention strategies for detected diseases.</p>
+              </div>
+            </div>
+          </section>
+        </div>
 
       </div>
       
-      <Footer />
+      {/* Footer only on desktop */}
+      <div className="desktop-only"><Footer /></div>
     </>
   );
 }

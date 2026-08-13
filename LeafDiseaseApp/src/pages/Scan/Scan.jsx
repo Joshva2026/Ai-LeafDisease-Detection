@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Camera, UploadCloud, ImageIcon, Video, AlertCircle, X, Check, Loader2 } from "lucide-react";
+import { Camera, UploadCloud, ImageIcon, Video, AlertCircle, X, Check, Info, Loader2 } from "lucide-react";
 import { t } from "../../data/translations";
 import api from "../../api/api";
 import "./Scan.css";
@@ -9,8 +9,9 @@ function Scan({ onPredictionSuccess, lang }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isWakingUp, setIsWakingUp] = useState(false);
+  
   const [useCamera, setUseCamera] = useState(false);
-  const [cameraError, setCameraError] = useState("");
+  const [cameraStatus, setCameraStatus] = useState("idle"); // idle, requesting, ready, denied, unavailable
   const [errorMsg, setErrorMsg] = useState("");
   
   const fileInputRef = useRef(null);
@@ -25,23 +26,33 @@ function Scan({ onPredictionSuccess, lang }) {
   }, []);
 
   const startCamera = async () => {
-    setCameraError("");
+    setErrorMsg("");
     setUseCamera(true);
+    setCameraStatus("requesting");
     setImage(null);
     setFile(null);
+    
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setCameraStatus("unavailable");
+        return;
+      }
       const constraints = {
-        video: { facingMode: "environment" } // default to back camera on mobile
+        video: { facingMode: "environment" } 
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
+      setCameraStatus("ready");
     } catch (err) {
       console.error("Camera access error:", err);
-      setCameraError(lang === "ta" ? "கேமராவை அணுக முடியவில்லை. கேமரா அனுமதிகளை சரிபார்க்கவும்." : "Unable to access camera. Please check permissions or choose gallery upload.");
-      setUseCamera(false);
+      if (err.name === "NotAllowedError" || err.name === "SecurityError") {
+        setCameraStatus("denied");
+      } else {
+        setCameraStatus("unavailable");
+      }
     }
   };
 
@@ -53,13 +64,12 @@ function Scan({ onPredictionSuccess, lang }) {
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
-    setUseCamera(false);
+    setCameraStatus("idle");
   };
 
   const capturePhoto = () => {
     if (videoRef.current) {
       const canvas = document.createElement("canvas");
-      // Match camera video dimensions
       canvas.width = videoRef.current.videoWidth || 640;
       canvas.height = videoRef.current.videoHeight || 480;
       const ctx = canvas.getContext("2d");
@@ -68,7 +78,6 @@ function Scan({ onPredictionSuccess, lang }) {
       const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
       setImage(dataUrl);
       
-      // Convert base64 to File blob
       fetch(dataUrl)
         .then((res) => res.blob())
         .then((blob) => {
@@ -77,13 +86,13 @@ function Scan({ onPredictionSuccess, lang }) {
         });
       
       stopCamera();
+      setUseCamera(false);
     }
   };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      // Validate file type
       const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
       if (!validTypes.includes(selectedFile.type)) {
         setErrorMsg(lang === "ta" ? "செல்லாத படம். JPG, PNG அல்லது WEBP படத்தைப் பதிவேற்றவும்." : "Invalid file type. Please upload a JPG, PNG, or WEBP image.");
@@ -92,8 +101,7 @@ function Scan({ onPredictionSuccess, lang }) {
         return;
       }
 
-      // Validate file size (max 10MB)
-      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      const maxSize = 10 * 1024 * 1024;
       if (selectedFile.size > maxSize) {
         setErrorMsg(lang === "ta" ? "படம் மிகப் பெரியது. 10 MB-க்கு குறைவான படத்தைப் பதிவேற்றவும்." : "Image is too large. Please upload an image below 10 MB.");
         setImage(null);
@@ -108,6 +116,8 @@ function Scan({ onPredictionSuccess, lang }) {
       };
       reader.readAsDataURL(selectedFile);
       setErrorMsg("");
+      stopCamera();
+      setUseCamera(false);
     }
   };
 
@@ -130,7 +140,7 @@ function Scan({ onPredictionSuccess, lang }) {
           await api.get("/", { timeout: 15000 });
           return;
         } catch (err) {
-          if (i === retries) return; // If ping fails entirely, let the POST handle the error naturally
+          if (i === retries) return; 
           setIsWakingUp(true);
           await new Promise(resolve => setTimeout(resolve, 3000));
         }
@@ -147,10 +157,10 @@ function Scan({ onPredictionSuccess, lang }) {
       while (attempt <= MAX_PREDICT_RETRIES) {
         try {
           response = await api.post("/predict", formData);
-          break; // success
+          break; 
         } catch (err) {
           if (err.response && [400, 413, 422].includes(err.response.status)) {
-            throw err; // client error, do not retry
+            throw err; 
           }
           if (attempt === MAX_PREDICT_RETRIES) throw err;
           
@@ -196,155 +206,154 @@ function Scan({ onPredictionSuccess, lang }) {
     setImage(null);
     setFile(null);
     setErrorMsg("");
-    setCameraError("");
     stopCamera();
+    setUseCamera(false);
   };
 
   return (
-    <div className="page-wrapper slide-section">
-      <div className="scan-title-container">
+    <div className="page-wrapper scan-page-wrapper">
+      <div className="scan-header">
         <h2 className="scan-title">{t("plantDoctor", lang)}</h2>
-        <p className="scan-subtitle">{t("scanSubtitle", lang)}</p>
+        <p className="scan-subtitle">{lang === "ta" ? "இலையைப் படம் பிடித்து நோயைக் கண்டறியவும்." : "Take a photo of a leaf to identify possible diseases."}</p>
       </div>
 
-      <div className="fade-in-section scan-layout-container">
-        
-        {/* Left Column: Capture / Preview Zone */}
-        <div className="scan-left-col">
-          <div className="scan-area-card">
-            {loading && (
-              <>
-                <div className="laser-scanner"></div>
-                <div className="scan-ring"></div>
-              </>
-            )}
+      <div className="scan-content">
+        {loading ? (
+          <div className="analyzing-state">
+            <div className="preview-img-wrapper analyzing-preview">
+              <img src={image} alt="Preview" className="preview-img dimmed" />
+              <div className="laser-scanner"></div>
+              <div className="scan-ring"></div>
+            </div>
+            <h3 className="analyzing-title">
+              {isWakingUp ? (lang === "ta" ? "சேவையகம் தயாராகிறது..." : "Waking up server...") : (lang === "ta" ? "உங்கள் இலையை பகுப்பாய்வு செய்கிறது..." : "Analyzing your leaf...")}
+            </h3>
+            <p className="analyzing-sub">
+              {isWakingUp ? (lang === "ta" ? "இது சிறிது நேரம் ஆகலாம்." : "This may take a moment.") : (lang === "ta" ? "AI நிலையை கண்டறிகிறது..." : "AI is identifying the condition...")}
+            </p>
+          </div>
+        ) : image ? (
+          <div className="image-ready-state">
+            <div className="preview-img-wrapper rounded-preview">
+              <img src={image} alt="Preview" className="preview-img" />
+            </div>
+            
+            <div className="file-info">
+              <span className="file-name">{file?.name || "captured-image.jpg"}</span>
+              <span className="file-size">{file ? (file.size / 1024 / 1024).toFixed(2) + " MB" : ""}</span>
+            </div>
 
-            {useCamera ? (
-              <div className="camera-stream-wrapper">
-                <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
-                <div className="camera-overlay-controls">
-                  <button className="camera-btn camera-btn-capture" onClick={capturePhoto}>
-                    <Video size={14} style={{ marginRight: "4px", verticalAlign: "middle" }} />
-                    {lang === "ta" ? "படம் எடு" : "Capture"}
-                  </button>
-                  <button className="camera-btn camera-btn-cancel" onClick={stopCamera}>
-                    {lang === "ta" ? "ரத்துசெய்" : "Cancel"}
-                  </button>
+            <div className="preview-actions">
+              <button className="btn-secondary" onClick={resetAll}>
+                {lang === "ta" ? "மாற்று" : "Choose Another"}
+              </button>
+              <button className="btn-secondary" onClick={() => { startCamera(); }}>
+                {lang === "ta" ? "மீண்டும் எடு" : "Retake"}
+              </button>
+            </div>
+
+            <button className="btn btn-primary btn-analyze-large" onClick={handleDiagnose}>
+              {t("analyzeLeaf", lang)}
+            </button>
+            
+            {errorMsg && (
+              <div className="scan-error-card mt-3">
+                <AlertCircle size={18} style={{ flexShrink: 0 }} />
+                <div>
+                  <p style={{ fontWeight: "bold", marginBottom: "4px" }}>{t("analysisFailed", lang)}</p>
+                  <p>{errorMsg}</p>
                 </div>
               </div>
-            ) : image ? (
-              <div className="preview-img-wrapper">
-                <img src={image} alt="Preview" className="preview-img" />
-                {!loading && (
-                  <button className="remove-img-btn" onClick={resetAll} title="Clear Image">
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div onClick={() => fileInputRef.current.click()} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px", cursor: "pointer" }}>
-                <div className="scan-placeholder-icon">
-                  <UploadCloud size={28} />
-                </div>
+            )}
+          </div>
+        ) : (
+          <div className="input-selection-state">
+            <div className="scan-mode-tabs compact-tabs">
+              <button
+                className={`scan-mode-btn ${!useCamera ? "active" : ""}`}
+                onClick={() => { stopCamera(); setUseCamera(false); }}
+              >
+                <ImageIcon size={16} />
+                {t("uploadImage", lang)}
+              </button>
+              <button
+                className={`scan-mode-btn ${useCamera ? "active" : ""}`}
+                onClick={startCamera}
+              >
+                <Camera size={16} />
+                {t("useCamera", lang)}
+              </button>
+            </div>
+
+            {!useCamera ? (
+              <div className="upload-card" onClick={() => fileInputRef.current.click()}>
+                <UploadCloud size={32} className="upload-icon" />
                 <h4>{t("uploadPrompt", lang)}</h4>
-                <p style={{ textAlign: "center", marginBottom: "16px", color: "var(--text-secondary)" }}>{t("dragDropPrompt", lang)}</p>
-                <div className="scan-tips-list" style={{ fontSize: "13px", color: "var(--text-secondary)", textAlign: "left", display: "inline-block", lineHeight: "1.8" }}>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipLighting", lang)}</div>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipVisible", lang)}</div>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipBlur", lang)}</div>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipArea", lang)}</div>
-                  <div><Check size={14} style={{ display: "inline", verticalAlign: "middle", color: "var(--color-healthy)", marginRight: "6px" }} /> {t("tipOverlap", lang)}</div>
-                </div>
-                <div style={{ marginTop: "24px", fontSize: "12px", color: "var(--text-light)" }}>
-                  {t("supportedFormats", lang)}
-                </div>
+                <p className="upload-specs">JPG PNG WEBP • Max 10MB</p>
+                <button className="btn-gallery">{lang === "ta" ? "கேலரியில் இருந்து தேர்ந்தெடு" : "Choose from Gallery"}</button>
                 <input
                   type="file"
                   ref={fileInputRef}
                   hidden
-                  accept="image/*"
+                  accept="image/jpeg, image/jpg, image/png, image/webp"
                   onChange={handleFileChange}
                 />
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right Column: Controls & Actions */}
-        <div className="scan-right-col">
-          {/* Tabs */}
-          <div className="scan-mode-tabs">
-            <button
-              className={`scan-mode-btn ${!useCamera ? "active" : ""}`}
-              onClick={() => { stopCamera(); setUseCamera(false); }}
-            >
-              <ImageIcon size={16} />
-              {t("uploadImage", lang)}
-            </button>
-            <button
-              className={`scan-mode-btn ${useCamera ? "active" : ""}`}
-              onClick={startCamera}
-            >
-              <Camera size={16} />
-              {t("useCamera", lang)}
-            </button>
-          </div>
-
-          {/* Camera Errors */}
-          {cameraError && (
-            <div className="scan-error-card">
-              <AlertCircle size={18} style={{ flexShrink: 0 }} />
-              <div>{cameraError}</div>
-            </div>
-          )}
-
-          {/* Error state */}
-          {errorMsg && (
-            <div className="scan-error-card">
-              <AlertCircle size={18} style={{ flexShrink: 0 }} />
-              <div>
-                <p style={{ color: "var(--color-danger)", fontWeight: "bold", marginBottom: "4px" }}>{t("analysisFailed", lang)}</p>
-                <p style={{ color: "var(--color-danger)" }}>{errorMsg}</p>
-                <button onClick={resetAll} style={{ marginTop: "6px" }}>{t("tryAnother", lang)}</button>
-              </div>
-            </div>
-          )}
-
-          {/* Image Ready / Analyzing state UI */}
-          {image && !errorMsg && (
-            <div className="scan-action-container">
-              {loading ? (
-                <div className="card analyzing-box">
-                  <div className="scanner-loader"></div>
-                  {isWakingUp ? (
-                    <>
-                      <span className="analyzing-title" style={{color: "var(--color-healthy)", fontSize: "14px"}}>{t("wakingUpMsg", lang)}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="analyzing-title">{t("analyzing", lang)}</span>
-                      <span className="analyzing-sub">{t("analyzingSub", lang)}</span>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <div className="image-status-bar">
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <Check size={16} color="var(--color-healthy)" />
-                      <span>{t("readyScan", lang)}</span>
+            ) : (
+              <div className="camera-card">
+                {cameraStatus === "requesting" && (
+                  <div className="camera-message">
+                    <Loader2 className="spinner" size={24} />
+                    <p>{lang === "ta" ? "கேமரா அனுமதியை கோருகிறது..." : "Requesting camera permission..."}</p>
+                  </div>
+                )}
+                
+                {cameraStatus === "denied" && (
+                  <div className="camera-message error-msg">
+                    <AlertCircle size={28} />
+                    <p>{lang === "ta" ? "புகைப்படம் எடுக்க கேமரா அனுமதி தேவை." : "Camera permission is required to take a photo."}</p>
+                    <button className="btn btn-primary mt-2" onClick={startCamera}>{lang === "ta" ? "கேமராவை அனுமதி" : "Allow Camera"}</button>
+                    <button className="btn-text mt-2" onClick={() => setUseCamera(false)}>{lang === "ta" ? "கேலரியில் இருந்து பதிவேற்று" : "Upload from Gallery"}</button>
+                  </div>
+                )}
+                
+                {cameraStatus === "unavailable" && (
+                  <div className="camera-message error-msg">
+                    <AlertCircle size={28} />
+                    <p>{lang === "ta" ? "இந்த சாதனத்தில் கேமரா இல்லை." : "Camera is not available on this device."}</p>
+                    <button className="btn-text mt-2" onClick={() => setUseCamera(false)}>{lang === "ta" ? "கேலரியில் இருந்து பதிவேற்று" : "Upload from Gallery"}</button>
+                  </div>
+                )}
+                
+                {cameraStatus === "ready" && (
+                  <div className="live-camera-container">
+                    <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
+                    <div className="camera-controls">
+                      <button className="btn-camera-close" onClick={() => setUseCamera(false)}>
+                        <X size={20} />
+                      </button>
+                      <button className="btn-camera-capture" onClick={capturePhoto}>
+                        <div className="capture-inner"></div>
+                      </button>
+                      <div style={{ width: 44 }}></div> {/* Spacer to center the capture button */}
                     </div>
                   </div>
-                  <div className="analyze-btn-wrapper">
-                    <button className="btn btn-primary btn-analyze" onClick={handleDiagnose}>
-                      {t("analyzeLeaf", lang)}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+                )}
+              </div>
+            )}
+            
+            {!useCamera && (
+               <details className="photo-tips-card">
+                 <summary><Info size={16} /> {lang === "ta" ? "புகைப்பட குறிப்புகள்" : "Photo Tips"}</summary>
+                 <div className="tips-content">
+                    <p><Check size={14} color="var(--color-healthy)" /> {t("tipLighting", lang)}</p>
+                    <p><Check size={14} color="var(--color-healthy)" /> {t("tipVisible", lang)}</p>
+                    <p><Check size={14} color="var(--color-healthy)" /> {t("tipBlur", lang)}</p>
+                 </div>
+               </details>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

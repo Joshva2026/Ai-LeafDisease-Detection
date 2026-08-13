@@ -16,6 +16,7 @@ import SlideIndicator from "./components/SlideIndicator/SlideIndicator";
 
 import MobileHeader from "./components/Navbar/MobileHeader";
 import BottomNav from "./components/Navbar/BottomNav";
+import BotanicalBackground from "./components/BotanicalBackground/BotanicalBackground";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -53,27 +54,8 @@ function App() {
     }
   }, []);
 
-  // Parallax background glows & IntersectionObserver scroll triggers
+  // IntersectionObserver scroll triggers
   useEffect(() => {
-    let tick = false;
-    const handleScroll = () => {
-      if (!tick) {
-        requestAnimationFrame(() => {
-          const y = window.scrollY;
-          const blob1 = document.querySelector(".glow-blob-1");
-          const blob2 = document.querySelector(".glow-blob-2");
-          const blob4 = document.querySelector(".glow-blob-4");
-          if (blob1) blob1.style.transform = `translate3d(0, ${y * 0.12}px, 0)`;
-          if (blob2) blob2.style.transform = `translate3d(0, ${-y * 0.06}px, 0)`;
-          if (blob4) blob4.style.transform = `translate3d(0, ${y * 0.1}px, 0)`;
-          tick = false;
-        });
-        tick = true;
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
     // Fade-in sections Intersection Observer
     const observer = new IntersectionObserver(
       (entries) => {
@@ -98,7 +80,6 @@ function App() {
     window.scrollTo(0, 0);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       clearTimeout(timer);
       observer.disconnect();
     };
@@ -128,8 +109,6 @@ function App() {
     }
   }, [user, prediction]);
 
-
-
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
@@ -150,13 +129,7 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Ambient Lighting Background Glows */}
-      <div className="ambient-glow-container">
-        <div className="glow-blob glow-blob-1"></div>
-        <div className="glow-blob glow-blob-2"></div>
-        <div className="glow-blob glow-blob-3"></div>
-        <div className="glow-blob glow-blob-4"></div>
-      </div>
+      <BotanicalBackground />
 
       {/* Desktop Navbar (hidden on mobile via CSS) */}
       <Navbar 
