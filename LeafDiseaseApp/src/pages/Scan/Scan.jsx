@@ -101,14 +101,7 @@ function Scan({ onPredictionSuccess, lang }) {
         return;
       }
 
-      const maxSize = 10 * 1024 * 1024;
-      if (selectedFile.size > maxSize) {
-        setErrorMsg(lang === "ta" ? "படம் மிகப் பெரியது. 10 MB-க்கு குறைவான படத்தைப் பதிவேற்றவும்." : "Image is too large. Please upload an image below 10 MB.");
-        setImage(null);
-        setFile(null);
-        return;
-      }
-
+      // Removed 10MB file size limit to support high resolution images
       setFile(selectedFile);
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -289,7 +282,7 @@ function Scan({ onPredictionSuccess, lang }) {
               <div className="upload-card" onClick={() => fileInputRef.current.click()}>
                 <UploadCloud size={32} className="upload-icon" />
                 <h4>{t("uploadPrompt", lang)}</h4>
-                <p className="upload-specs">JPG PNG WEBP • Max 10MB</p>
+                <p className="upload-specs">JPG PNG WEBP</p>
                 <button className="btn-gallery">{lang === "ta" ? "கேலரியில் இருந்து தேர்ந்தெடு" : "Choose from Gallery"}</button>
                 <input
                   type="file"

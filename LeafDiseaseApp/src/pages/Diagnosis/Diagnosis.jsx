@@ -113,9 +113,11 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                 </div>
                 <div className="ds-title-area">
                   <span className={`ds-badge ${isHealthy ? 'healthy' : 'danger'}`}>
-                    {isHealthy ? 'Healthy Leaf' : 'Condition Detected'}
+                    {prediction.health_status || (isHealthy ? 'Healthy Leaf' : 'Condition Detected')}
                   </span>
-                  <h1 className="ds-disease-name">{details.displayName}</h1>
+                  <h1 className="ds-disease-name">{prediction.disease_formatted || details.displayName}</h1>
+                  {prediction.plant && <p className="ds-plant-name"><strong>Plant:</strong> {prediction.plant}</p>}
+                  {prediction.severity && <p className={`ds-severity sev-${prediction.severity.toLowerCase()}`}><strong>Severity:</strong> {prediction.severity}</p>}
                 </div>
               </div>
 

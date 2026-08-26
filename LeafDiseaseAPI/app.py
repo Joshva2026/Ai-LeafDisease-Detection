@@ -4,6 +4,7 @@
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import tensorflow as tf
@@ -15,7 +16,7 @@ import matplotlib.cm as cm
 
 # Initialize Flask App
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 MB limit
+# Removed 10 MB limit to allow high-res images
 CORS(app)
 
 # Initialize Rate Limiter
@@ -36,7 +37,7 @@ def ratelimit_handler(e):
 def request_entity_too_large(e):
     return jsonify({
         "success": False,
-        "error": "File too large. Maximum size is 10MB."
+        "error": "File too large."
     }), 413
 
 # Load .env file natively if it exists
@@ -51,11 +52,30 @@ print("[OK] Running app.py from:", os.path.abspath(__file__))
 
 
 # Model Load
-
 MODEL_PATH = "model/leaf_disease_model.keras"
 
 model = tf.keras.models.load_model(MODEL_PATH)
 print("[OK] Model Loaded Successfully")
+
+def find_last_conv_layer(model):
+    for layer in reversed(model.layers):
+        if isinstance(layer, tf.keras.layers.Conv2D):
+            return layer.name
+    for layer in reversed(model.layers):
+        name = layer.name.lower()
+        if 'conv' in name and 'bn' not in name and 'batch' not in name:
+            return layer.name
+    for layer in reversed(model.layers):
+        if len(layer.output_shape) == 4:
+            return layer.name
+    raise ValueError("No convolutional layer found in the model.")
+
+last_conv_layer_name = find_last_conv_layer(model)
+grad_model = tf.keras.models.Model(
+    inputs=model.input,
+    outputs=[model.get_layer(last_conv_layer_name).output, model.output]
+)
+print("[OK] Grad-CAM Explainability Model Initialized")
 
 # Classes
 
@@ -117,6 +137,15 @@ def home():
         "message": "🌿 Leaf Disease Detection API Running"
     })
 
+import uuid
+
+@app.route("/health")
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "model_loaded": model is not None
+    })
+
 def is_likely_leaf(img):
     # Convert PIL image to HSV
     img_hsv = img.convert("HSV")
@@ -128,36 +157,25 @@ def is_likely_leaf(img):
     total_pixels = h_array.size
     
     # Relaxed check for green plant color index
-    # Green Hue is roughly 30 to 135 degrees -> 20 to 95 in PIL (0-255)
-    # Saturation > 25 (filters out neutral grays/whites/blacks)
-    # Value > 25 (filters out pitch black shadows)
     green_mask = (h_array >= 20) & (h_array <= 95) & (s_array > 25) & (v_array > 25)
-    green_pixel_count = np.sum(green_mask)
+    green_ratio = np.sum(green_mask) / total_pixels
     
-    green_ratio = green_pixel_count / total_pixels
-    return green_ratio > 0.05 # At least 5% of the image must contain green plant pixels
+    # Also check variance/edges to prevent plain green screens
+    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+    gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
+    variance = cv2.Laplacian(gray, cv2.CV_64F).var()
+    
+    # Need some texture (variance) + some green color, or high texture if damaged
+    if variance < 50.0:
+        return False, "Image is too blurry or lacks structure."
+    
+    if green_ratio < 0.02 and variance < 200.0:
+        return False, "The image does not appear to contain a plant leaf."
+        
+    return True, "Valid leaf"
 
 
-def find_last_conv_layer(model):
-    for layer in reversed(model.layers):
-        if isinstance(layer, tf.keras.layers.Conv2D):
-            return layer.name
-    # Fallback search if no standard conv class
-    for layer in reversed(model.layers):
-        name = layer.name.lower()
-        if 'conv' in name and 'bn' not in name and 'batch' not in name:
-            return layer.name
-    # General fallback
-    for layer in reversed(model.layers):
-        if len(layer.output_shape) == 4: # Typically a 2D feature map
-            return layer.name
-    raise ValueError("No convolutional layer found in the model.")
-
-def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
-    grad_model = tf.keras.models.Model(
-        inputs=model.input,
-        outputs=[model.get_layer(last_conv_layer_name).output, model.output]
-    )
+def make_gradcam_heatmap(img_array, grad_model, pred_index=None):
     with tf.GradientTape() as tape:
         last_conv_layer_output, preds = grad_model(img_array)
         if pred_index is None:
@@ -203,21 +221,26 @@ def predict():
     if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
         return jsonify({"success": False, "error": "Unsupported file format. Please upload JPG, PNG, or WEBP."}), 400
 
-    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+    # Generate safe unique filename
+    safe_filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename) if file.filename else 'upload'}{ext}"
+    filepath = os.path.join(UPLOAD_FOLDER, safe_filename)
     file.save(filepath)
 
     try:
         # Load and verify image
         try:
             img = Image.open(filepath).convert("RGB")
+            # Downscale large images immediately to save memory
+            img.thumbnail((1024, 1024))
         except Exception as e:
             return jsonify({"success": False, "error": "Invalid or corrupted image file."}), 400
         
         # Leaf Heuristics Validation
-        if not is_likely_leaf(img):
+        is_leaf, leaf_msg = is_likely_leaf(img)
+        if not is_leaf:
             return jsonify({
                 "success": False,
-                "error": "The uploaded image does not appear to be a plant leaf. Please upload a clear crop leaf image."
+                "error": leaf_msg
             }), 400
 
         # Resize and process for deep model
@@ -232,22 +255,40 @@ def predict():
         top_indices = np.argsort(prediction[0])[-3:][::-1]
         top_predictions = []
         for idx in top_indices:
+            raw_class = class_names[idx]
+            parts = raw_class.split('___')
+            plant_name = parts[0].replace('_', ' ') if len(parts) > 1 else raw_class
+            condition_name = parts[1].replace('_', ' ') if len(parts) > 1 else ""
+            
             top_predictions.append({
-                "disease": class_names[idx],
+                "disease": raw_class,
+                "formatted_name": f"{plant_name} — {condition_name}" if condition_name else plant_name,
                 "confidence": round(float(prediction[0][idx] * 100), 2)
             })
 
         primary_match = top_predictions[0]
         confidence = primary_match["confidence"]
+        disease_raw = primary_match["disease"]
+        
+        parts = disease_raw.split('___')
+        plant = parts[0].replace('_', ' ') if len(parts) > 1 else disease_raw
+        disease_formatted = parts[1].replace('_', ' ') if len(parts) > 1 else ""
+        is_healthy = "healthy" in disease_formatted.lower()
+        health_status = "Healthy" if is_healthy else "Diseased"
 
-        # Confidence validation (standard thresholding)
+        # Severity Estimation
+        severity = "Healthy"
+        if not is_healthy:
+            if confidence > 90: severity = "Severe"
+            elif confidence > 65: severity = "Moderate"
+            else: severity = "Mild"
+
+        # Confidence validation
         if confidence < 45.0:
             return jsonify({
                 "success": False,
                 "error": "Low prediction confidence. The image might not be a supported plant leaf."
             }), 400
-
-        disease = primary_match["disease"]
 
         import base64
         def get_base64_encoded_image(image_path):
@@ -263,9 +304,8 @@ def predict():
 
         # Generate Grad-CAM image
         try:
-            last_conv_layer = find_last_conv_layer(model)
-            heatmap = make_gradcam_heatmap(img_array, model, last_conv_layer, pred_index=int(top_indices[0]))
-            gradcam_filename = f"gradcam_{file.filename}"
+            heatmap = make_gradcam_heatmap(img_array, grad_model, pred_index=int(top_indices[0]))
+            gradcam_filename = f"gradcam_{safe_filename}"
             gradcam_path = os.path.join(UPLOAD_FOLDER, gradcam_filename)
             save_and_display_gradcam(filepath, heatmap, gradcam_path)
             gradcam_url = get_base64_encoded_image(gradcam_path)
@@ -282,14 +322,22 @@ def predict():
         cursor = conn.cursor()
         cursor.execute(
             "INSERT INTO scans (username, timestamp, filename, disease, confidence) VALUES (?, ?, ?, ?, ?)",
-            (username, timestamp, file.filename, disease, confidence)
+            (username, timestamp, safe_filename, disease_raw, confidence)
         )
         conn.commit()
         conn.close()
 
+        # Try to delete original and gradcam image after generating base64 if needed, 
+        # but we need to keep history working. History reads from UPLOAD_FOLDER so we keep it.
+        # Alternatively, we rely on a cron/cleanup job. For now, we will leave it as per previous implementation to support history API.
+
         return jsonify({
             "success": True,
-            "disease": disease,
+            "disease": disease_raw,  # preserve exact string for frontend compatibility
+            "plant": plant,
+            "health_status": health_status,
+            "disease_formatted": disease_formatted if not is_healthy else "No disease detected",
+            "severity": severity,
             "confidence": confidence,
             "top_predictions": top_predictions,
             "gradcam_url": gradcam_url,

@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Android Signing
+android/app/leafguard-release.keystore
+android/keystore.properties
