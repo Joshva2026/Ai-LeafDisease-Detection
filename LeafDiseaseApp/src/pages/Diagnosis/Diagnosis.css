@@ -481,6 +481,11 @@
     padding: 20px 20px 100px;
   }
 
+  .diag-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
   /* Force vertical hierarchy on mobile */
   .img-compare-container {
     flex-direction: column;

@@ -12,6 +12,25 @@
   padding-bottom: 80px; /* Safe area for bottom navigation */
 }
 
+@media (min-width: 769px) {
+  .scan-page-wrapper {
+    padding-top: 100px;
+  }
+  .scan-content {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: var(--border-style);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-medium);
+  }
+  .theme-dark .scan-content {
+    background: rgba(16, 26, 21, 0.65);
+    box-shadow: var(--shadow-medium);
+  }
+}
+
 .scan-header {
   text-align: center;
   margin-top: 10px;

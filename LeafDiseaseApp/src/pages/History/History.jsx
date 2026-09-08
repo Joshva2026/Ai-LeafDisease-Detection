@@ -134,64 +134,43 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
           </div>
         ) : (
           <>
-            {/* Desktop Table View */}
-            <div className="history-table-container">
-              <table className="history-table">
-                <thead>
-                  <tr>
-                    <th>{lang === "ta" ? "படம்" : "Image"}</th>
-                    <th>{lang === "ta" ? "தாவரம் & நோய்" : "Plant & Disease"}</th>
-                    <th>{lang === "ta" ? "நம்பிக்கை" : "Confidence"}</th>
-                    <th>{lang === "ta" ? "நிலை" : "Status"}</th>
-                    <th>{lang === "ta" ? "தேதி" : "Date"}</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAndSortedList.map((scan, idx) => {
-                    const details = mapClassName(scan.disease);
-                    const isHealthy = details.isHealthy;
-                    return (
-                      <tr key={idx} className="history-table-row" onClick={() => handleSelectScan(scan)}>
-                        <td>
-                          <img 
-                            src={scan.original_url} 
-                            alt={details.plantName} 
-                            className="history-thumb-table"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=120";
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <div className="history-plant-info">
-                            <span className="history-plant">{details.plantName}</span>
-                            <span className="history-condition">{details.diseaseName}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className="confidence-text">{scan.confidence}%</span>
-                        </td>
-                        <td>
-                          <span className={`status-pill ${isHealthy ? 'healthy' : 'danger'}`}>
-                            {isHealthy ? t("healthyStatus", lang) : t("diseasedStatus", lang)}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="history-time-table">{scan.timestamp}</span>
-                        </td>
-                        <td className="history-action-cell">
-                          <button className="view-btn">
-                            <Eye size={16} />
-                            <span>{lang === "ta" ? "காண்க" : "View"}</span>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            {/* Desktop Premium Grid View */}
+            <div className="history-desktop-grid">
+              {filteredAndSortedList.map((scan, idx) => {
+                const details = mapClassName(scan.disease);
+                const isHealthy = details.isHealthy;
+                return (
+                  <div key={idx} className="history-grid-card glass-card" onClick={() => handleSelectScan(scan)}>
+                    <div className="hgc-image-wrapper">
+                      <img 
+                        src={scan.original_url} 
+                        alt={details.plantName} 
+                        className="hgc-image"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=120";
+                        }}
+                      />
+                      <div className="hgc-overlay">
+                        <button className="btn-primary" style={{padding: '8px 16px', borderRadius: '100px'}}><Eye size={16}/> View Report</button>
+                      </div>
+                    </div>
+                    <div className="hgc-content">
+                      <div className="hgc-header">
+                        <span className={`status-pill ${isHealthy ? 'healthy' : 'danger'}`}>
+                          {isHealthy ? t("healthyStatus", lang) : t("diseasedStatus", lang)}
+                        </span>
+                        <span className="hgc-confidence">{scan.confidence}% AI Match</span>
+                      </div>
+                      <h3 className="hgc-plant-name">{details.plantName}</h3>
+                      <p className="hgc-disease-name">{details.diseaseName}</p>
+                      <div className="hgc-footer">
+                        <span className="hgc-time">{scan.timestamp}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Mobile Vertical Cards View */}
@@ -208,7 +187,7 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
                     <img 
                       src={scan.original_url} 
                       alt={details.plantName} 
-                      className="history-thumb"
+                      className="history-thumb" 
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=120";

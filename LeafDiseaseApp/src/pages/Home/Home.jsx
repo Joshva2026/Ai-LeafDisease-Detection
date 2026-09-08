@@ -41,7 +41,7 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
             <button className="m-primary-action" onClick={() => onViewChange("scan")}>
               <div className="m-action-icon"><Camera size={24} /></div>
               <div className="m-action-text">
-                <span className="m-action-title">Scan a Leaf</span>
+                <span className="m-action-title">Scan Plant</span>
                 <span className="m-action-sub">Detect diseases instantly</span>
               </div>
               <ArrowRight size={20} className="m-action-arrow" />
@@ -82,9 +82,12 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
                     <div key={idx} className="m-recent-item glass-card" onClick={() => onSelectPrediction(scan)}>
                       <img 
                         src={scan.original_url} 
-                        alt={details.name} 
+                        alt={details.displayName} 
                         className="m-recent-img" 
-                        onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=100"; }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=100";
+                        }}
                       />
                       <div className="m-recent-info">
                         <h4 className="m-recent-name">{details.displayName}</h4>
@@ -117,21 +120,20 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
           <section className="d-hero fade-in-section">
             <div className="d-hero-content">
               <div className="d-hero-badge">
-                <span className="d-badge-dot"></span> LeafGuard Intelligence Platform
+                <span className="d-badge-dot"></span> AgriSense AI
               </div>
-              <h1 className="d-hero-title">Understand<br/>Every Leaf.</h1>
+              <h1 className="d-hero-title">Smart Farmer<br/>Intelligence Platform.</h1>
               <p className="d-hero-subtitle">
-                AI-powered plant disease detection with visual intelligence. 
-                Identify 38 distinct crop conditions instantly using deep learning and actionable heatmaps.
+                AI-powered plant disease detection, plant intelligence and smart plant care.
               </p>
               <div className="d-hero-actions">
                 <button className="d-btn-primary" onClick={() => onViewChange("scan")}>
                   <Camera size={20} />
-                  Scan a Leaf
+                  Scan Your Plant
                 </button>
-                <button className="d-btn-secondary" onClick={() => onViewChange("about")}>
+                <button className="d-btn-secondary" onClick={() => onViewChange("guide")}>
                   <Leaf size={20} />
-                  Explore Plant Guide
+                  AI Plant Doctor
                 </button>
               </div>
             </div>

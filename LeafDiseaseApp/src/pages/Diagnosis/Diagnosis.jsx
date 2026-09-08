@@ -69,6 +69,45 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           <h2 className="d-header-title">Diagnostic Results</h2>
         </div>
 
+        {/* =======================================
+            HERO RESULT CARD (Top for both Mobile and Desktop)
+            ======================================= */}
+        <div className="diag-status-card glass-card" style={{ marginBottom: '24px' }}>
+          <div className="ds-header">
+            <div className={`ds-icon ${isHealthy ? 'healthy' : 'danger'}`}>
+              {isHealthy ? <CheckCircle size={28} /> : <AlertTriangle size={28} />}
+            </div>
+            <div className="ds-title-area">
+              <span className={`ds-badge ${isHealthy ? 'healthy' : 'danger'}`}>
+                {prediction.health_status || (isHealthy ? 'Healthy Leaf' : 'Condition Detected')}
+              </span>
+              <h1 className="ds-disease-name">{prediction.disease_formatted || details.displayName}</h1>
+              {prediction.plant && <p className="ds-plant-name"><strong>Plant:</strong> {prediction.plant}</p>}
+              {prediction.severity && <p className={`ds-severity sev-${prediction.severity.toLowerCase()}`}><strong>Severity:</strong> {prediction.severity}</p>}
+            </div>
+          </div>
+
+          <div className="ds-confidence-row">
+            <div className="ds-conf-text">
+              <span className="ds-conf-label">AI Confidence Score</span>
+              <span className="ds-conf-desc">Probability of accurate classification based on visual features.</span>
+            </div>
+            <div className="ds-gauge">
+              <svg width="60" height="60" viewBox="0 0 60 60">
+                <circle cx="30" cy="30" r={radius} fill="transparent" stroke="var(--border-color)" strokeWidth="5" />
+                <circle
+                  cx="30" cy="30" r={radius} fill="transparent"
+                  stroke={isHealthy ? "var(--color-healthy)" : "var(--color-danger)"}
+                  strokeWidth="5" strokeDasharray={circum} strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round" transform="rotate(-90 30 30)"
+                  style={{ transition: "stroke-dashoffset 1s ease-in-out" }}
+                />
+              </svg>
+              <div className="ds-gauge-val">{Math.round(prediction.confidence)}%</div>
+            </div>
+          </div>
+        </div>
+
         <div className="diag-layout">
           {/* =======================================
               LEFT COLUMN (Visual Assets)
@@ -104,43 +143,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
               RIGHT COLUMN (Data & Agronomy)
               ======================================= */}
           <div className="diag-data-col">
-            
-            {/* Status & Confidence Card */}
-            <div className="diag-status-card glass-card">
-              <div className="ds-header">
-                <div className={`ds-icon ${isHealthy ? 'healthy' : 'danger'}`}>
-                  {isHealthy ? <CheckCircle size={28} /> : <AlertTriangle size={28} />}
-                </div>
-                <div className="ds-title-area">
-                  <span className={`ds-badge ${isHealthy ? 'healthy' : 'danger'}`}>
-                    {prediction.health_status || (isHealthy ? 'Healthy Leaf' : 'Condition Detected')}
-                  </span>
-                  <h1 className="ds-disease-name">{prediction.disease_formatted || details.displayName}</h1>
-                  {prediction.plant && <p className="ds-plant-name"><strong>Plant:</strong> {prediction.plant}</p>}
-                  {prediction.severity && <p className={`ds-severity sev-${prediction.severity.toLowerCase()}`}><strong>Severity:</strong> {prediction.severity}</p>}
-                </div>
-              </div>
-
-              <div className="ds-confidence-row">
-                <div className="ds-conf-text">
-                  <span className="ds-conf-label">AI Confidence Score</span>
-                  <span className="ds-conf-desc">Probability of accurate classification based on visual features.</span>
-                </div>
-                <div className="ds-gauge">
-                  <svg width="60" height="60" viewBox="0 0 60 60">
-                    <circle cx="30" cy="30" r={radius} fill="transparent" stroke="var(--border-color)" strokeWidth="5" />
-                    <circle
-                      cx="30" cy="30" r={radius} fill="transparent"
-                      stroke={isHealthy ? "var(--color-healthy)" : "var(--color-danger)"}
-                      strokeWidth="5" strokeDasharray={circum} strokeDashoffset={strokeDashoffset}
-                      strokeLinecap="round" transform="rotate(-90 30 30)"
-                      style={{ transition: "stroke-dashoffset 1s ease-in-out" }}
-                    />
-                  </svg>
-                  <div className="ds-gauge-val">{Math.round(prediction.confidence)}%</div>
-                </div>
-              </div>
-            </div>
 
             {/* Disease Information */}
             <div className="diag-info-card glass-card">

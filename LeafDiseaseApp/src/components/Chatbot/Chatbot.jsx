@@ -8,7 +8,7 @@ function Chatbot({ currentDisease }) {
   const [messages, setMessages] = useState([
     {
       sender: "bot",
-      text: "Hello! I am LeafGuard AI Assistant. Ask me anything about plant care, leaf diseases, pesticides, or organic treatments."
+      text: "Hello! I am your AI Plant Doctor. Ask me anything about plant care, leaf diseases, pesticides, or organic treatments."
     }
   ]);
   const [input, setInput] = useState("");
@@ -74,8 +74,8 @@ function Chatbot({ currentDisease }) {
             <div className="chat-title">
               <Bot size={20} className="bot-header-icon" />
               <div>
-                <h4>Agri-bot Assistant</h4>
-                <p>Powered by Gemini AI</p>
+                <h4>AI Plant Doctor</h4>
+                <p>Powered by AgriSense AI</p>
               </div>
             </div>
             <button className="chat-close-btn" onClick={() => setIsOpen(false)}>

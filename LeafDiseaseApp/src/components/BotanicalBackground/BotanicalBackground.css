@@ -51,3 +51,10 @@
     display: none;
   }
 }
+
+/* Hide entirely on mobile apps for clean layout */
+@media (max-width: 768px) {
+  .botanical-bg-container {
+    display: none !important;
+  }
+}
