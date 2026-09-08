@@ -127,15 +127,18 @@ function Scan({ onPredictionSuccess, lang }) {
     const username = savedUser ? JSON.parse(savedUser).username : "testuser";
     formData.append("username", username);
 
-    const wakeUpServer = async (retries = 2) => {
+    const wakeUpServer = async (retries = 3) => {
       for (let i = 0; i <= retries; i++) {
         try {
-          await api.get("/", { timeout: 15000 });
-          return;
+          const res = await api.get("/health", { timeout: 10000 });
+          if (res.data && res.data.status === "healthy" && res.data.model_loaded) {
+            return;
+          }
+          throw new Error("Server not fully ready");
         } catch (err) {
           if (i === retries) return; 
           setIsWakingUp(true);
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          await new Promise(resolve => setTimeout(resolve, 4000));
         }
       }
     };
@@ -253,7 +256,7 @@ function Scan({ onPredictionSuccess, lang }) {
               <div className="scan-error-card mt-3">
                 <AlertCircle size={18} style={{ flexShrink: 0 }} />
                 <div>
-                  <p style={{ fontWeight: "bold", marginBottom: "4px" }}>{t("analysisFailed", lang)}</p>
+                  <p style={{ fontWeight: "bold", marginBottom: "4px" }}>{lang === "ta" ? "கணிப்பு தோல்வியுற்றது" : "Prediction failed"}</p>
                   <p>{errorMsg}</p>
                 </div>
               </div>

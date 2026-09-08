@@ -81,7 +81,7 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
                   return (
                     <div key={idx} className="m-recent-item glass-card" onClick={() => onSelectPrediction(scan)}>
                       <img 
-                        src={scan.image_url} 
+                        src={scan.original_url} 
                         alt={details.name} 
                         className="m-recent-img" 
                         onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=100"; }}

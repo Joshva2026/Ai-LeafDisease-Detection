@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Auth from "./components/Auth/Auth";
 import api from "./api/api";
+import { loadHistory, saveHistory } from "./utils/historyStorage";
 import Home from "./pages/Home/Home";
 import Scan from "./pages/Scan/Scan";
 import Diagnosis from "./pages/Diagnosis/Diagnosis";
@@ -93,12 +94,12 @@ function App() {
       if (response.data.success && response.data.history && response.data.history.length > 0) {
         setHistory(response.data.history);
       } else {
-        const localHist = JSON.parse(localStorage.getItem(`history_${user.username}`) || "[]");
+        const localHist = loadHistory(user.username);
         setHistory(localHist);
       }
     } catch (err) {
       console.error("Failed to fetch history:", err);
-      const localHist = JSON.parse(localStorage.getItem(`history_${user.username}`) || "[]");
+      const localHist = loadHistory(user.username);
       setHistory(localHist);
     }
   };
@@ -177,17 +178,40 @@ function App() {
         {view === "scan" && (
           <Scan 
             onPredictionSuccess={(result) => {
+              // Always set prediction state first — prediction succeeded
+              const predictionForState = {
+                success: true,
+                disease: result.disease,
+                plant: result.plant,
+                health_status: result.health_status,
+                disease_formatted: result.disease_formatted,
+                severity: result.severity,
+                confidence: result.confidence,
+                top_predictions: result.top_predictions,
+                gradcam_url: result.gradcam_url,
+                original_url: result.original_url
+              };
+              setPrediction(predictionForState);
+
+              // Try to save lightweight history — failure must NOT block prediction
               if (user) {
-                const localHist = JSON.parse(localStorage.getItem(`history_${user.username}`) || "[]");
-                const newEntry = {
-                  ...result,
-                  date: new Date().toISOString()
-                };
-                localHist.unshift(newEntry);
-                localStorage.setItem(`history_${user.username}`, JSON.stringify(localHist.slice(0, 50)));
-                setHistory(localHist);
+                try {
+                  const localHist = loadHistory(user.username);
+                  const historyEntry = {
+                    disease: result.disease,
+                    confidence: result.confidence,
+                    original_url: result.original_url,
+                    gradcam_url: result.gradcam_url,
+                    timestamp: new Date().toISOString()
+                  };
+                  localHist.unshift(historyEntry);
+                  saveHistory(user.username, localHist);
+                  setHistory(localHist);
+                } catch (e) {
+                  console.warn("History could not be saved", e);
+                }
               }
-              setPrediction(result);
+
               setView("diagnosis");
             }}
             lang={lang}

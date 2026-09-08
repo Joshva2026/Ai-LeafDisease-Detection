@@ -290,25 +290,13 @@ def predict():
                 "error": "Low prediction confidence. The image might not be a supported plant leaf."
             }), 400
 
-        import base64
-        def get_base64_encoded_image(image_path):
-            try:
-                with open(image_path, "rb") as image_file:
-                    encoded = base64.b64encode(image_file.read()).decode('utf-8')
-                    # determine mime type simply by extension or default to jpeg
-                    ext = os.path.splitext(image_path)[1].lower().replace('.', '')
-                    mime = f"image/{ext}" if ext in ['png', 'jpg', 'jpeg', 'webp'] else "image/jpeg"
-                    return f"data:{mime};base64,{encoded}"
-            except Exception as e:
-                return None
-
         # Generate Grad-CAM image
         try:
             heatmap = make_gradcam_heatmap(img_array, grad_model, pred_index=int(top_indices[0]))
             gradcam_filename = f"gradcam_{safe_filename}"
             gradcam_path = os.path.join(UPLOAD_FOLDER, gradcam_filename)
             save_and_display_gradcam(filepath, heatmap, gradcam_path)
-            gradcam_url = get_base64_encoded_image(gradcam_path)
+            gradcam_url = f"/uploads/{gradcam_filename}"
         except Exception as cam_err:
             print("Grad-CAM generation failed:", cam_err)
             gradcam_url = None
@@ -341,7 +329,7 @@ def predict():
             "confidence": confidence,
             "top_predictions": top_predictions,
             "gradcam_url": gradcam_url,
-            "original_url": get_base64_encoded_image(filepath)
+            "original_url": f"/uploads/{safe_filename}"
         })
     except Exception as e:
         return jsonify({"success": False, "error": f"Error processing image: {str(e)}"}), 500
@@ -542,27 +530,13 @@ def history():
         history_list = []
         for row in rows:
             filename = row[1]
-            orig_path = os.path.join(UPLOAD_FOLDER, filename)
-            grad_path = os.path.join(UPLOAD_FOLDER, f"gradcam_{filename}")
-            
-            # Use the helper function defined in /predict (we'll move it or redefine it)
-            import base64
-            def get_b64(path):
-                try:
-                    with open(path, "rb") as f:
-                        enc = base64.b64encode(f.read()).decode('utf-8')
-                        ext = os.path.splitext(path)[1].lower().replace('.', '')
-                        mime = f"image/{ext}" if ext in ['png', 'jpg', 'jpeg', 'webp'] else "image/jpeg"
-                        return f"data:{mime};base64,{enc}"
-                except: return None
-                
             history_list.append({
                 "timestamp": row[0],
                 "filename": filename,
                 "disease": row[2],
                 "confidence": row[3],
-                "thumbnail_base64": get_b64(orig_path),
-                "gradcam_base64": get_b64(grad_path)
+                "original_url": "/uploads/" + filename,
+                "gradcam_url": "/uploads/gradcam_" + filename
             })
         return jsonify({"success": True, "history": history_list})
     except Exception as e:
@@ -583,6 +557,8 @@ def chat():
         return jsonify({"success": False, "error": "Message content is required"}), 400
 
     gemini_api_key = os.getenv("GEMINI_API_KEY", "")
+    if gemini_api_key in ("", "YOUR_API_KEY_HERE"):
+        gemini_api_key = ""
 
     # System instruction tailored for the agri-bot
     system_prompt = (

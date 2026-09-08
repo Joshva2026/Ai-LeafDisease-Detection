@@ -10,29 +10,29 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("newest"); // "newest" or "oldest"
 
-  const handleSelectScan = (scan) => {
-    const info = diseaseData[scan.disease] || {
-      description: "No specific description available.",
-      symptoms: ["No symptoms available."],
-      treatment: "Consult local agricultural extensions.",
-      prevention: "Maintain crop hygiene and ventilation."
-    };
+    const handleSelectScan = (scan) => {
+      const info = diseaseData[scan.disease] || {
+        description: "No specific description available.",
+        symptoms: ["No symptoms available."],
+        treatment: "Consult local agricultural extensions.",
+        prevention: "Maintain crop hygiene and ventilation."
+      };
 
-    onSelectPrediction({
-      success: true,
-      disease: scan.disease,
-      confidence: scan.confidence,
-      original_url: scan.thumbnail_base64,
-      gradcam_url: scan.gradcam_base64,
-      description: info.description,
-      symptoms: info.symptoms,
-      treatment: info.treatment,
-      prevention: info.prevention,
-      timestamp: scan.timestamp
-    });
-    
-    onViewChange("diagnosis");
-  };
+      onSelectPrediction({
+        success: true,
+        disease: scan.disease,
+        confidence: scan.confidence,
+        original_url: scan.original_url,
+        gradcam_url: scan.gradcam_url,
+        description: info.description,
+        symptoms: info.symptoms,
+        treatment: info.treatment,
+        prevention: info.prevention,
+        timestamp: scan.timestamp
+      });
+      
+      onViewChange("diagnosis");
+    };
 
   const filteredAndSortedList = useMemo(() => {
     let result = history.filter(scan => {
@@ -155,7 +155,7 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
                       <tr key={idx} className="history-table-row" onClick={() => handleSelectScan(scan)}>
                         <td>
                           <img 
-                            src={scan.thumbnail_base64} 
+                            src={scan.original_url} 
                             alt={details.plantName} 
                             className="history-thumb-table"
                             onError={(e) => {
@@ -206,7 +206,7 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
                     onClick={() => handleSelectScan(scan)}
                   >
                     <img 
-                      src={scan.thumbnail_base64} 
+                      src={scan.original_url} 
                       alt={details.plantName} 
                       className="history-thumb"
                       onError={(e) => {
