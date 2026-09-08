@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { FileText, Search, ArrowUpDown, Eye } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
+import { getMediaUrl } from "../../utils/mediaUrl";
 import diseaseData from "../../data/diseaseData";
 import "./History.css";
 
@@ -143,7 +144,7 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
                   <div key={idx} className="history-grid-card glass-card" onClick={() => handleSelectScan(scan)}>
                     <div className="hgc-image-wrapper">
                       <img 
-                        src={scan.original_url} 
+                        src={getMediaUrl(scan.original_url)} 
                         alt={details.plantName} 
                         className="hgc-image"
                         onError={(e) => {
@@ -185,7 +186,7 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
                     onClick={() => handleSelectScan(scan)}
                   >
                     <img 
-                      src={scan.original_url} 
+                      src={getMediaUrl(scan.original_url)} 
                       alt={details.plantName} 
                       className="history-thumb" 
                       onError={(e) => {

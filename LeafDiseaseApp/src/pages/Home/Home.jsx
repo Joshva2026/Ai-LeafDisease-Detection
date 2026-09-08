@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Camera, Search, Activity, CheckCircle, Leaf, History, ArrowRight } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
+import { getMediaUrl } from "../../utils/mediaUrl";
 import Footer from "../../components/Footer/Footer";
 import "./Home.css";
 
@@ -81,7 +82,7 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
                   return (
                     <div key={idx} className="m-recent-item glass-card" onClick={() => onSelectPrediction(scan)}>
                       <img 
-                        src={scan.original_url} 
+                        src={getMediaUrl(scan.original_url)} 
                         alt={details.displayName} 
                         className="m-recent-img" 
                         onError={(e) => {

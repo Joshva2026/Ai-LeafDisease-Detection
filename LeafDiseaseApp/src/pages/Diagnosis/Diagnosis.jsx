@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, CheckCircle, AlertTriangle, ShieldCheck, RefreshCw, BookmarkCheck, Maximize2, X } from "lucide-react";
 import { mapClassName, getSeverityStyle } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
+import { getMediaUrl } from "../../utils/mediaUrl";
 import diseaseData from "../../data/diseaseData";
 import "./Diagnosis.css";
 
@@ -117,15 +118,15 @@ function Diagnosis({ prediction, onViewChange, lang }) {
               
               <div className="img-compare-container">
                 <div className="img-box">
-                  <img src={prediction.original_url} alt="Original Leaf" className="diag-img" />
+                  <img src={getMediaUrl(prediction.original_url)} alt="Original Leaf" className="diag-img" />
                   <span className="img-badge">Original</span>
                 </div>
                 
                 <div className="img-box heatmap-box">
-                  <img src={prediction.gradcam_url || prediction.original_url} alt="AI Heatmap" className="diag-img" />
+                  <img src={getMediaUrl(prediction.gradcam_url || prediction.original_url)} alt="AI Heatmap" className="diag-img" />
                   <span className="img-badge ai-badge">AI Focus</span>
                   {/* Mobile tap-to-fullscreen button overlay */}
-                  <button className="btn-fullscreen mobile-only" onClick={() => setFullscreenImage(prediction.gradcam_url || prediction.original_url)}>
+                  <button className="btn-fullscreen mobile-only" onClick={() => setFullscreenImage(getMediaUrl(prediction.gradcam_url || prediction.original_url))}>
                     <Maximize2 size={16}/>
                   </button>
                 </div>
