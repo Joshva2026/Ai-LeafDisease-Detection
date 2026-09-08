@@ -81,13 +81,18 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
   };
 
   return (
-    <div className="page-wrapper">
+    <div className="page-wrapper fade-in-section">
+      <div className="profile-header-title-block">
+        <h2 className="guide-title">Plant Intelligence Profile</h2>
+        <p className="guide-subtitle">Manage your field identity, diagnostic history summary, and system preferences.</p>
+      </div>
+
       <div className="profile-desktop-layout">
         
         {/* Left Column: User details and statistics */}
         <div className="profile-left-col">
           {/* Header Info */}
-          <div className="profile-header card">
+          <div className="profile-header card glass-card">
             {user.profile_image ? (
               <img src={user.profile_image} alt={user.username} className="profile-avatar-large" />
             ) : (
@@ -95,6 +100,7 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
             )}
 
             <div className="profile-info">
+              <span className="profile-rank-badge">✦ LEAF EXPLORER</span>
               <h3 className="profile-name">{user.username}</h3>
               <span className="profile-email">{user.username.toLowerCase()}@leafguard.ai</span>
               {user.location && (

@@ -9,6 +9,15 @@ function Scan({ onPredictionSuccess, lang }) {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isWakingUp, setIsWakingUp] = useState(false);
+  const [analysisStageIndex, setAnalysisStageIndex] = useState(0);
+
+  const stages = [
+    lang === "ta" ? "இலையின் படத்தைப் பிடிக்கிறது..." : "CAPTURING LEAF IMAGE",
+    lang === "ta" ? "இலை அமைப்பை ஆராய்கிறது..." : "EXAMINING LEAF STRUCTURE",
+    lang === "ta" ? "காட்சி வடிவங்களை பகுப்பாய்வு செய்கிறது..." : "ANALYZING VISUAL PATTERNS",
+    lang === "ta" ? "காட்சி ஆதாரத்தை உருவாக்குகிறது..." : "GENERATING VISUAL EVIDENCE",
+    lang === "ta" ? "நோயறிதல் அறிக்கையைத் தயார் செய்கிறது..." : "PREPARING DIAGNOSIS REPORT"
+  ];
   
   const [useCamera, setUseCamera] = useState(false);
   const [cameraStatus, setCameraStatus] = useState("idle"); // idle, requesting, ready, denied, unavailable
@@ -101,7 +110,6 @@ function Scan({ onPredictionSuccess, lang }) {
         return;
       }
 
-      // Removed 10MB file size limit to support high resolution images
       setFile(selectedFile);
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -119,6 +127,11 @@ function Scan({ onPredictionSuccess, lang }) {
     setLoading(true);
     setIsWakingUp(false);
     setErrorMsg("");
+    setAnalysisStageIndex(0);
+
+    const stageInterval = setInterval(() => {
+      setAnalysisStageIndex(prev => (prev < stages.length - 1 ? prev + 1 : prev));
+    }, 600);
 
     const formData = new FormData();
     formData.append("image", file);
@@ -222,10 +235,10 @@ function Scan({ onPredictionSuccess, lang }) {
               <div className="scan-ring"></div>
             </div>
             <h3 className="analyzing-title">
-              {isWakingUp ? (lang === "ta" ? "சேவையகம் தயாராகிறது..." : "Waking up server...") : (lang === "ta" ? "உங்கள் இலையை பகுப்பாய்வு செய்கிறது..." : "Analyzing your leaf...")}
+              {isWakingUp ? (lang === "ta" ? "சேவையகம் தயாராகிறது..." : "Waking up server...") : stages[analysisStageIndex]}
             </h3>
             <p className="analyzing-sub">
-              {isWakingUp ? (lang === "ta" ? "இது சிறிது நேரம் ஆகலாம்." : "This may take a moment.") : (lang === "ta" ? "AI நிலையை கண்டறிகிறது..." : "AI is identifying the condition...")}
+              {isWakingUp ? (lang === "ta" ? "இது சிறிது நேரம் ஆகலாம்." : "This may take a moment.") : (lang === "ta" ? "AI நிலையைக் கண்டறிகிறது..." : `Stage ${analysisStageIndex + 1} of ${stages.length} — AI pattern recognition in progress`)}
             </p>
           </div>
         ) : image ? (

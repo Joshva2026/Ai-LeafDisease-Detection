@@ -25,6 +25,33 @@
   color: var(--text-secondary);
 }
 
+/* Date divider styling */
+.history-date-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0 16px;
+  width: 100%;
+}
+
+.hdd-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.hdd-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
 /* Controls (Search, Tabs, Sort) */
 .history-controls {
   display: flex;

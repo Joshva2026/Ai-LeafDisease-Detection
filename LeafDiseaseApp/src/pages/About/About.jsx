@@ -66,25 +66,20 @@ function About() {
         </section>
 
         <section className="architecture-section slide-section fade-in-section is-visible">
-          <div className="about-card">
-            <h2 className="about-heading" style={{ textAlign: "center", marginBottom: "24px" }}>System Architecture</h2>
-            
+          <div className="about-card glass-card">
+            <h2 className="about-heading" style={{ textAlign: "center", marginBottom: "12px" }}>5-Stage AI Pathology Pipeline</h2>
+            <p style={{ textAlign: "center", color: "var(--text-secondary)", marginBottom: "32px" }}>How LeafGuard AI transforms a photograph into actionable agronomic insights.</p>
+
             <div className="arch-flow">
-              <div className="arch-node">User</div>
+              <div className="arch-node">01 Capture Leaf Image</div>
               <div className="arch-arrow">↓</div>
-              <div className="arch-node">Leaf Image</div>
+              <div className="arch-node highlight">02 Preprocessing & Heuristics</div>
               <div className="arch-arrow">↓</div>
-              <div className="arch-node highlight">React Frontend</div>
+              <div className="arch-node highlight-ai">03 MobileNetV2 Neural Network</div>
               <div className="arch-arrow">↓</div>
-              <div className="arch-node highlight">Flask API</div>
+              <div className="arch-node highlight">04 Grad-CAM Visual Evidence</div>
               <div className="arch-arrow">↓</div>
-              <div className="arch-node highlight-ai">TensorFlow Model</div>
-              <div className="arch-arrow">↓</div>
-              <div className="arch-node">Prediction</div>
-              <div className="arch-arrow">↓</div>
-              <div className="arch-node">Heatmap</div>
-              <div className="arch-arrow">↓</div>
-              <div className="arch-node final">Result</div>
+              <div className="arch-node final">05 Agronomic Action & Care Plan</div>
             </div>
           </div>
         </section>

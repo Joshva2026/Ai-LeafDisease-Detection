@@ -135,38 +135,70 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
           </div>
         ) : (
           <>
-            {/* Desktop Premium Grid View */}
+            {/* Desktop Premium Grid View with Date Grouping */}
             <div className="history-desktop-grid">
               {filteredAndSortedList.map((scan, idx) => {
                 const details = mapClassName(scan.disease);
                 const isHealthy = details.isHealthy;
+                
+                // Determine date group category
+                const scanDateStr = scan.timestamp ? scan.timestamp.split(" ")[0] : "";
+                const todayStr = new Date().toISOString().split("T")[0];
+                const yesterdayObj = new Date();
+                yesterdayObj.setDate(yesterdayObj.getDate() - 1);
+                const yesterdayStr = yesterdayObj.toISOString().split("T")[0];
+
+                let groupLabel = lang === "ta" ? "முந்தைய பதிவுகள்" : "OLDER DIAGNOSES";
+                if (scanDateStr === todayStr) {
+                  groupLabel = lang === "ta" ? "இன்று" : "TODAY";
+                } else if (scanDateStr === yesterdayStr) {
+                  groupLabel = lang === "ta" ? "நேற்று" : "YESTERDAY";
+                }
+
+                const isFirstOfGroup = idx === 0 || (() => {
+                  const prevDate = filteredAndSortedList[idx - 1]?.timestamp?.split(" ")[0];
+                  let prevLabel = "OLDER DIAGNOSES";
+                  if (prevDate === todayStr) prevLabel = "TODAY";
+                  else if (prevDate === yesterdayStr) prevLabel = "YESTERDAY";
+                  return prevLabel !== groupLabel;
+                })();
+
                 return (
-                  <div key={idx} className="history-grid-card glass-card" onClick={() => handleSelectScan(scan)}>
-                    <div className="hgc-image-wrapper">
-                      <img 
-                        src={getMediaUrl(scan.original_url)} 
-                        alt={details.plantName} 
-                        className="hgc-image"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=120";
-                        }}
-                      />
-                      <div className="hgc-overlay">
-                        <button className="btn-primary" style={{padding: '8px 16px', borderRadius: '100px'}}><Eye size={16}/> View Report</button>
+                  <div key={idx} className="history-group-item-wrap" style={{ gridColumn: '1 / -1' }}>
+                    {isFirstOfGroup && (
+                      <div className="history-date-divider">
+                        <span className="hdd-label">{groupLabel}</span>
+                        <div className="hdd-line"></div>
                       </div>
-                    </div>
-                    <div className="hgc-content">
-                      <div className="hgc-header">
-                        <span className={`status-pill ${isHealthy ? 'healthy' : 'danger'}`}>
-                          {isHealthy ? t("healthyStatus", lang) : t("diseasedStatus", lang)}
-                        </span>
-                        <span className="hgc-confidence">{scan.confidence}% AI Match</span>
+                    )}
+
+                    <div className="history-grid-card glass-card" onClick={() => handleSelectScan(scan)}>
+                      <div className="hgc-image-wrapper">
+                        <img 
+                          src={getMediaUrl(scan.original_url)} 
+                          alt={details.plantName} 
+                          className="hgc-image"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=120";
+                          }}
+                        />
+                        <div className="hgc-overlay">
+                          <button className="btn-primary" style={{padding: '8px 16px', borderRadius: '100px'}}><Eye size={16}/> View Report</button>
+                        </div>
                       </div>
-                      <h3 className="hgc-plant-name">{details.plantName}</h3>
-                      <p className="hgc-disease-name">{details.diseaseName}</p>
-                      <div className="hgc-footer">
-                        <span className="hgc-time">{scan.timestamp}</span>
+                      <div className="hgc-content">
+                        <div className="hgc-header">
+                          <span className={`status-pill ${isHealthy ? 'healthy' : 'danger'}`}>
+                            {isHealthy ? t("healthyStatus", lang) : t("diseasedStatus", lang)}
+                          </span>
+                          <span className="hgc-confidence">{scan.confidence}% AI Match</span>
+                        </div>
+                        <h3 className="hgc-plant-name">{details.plantName}</h3>
+                        <p className="hgc-disease-name">{details.diseaseName}</p>
+                        <div className="hgc-footer">
+                          <span className="hgc-time">{scan.timestamp}</span>
+                        </div>
                       </div>
                     </div>
                   </div>

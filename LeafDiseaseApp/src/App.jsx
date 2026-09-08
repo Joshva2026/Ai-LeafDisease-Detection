@@ -18,6 +18,7 @@ import SlideIndicator from "./components/SlideIndicator/SlideIndicator";
 import MobileHeader from "./components/Navbar/MobileHeader";
 import BottomNav from "./components/Navbar/BottomNav";
 import BotanicalBackground from "./components/BotanicalBackground/BotanicalBackground";
+import OnboardingModal from "./components/Onboarding/OnboardingModal";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -30,6 +31,7 @@ function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "light";
   });
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Apply theme settings
   useEffect(() => {
@@ -123,7 +125,17 @@ function App() {
   };
 
   if (!user) {
-    return <Auth onLoginSuccess={(u) => setUser(u)} />;
+    return (
+      <Auth
+        onLoginSuccess={(u) => {
+          setUser(u);
+          const hasSeen = localStorage.getItem(`onboarded_${u.username}`);
+          if (!hasSeen) {
+            setShowOnboarding(true);
+          }
+        }}
+      />
+    );
   }
 
   const activePred = prediction;
@@ -131,6 +143,18 @@ function App() {
   return (
     <div className="app-container">
       <BotanicalBackground />
+
+      {showOnboarding && (
+        <OnboardingModal
+          lang={lang}
+          onComplete={() => {
+            setShowOnboarding(false);
+            if (user) {
+              localStorage.setItem(`onboarded_${user.username}`, "true");
+            }
+          }}
+        />
+      )}
 
       {/* Desktop Navbar (hidden on mobile via CSS) */}
       <Navbar 
