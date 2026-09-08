@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../api/api";
+import { API_BASE_URL } from "../api/api.js";
 
 /**
  * Constructs a full URL for backend-served media (uploaded images, Grad-CAM).

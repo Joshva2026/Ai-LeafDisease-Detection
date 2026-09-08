@@ -3,14 +3,13 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -1;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  background-color: var(--bg-primary, #FAF9F5);
+  background-color: var(--bg-primary, #060c09);
 }
 
-.botanical-bg-video,
-.botanical-bg-fallback {
+.botanical-bg-video {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -19,6 +18,8 @@
   object-fit: cover;
   transform: translate(-50%, -50%);
   pointer-events: none;
+  opacity: 0.22;
+  filter: saturate(1.2) contrast(1.1) brightness(0.8);
 }
 
 .botanical-bg-overlay {
@@ -28,31 +29,43 @@
   height: 100%;
   pointer-events: none;
   z-index: 1;
-  /* Soft ivory/green transparent overlay for readability */
-  background: linear-gradient(
-    to bottom,
-    rgba(250, 249, 245, 0.75) 0%,
-    rgba(235, 240, 235, 0.85) 100%
+  background: radial-gradient(
+    circle at 50% 30%,
+    rgba(16, 185, 129, 0.04) 0%,
+    rgba(6, 12, 9, 0.7) 60%,
+    rgba(6, 12, 9, 0.92) 100%
   );
 }
 
-/* Dark mode overlay */
-.theme-dark .botanical-bg-overlay {
-  background: linear-gradient(
-    to bottom,
-    rgba(6, 12, 9, 0.75) 0%,
-    rgba(6, 12, 9, 0.85) 100%
+/* Light mode overlay */
+:root:not(.theme-dark) .botanical-bg-overlay {
+  background: radial-gradient(
+    circle at 50% 30%,
+    rgba(78, 135, 106, 0.08) 0%,
+    rgba(248, 250, 247, 0.85) 60%,
+    rgba(248, 250, 247, 0.96) 100%
   );
+}
+
+/* Ambient spore particle grid effect */
+.botanical-ambient-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: radial-gradient(rgba(16, 185, 129, 0.12) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.4;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .botanical-bg-video {
-    display: none;
+    display: none !important;
   }
 }
 
-/* Hide entirely on mobile apps for clean layout */
+/* Hide completely on mobile for high performance farmer utility app */
 @media (max-width: 768px) {
   .botanical-bg-container {
     display: none !important;
