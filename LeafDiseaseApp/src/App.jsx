@@ -20,6 +20,8 @@ import BottomNav from "./components/Navbar/BottomNav";
 import BotanicalBackground from "./components/BotanicalBackground/BotanicalBackground";
 import OnboardingModal from "./components/Onboarding/OnboardingModal";
 
+import HowTo from "./pages/HowTo/HowTo";
+
 function App() {
   const [user, setUser] = useState(null);
   const [prediction, setPrediction] = useState(null);
@@ -27,7 +29,7 @@ function App() {
   const [lang, setLang] = useState(() => {
     return localStorage.getItem("lang") || "en";
   });
-  const [view, setView] = useState("home"); // "home", "myplants", "scan", "history", "profile", "diagnosis"
+  const [view, setView] = useState("howto"); // "howto", "home", "myplants", "scan", "history", "profile", "diagnosis"
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "light";
   });
@@ -152,6 +154,7 @@ function App() {
             if (user) {
               localStorage.setItem(`onboarded_${user.username}`, "true");
             }
+            setView("scan");
           }}
         />
       )}
@@ -186,6 +189,10 @@ function App() {
 
       {/* Main Pages scroll viewport container */}
       <div className="scroll-container">
+        {view === "howto" && (
+          <HowTo onViewChange={setView} lang={lang} />
+        )}
+
         {view === "home" && (
           <Home 
             user={user} 

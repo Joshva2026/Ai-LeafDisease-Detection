@@ -1,0 +1,478 @@
+/* =====================================================
+   THE LEAF JOURNEY — HOW TO DEDICATED ROUTE STYLING
+   ===================================================== */
+
+.howto-master-container {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-primary, #060c09);
+  color: var(--text-primary, #eaeaea);
+  position: relative;
+  overflow-x: hidden;
+  padding-top: 60px;
+}
+
+/* Fixed Progress Bar */
+.howto-progress-bar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  padding: 12px 6%;
+  background: rgba(6, 12, 9, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 40;
+}
+
+.howto-progress-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.howto-step-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.howto-step-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #ffffff;
+}
+
+.howto-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.howto-dot {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #9ca3af;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.howto-dot.active {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Master Scene Layout */
+.howto-scene {
+  min-height: 88vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 6% 60px 6%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.howto-scene-content {
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+}
+
+.scene-ch-tag {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.howto-headline {
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+  line-height: 1.25;
+}
+
+.howto-description {
+  font-size: 16px;
+  color: #9ca3af;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.btn-howto-next {
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e5e7eb;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-howto-next:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+/* Scene 1 Hero Leaf */
+.macro-leaf-hero {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.macro-leaf-svg {
+  width: 180px;
+  height: 180px;
+  filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.4));
+}
+
+.aura-pulse {
+  animation: auraPulse 3s ease-in-out infinite;
+}
+
+/* Scene 2 Camera Frame */
+.camera-frame-simulation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.viewfinder-box {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.04);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewfinder-leaf {
+  width: 140px;
+  height: 140px;
+}
+
+.viewfinder-corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: #10b981;
+  border-style: solid;
+}
+
+.viewfinder-corner.top-left { top: 10px; left: 10px; border-width: 2.5px 0 0 2.5px; }
+.viewfinder-corner.top-right { top: 10px; right: 10px; border-width: 2.5px 2.5px 0 0; }
+.viewfinder-corner.bottom-left { bottom: 10px; left: 10px; border-width: 0 0 2.5px 2.5px; }
+.viewfinder-corner.bottom-right { bottom: 10px; right: 10px; border-width: 0 2.5px 2.5px 0; }
+
+.reticle-center {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.capture-instructions-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px 24px;
+  border-radius: 14px;
+  text-align: left;
+}
+
+.rule-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #d1d5db;
+}
+
+/* Scene 3 Analysis Grid */
+.analysis-grid-simulation {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.scan-grid-box {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 16px;
+  background: rgba(4, 47, 46, 0.6);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.grid-leaf {
+  width: 140px;
+  height: 140px;
+}
+
+.scan-laser-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #34d399, transparent);
+  box-shadow: 0 0 15px #34d399;
+  animation: laserSweep 3s ease-in-out infinite;
+}
+
+.neural-nodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.node-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Scene 4 Visual Evidence Split */
+.visual-evidence-split {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.split-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  border-radius: 16px;
+  width: 200px;
+}
+
+.gradcam-side {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.split-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #9ca3af;
+}
+
+.split-canvas {
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.split-sub {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.attention-text {
+  color: #f87171;
+  font-weight: 700;
+}
+
+.split-divider {
+  color: #10b981;
+}
+
+/* Scene 5 Understand Cards */
+.understand-cards-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.u-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 20px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.u-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.u-card h4 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.u-card p {
+  font-size: 13px;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+/* Scene 6 Act & Final Scan CTA */
+.act-transformation-visual {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.healthy-leaf-svg {
+  width: 90px;
+  height: 90px;
+  filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.5));
+}
+
+.final-prompt-headline {
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.15;
+  letter-spacing: -1px;
+}
+
+.final-prompt-subheadline {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 300;
+  font-style: italic;
+  color: #6ee7b7;
+  letter-spacing: 2px;
+}
+
+.start-scan-cta {
+  padding: 16px 36px;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Animations */
+@keyframes auraPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 0.5; }
+}
+
+@keyframes laserSweep {
+  0% { top: 0%; opacity: 0.8; }
+  50% { top: 95%; opacity: 1; }
+  100% { top: 0%; opacity: 0.8; }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .aura-pulse,
+  .scan-laser-line {
+    animation: none !important;
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .howto-progress-bar {
+    top: 50px;
+    padding: 8px 4%;
+  }
+
+  .howto-step-title {
+    display: none;
+  }
+
+  .howto-scene {
+    padding: 60px 4% 40px 4%;
+  }
+
+  .split-divider {
+    transform: rotate(90deg);
+  }
+}

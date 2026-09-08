@@ -1,287 +1,298 @@
 /* =====================================================
-   PLANT GUIDE SPECIFIC STYLES
- ===================================================== */
+   BOTANICAL ARCHIVE — PLANT GUIDE STYLING
+   ===================================================== */
 
-.guide-title {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-@media (min-width: 769px) {
-  .guide-title {
-    font-size: 32px;
-    margin-top: 10px;
-  }
-}
-
-.guide-subtitle {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-/* Category Scroller */
-.guide-categories-row {
+.botanical-archive-container {
+  padding: 40px 6% 60px 6%;
+  max-width: 1000px;
+  margin: 0 auto;
   display: flex;
-  overflow-x: auto;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Archive Header */
+.archive-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.archive-badge {
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
-  margin-bottom: 24px;
-  padding-bottom: 6px;
-}
-.guide-categories-row::-webkit-scrollbar {
-  height: 4px;
-}
-.guide-categories-row::-webkit-scrollbar-thumb {
-  background-color: var(--border-color);
-  border-radius: var(--radius-pill);
-}
-
-.guide-cat-btn {
-  background-color: var(--card-bg);
-  border: var(--border-style);
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: var(--transition-smooth);
-}
-
-.guide-cat-btn:hover {
-  border-color: var(--border-color-hover);
-  background-color: var(--card-hover-bg);
-}
-
-.guide-cat-btn.active {
-  background-color: var(--primary-dark);
-  color: var(--bg-primary);
-  border-color: var(--primary-dark);
-}
-.theme-dark .guide-cat-btn.active {
-  color: #060c09;
-  background-color: #e9efea;
-  border-color: #e9efea;
-}
-
-/* Disease Cards List */
-.guide-cards-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 40px;
-}
-
-@media (min-width: 769px) {
-  .guide-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-}
-
-.disease-item-card {
-  background-color: var(--card-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: var(--border-style);
-  border-radius: var(--radius-lg);
-  padding: 12px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
-}
-
-.disease-item-card:hover {
-  border-color: var(--primary);
-  box-shadow: var(--shadow-medium);
-  transform: translateY(-4px);
-}
-
-.disease-card-img {
-  width: 60px;
-  height: 60px;
-  border-radius: var(--radius-md);
-  object-fit: cover;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-}
-
-.disease-card-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow: hidden;
-}
-
-.disease-card-plant {
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 700;
-  color: var(--primary);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #10b981;
 }
 
-.disease-card-name {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.archive-title {
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: #ffffff;
 }
 
-.disease-card-desc {
-  font-size: 12px;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.archive-subtitle {
+  font-size: 15px;
+  color: #9ca3af;
+  max-width: 620px;
+  line-height: 1.6;
 }
 
-.disease-card-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-/* Detail view styling */
-.detail-header-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-@media (min-width: 769px) {
-  .detail-header-row {
-    margin-top: 10px;
-  }
-}
-
-.detail-back-btn {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 50%;
-  display: flex;
-}
-.detail-back-btn:hover {
-  background-color: var(--bg-secondary);
-}
-
-/* Detail desktop split layout */
-.guide-detail-desktop-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-@media (min-width: 769px) {
-  .guide-detail-desktop-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 30px;
-    align-items: start;
-  }
-}
-
-.detail-img-card {
-  height: 200px;
-  width: 100%;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  position: relative;
-  border: var(--border-style);
-}
-
-@media (min-width: 769px) {
-  .detail-img-card {
-    height: 360px;
-    border-radius: var(--radius-xl);
-  }
-}
-
-.detail-img-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.detail-img-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px 20px;
-  background: linear-gradient(to top, rgba(13, 22, 18, 0.9), transparent);
-  color: #fff;
-}
-
-.detail-plant-type {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.detail-title {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.detail-scroll-content {
+/* Controls */
+.archive-controls {
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.detail-info-block {
-  background-color: var(--card-bg);
-  border: var(--border-style);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-}
-
-.detail-info-title {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--primary-dark);
-  margin-bottom: 10px;
+.archive-search-box {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-.theme-dark .detail-info-title {
-  color: var(--primary);
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 18px;
+  border-radius: 10px;
 }
 
-.detail-info-body {
+.archive-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
   font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.55;
+  width: 100%;
 }
 
-.detail-symptoms-list {
-  padding-left: 20px;
-  margin-top: 6px;
+.archive-categories-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.detail-symptoms-list li {
-  margin-bottom: 6px;
+.archive-cat-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.archive-cat-btn.active {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+/* Grid */
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.species-card {
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+  text-align: left;
+}
+
+.species-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
+}
+
+.species-img-box {
+  width: 100%;
+  height: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.species-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.species-crop-name {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #10b981;
+  text-transform: uppercase;
+}
+
+.species-disease-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.species-desc-snippet {
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.species-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-read-more {
+  font-size: 12px;
+  font-weight: 700;
+  color: #34d399;
+}
+
+/* Detail Card View */
+.archive-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-back-archive {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.btn-back-archive:hover {
+  color: #10b981;
+}
+
+.archive-specimen-id {
+  font-size: 11px;
+  font-weight: 800;
+  color: #6b7280;
+  letter-spacing: 1px;
+}
+
+.archive-detail-card {
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  text-align: left;
+}
+
+.detail-hero-box {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.detail-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.6);
+}
+
+.detail-hero-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-plant-tag {
+  font-size: 12px;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 1px;
+}
+
+.detail-hero-overlay h2 {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.detail-sections-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.d-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.d-sec-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.d-sec-head h4 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.d-section-block p,
+.d-section-block ul {
+  font-size: 14px;
+  color: #d1d5db;
+  line-height: 1.6;
+  padding-left: 16px;
+}
+
+@media (max-width: 640px) {
+  .botanical-archive-container {
+    padding: 20px 4% 40px 4%;
+  }
 }

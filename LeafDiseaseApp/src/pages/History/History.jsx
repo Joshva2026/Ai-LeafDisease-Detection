@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { FileText, Search, ArrowUpDown, Eye } from "lucide-react";
+import { FileText, Search, ArrowUpDown, Eye, History as HistoryIcon, Sparkles } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
 import { getMediaUrl } from "../../utils/mediaUrl";
@@ -9,40 +9,38 @@ import "./History.css";
 function History({ history, onViewChange, onSelectPrediction, lang }) {
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState("newest"); // "newest" or "oldest"
+  const [sortOrder, setSortOrder] = useState("newest");
 
-    const handleSelectScan = (scan) => {
-      const info = diseaseData[scan.disease] || {
-        description: "No specific description available.",
-        symptoms: ["No symptoms available."],
-        treatment: "Consult local agricultural extensions.",
-        prevention: "Maintain crop hygiene and ventilation."
-      };
-
-      onSelectPrediction({
-        success: true,
-        disease: scan.disease,
-        confidence: scan.confidence,
-        original_url: scan.original_url,
-        gradcam_url: scan.gradcam_url,
-        description: info.description,
-        symptoms: info.symptoms,
-        treatment: info.treatment,
-        prevention: info.prevention,
-        timestamp: scan.timestamp
-      });
-      
-      onViewChange("diagnosis");
+  const handleSelectScan = (scan) => {
+    const info = diseaseData[scan.disease] || {
+      description: "No specific description available.",
+      symptoms: ["No symptoms available."],
+      treatment: "Consult local agricultural extensions.",
+      prevention: "Maintain crop hygiene and ventilation."
     };
+
+    onSelectPrediction({
+      success: true,
+      disease: scan.disease,
+      confidence: scan.confidence,
+      original_url: scan.original_url,
+      gradcam_url: scan.gradcam_url,
+      description: info.description,
+      symptoms: info.symptoms,
+      treatment: info.treatment,
+      prevention: info.prevention,
+      timestamp: scan.timestamp
+    });
+    
+    onViewChange("diagnosis");
+  };
 
   const filteredAndSortedList = useMemo(() => {
     let result = history.filter(scan => {
-      // 1. Status Filter
       const isHealthy = scan.disease.toLowerCase().includes("healthy");
       if (filter === "healthy" && !isHealthy) return false;
       if (filter === "diseases" && isHealthy) return false;
 
-      // 2. Search Filter
       if (searchQuery.trim() !== "") {
         const details = mapClassName(scan.disease);
         const query = searchQuery.toLowerCase();
@@ -56,9 +54,7 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
       return true;
     });
 
-    // 3. Sort
     result.sort((a, b) => {
-      // Very simple string comparison for "YYYY-MM-DD HH:MM:SS"
       if (sortOrder === "newest") {
         return b.timestamp.localeCompare(a.timestamp);
       } else {
@@ -74,176 +70,127 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
   };
 
   return (
-    <div className="page-wrapper fade-in-section">
-      <div className="history-header-block">
-        <div>
-          <h2 className="history-title">{t("history", lang)}</h2>
-          <p className="history-subtitle">
-            {lang === "ta" 
-              ? "நீங்கள் முன்பு பகுப்பாய்வு செய்த இலைகளின் வரலாற்றுப் பதிவுகள்." 
-              : "Review records of plant scans and health diagnoses over time."}
-          </p>
+    <div className="leaf-memory-container fade-in-section">
+      
+      {/* HEADER SECTION */}
+      <header className="memory-header">
+        <div className="memory-badge">
+          <span className="badge-pulse-dot"></span>
+          <span>LEAF MEMORY ARCHIVE</span>
         </div>
-      </div>
+        <h1 className="memory-title">Preserved Leaf Specimens</h1>
+        <p className="memory-subtitle">
+          "Every leaf you analyze leaves a memory." Review your historical field pathology scans, Grad-CAM heatmaps, and past diagnoses.
+        </p>
+      </header>
 
-      {/* Controls Bar */}
-      <div className="history-controls">
-        <div className="search-box">
+      {/* CONTROLS BAR */}
+      <div className="memory-controls-bar glass-card">
+        <div className="memory-search-box">
           <Search size={16} className="search-icon" />
           <input
             type="text"
-            placeholder={lang === "ta" ? "தேடுங்கள்..." : "Search scans..."}
+            placeholder={lang === "ta" ? "தேடுங்கள்..." : "Search specimen archive..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
+            className="memory-search-input"
           />
         </div>
-        
-        <div className="history-tabs-row">
+
+        <div className="memory-filter-tabs">
           <button
-            className={`history-tab-btn ${filter === "all" ? "active" : ""}`}
+            className={`memory-tab ${filter === "all" ? "active" : ""}`}
             onClick={() => setFilter("all")}
           >
-            {lang === "ta" ? "அனைத்தும்" : "All"} ({history.length})
+            {lang === "ta" ? "அனைத்தும்" : "All Memory"} ({history.length})
           </button>
           <button
-            className={`history-tab-btn ${filter === "healthy" ? "active" : ""}`}
+            className={`memory-tab ${filter === "healthy" ? "active" : ""}`}
             onClick={() => setFilter("healthy")}
           >
             {t("healthyStatus", lang)}
           </button>
           <button
-            className={`history-tab-btn ${filter === "diseases" ? "active" : ""}`}
+            className={`memory-tab ${filter === "diseases" ? "active" : ""}`}
             onClick={() => setFilter("diseases")}
           >
             {t("diseasedStatus", lang)}
           </button>
         </div>
-        
-        <button className="sort-btn" onClick={toggleSort} title="Sort by Date">
-          <ArrowUpDown size={16} />
-          <span>{sortOrder === "newest" ? (lang === "ta" ? "புதியது" : "Newest") : (lang === "ta" ? "பழையது" : "Oldest")}</span>
+
+        <button className="memory-sort-btn" onClick={toggleSort} title="Sort by Timestamp">
+          <ArrowUpDown size={15} />
+          <span>{sortOrder === "newest" ? "Newest Scans" : "Oldest Scans"}</span>
         </button>
       </div>
 
-      {/* History Content */}
-      <div className="history-content">
+      {/* TIMELINE SPECIMEN GRID */}
+      <div className="memory-timeline-content">
         {filteredAndSortedList.length === 0 ? (
-          <div className="card empty-state">
-            <FileText size={36} className="empty-icon" />
-            <p>{lang === "ta" ? "வரலாற்றுப் பதிவுகள் எதுவும் இல்லை." : "No history logs found matching criteria."}</p>
+          <div className="memory-empty-card glass-card">
+            <HistoryIcon size={40} className="empty-icon" />
+            <h3>No Leaf Memory Records Found</h3>
+            <p>No scans match your current filter or search terms. Perform a new diagnostic scan to add specimens.</p>
+            <button className="btn btn-primary mt-3" onClick={() => onViewChange("scan")}>
+              Launch Scan Chamber
+            </button>
           </div>
         ) : (
-          <>
-            {/* Desktop Premium Grid View with Date Grouping */}
-            <div className="history-desktop-grid">
-              {filteredAndSortedList.map((scan, idx) => {
-                const details = mapClassName(scan.disease);
-                const isHealthy = details.isHealthy;
-                
-                // Determine date group category
-                const scanDateStr = scan.timestamp ? scan.timestamp.split(" ")[0] : "";
-                const todayStr = new Date().toISOString().split("T")[0];
-                const yesterdayObj = new Date();
-                yesterdayObj.setDate(yesterdayObj.getDate() - 1);
-                const yesterdayStr = yesterdayObj.toISOString().split("T")[0];
+          <div className="specimen-timeline-list">
+            {filteredAndSortedList.map((scan, idx) => {
+              const details = mapClassName(scan.disease);
+              const isHealthy = details.isHealthy;
 
-                let groupLabel = lang === "ta" ? "முந்தைய பதிவுகள்" : "OLDER DIAGNOSES";
-                if (scanDateStr === todayStr) {
-                  groupLabel = lang === "ta" ? "இன்று" : "TODAY";
-                } else if (scanDateStr === yesterdayStr) {
-                  groupLabel = lang === "ta" ? "நேற்று" : "YESTERDAY";
-                }
-
-                const isFirstOfGroup = idx === 0 || (() => {
-                  const prevDate = filteredAndSortedList[idx - 1]?.timestamp?.split(" ")[0];
-                  let prevLabel = "OLDER DIAGNOSES";
-                  if (prevDate === todayStr) prevLabel = "TODAY";
-                  else if (prevDate === yesterdayStr) prevLabel = "YESTERDAY";
-                  return prevLabel !== groupLabel;
-                })();
-
-                return (
-                  <div key={idx} className="history-group-item-wrap" style={{ gridColumn: '1 / -1' }}>
-                    {isFirstOfGroup && (
-                      <div className="history-date-divider">
-                        <span className="hdd-label">{groupLabel}</span>
-                        <div className="hdd-line"></div>
-                      </div>
-                    )}
-
-                    <div className="history-grid-card glass-card" onClick={() => handleSelectScan(scan)}>
-                      <div className="hgc-image-wrapper">
-                        <img 
-                          src={getMediaUrl(scan.original_url)} 
-                          alt={details.plantName} 
-                          className="hgc-image"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=120";
-                          }}
-                        />
-                        <div className="hgc-overlay">
-                          <button className="btn-primary" style={{padding: '8px 16px', borderRadius: '100px'}}><Eye size={16}/> View Report</button>
-                        </div>
-                      </div>
-                      <div className="hgc-content">
-                        <div className="hgc-header">
-                          <span className={`status-pill ${isHealthy ? 'healthy' : 'danger'}`}>
-                            {isHealthy ? t("healthyStatus", lang) : t("diseasedStatus", lang)}
-                          </span>
-                          <span className="hgc-confidence">{scan.confidence}% AI Match</span>
-                        </div>
-                        <h3 className="hgc-plant-name">{details.plantName}</h3>
-                        <p className="hgc-disease-name">{details.diseaseName}</p>
-                        <div className="hgc-footer">
-                          <span className="hgc-time">{scan.timestamp}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Mobile Vertical Cards View */}
-            <div className="history-mobile-list">
-              {filteredAndSortedList.map((scan, idx) => {
-                const details = mapClassName(scan.disease);
-                const isHealthy = details.isHealthy;
-                return (
-                  <div 
-                    key={idx} 
-                    className="history-log-card"
-                    onClick={() => handleSelectScan(scan)}
-                  >
+              return (
+                <div key={idx} className="specimen-card glass-card" onClick={() => handleSelectScan(scan)}>
+                  
+                  {/* SPECIMEN THUMBNAILS */}
+                  <div className="specimen-visual-box">
                     <img 
                       src={getMediaUrl(scan.original_url)} 
                       alt={details.plantName} 
-                      className="history-thumb" 
+                      className="specimen-thumb"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=120";
+                        e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=160";
                       }}
                     />
-                    <div className="history-info">
-                      <span className="history-plant">{details.plantName}</span>
-                      <span className="history-condition">{details.diseaseName}</span>
-                      <span className="history-time-mobile">{scan.timestamp.split(" ")[0]}</span>
-                    </div>
-                    <div className="history-meta">
-                      <span className={`status-pill-mobile ${isHealthy ? 'healthy' : 'danger'}`}>
-                        {isHealthy ? "Healthy" : "Diseased"}
+                    {scan.gradcam_url && (
+                      <div className="specimen-overlay-badge">
+                        <Sparkles size={12} />
+                        <span>Grad-CAM</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* SPECIMEN DETAILS */}
+                  <div className="specimen-body">
+                    <div className="specimen-meta-top">
+                      <span className={`specimen-status-tag ${isHealthy ? 'healthy' : 'danger'}`}>
+                        {isHealthy ? 'Healthy Specimen' : 'Pathology Detected'}
                       </span>
-                      <span className="confidence-text-mobile">{scan.confidence}%</span>
+                      <span className="specimen-date">{scan.timestamp}</span>
+                    </div>
+
+                    <h3 className="specimen-plant-title">{details.plantName}</h3>
+                    <p className="specimen-disease-subtitle">{details.diseaseName}</p>
+
+                    <div className="specimen-footer">
+                      <span className="specimen-conf-score">{Math.round(scan.confidence)}% AI Confidence Match</span>
+                      <button className="btn-view-specimen">
+                        <Eye size={14} />
+                        <span>Open Report</span>
+                      </button>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </>
+
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
+
     </div>
   );
 }

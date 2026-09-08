@@ -1,220 +1,257 @@
 /* =====================================================
-   PROFILE SPECIFIC STYLES
- ===================================================== */
+   FARMER IDENTITY — PROFILE PAGE STYLING
+   ===================================================== */
 
-.profile-header {
+.farmer-identity-container {
+  padding: 40px 6% 60px 6%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Header */
+.profile-hero-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 12px;
-  margin-bottom: 24px;
 }
 
-@media (min-width: 769px) {
-  .profile-header {
-    margin-top: 10px;
-  }
-}
-
-.profile-avatar-large {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--primary-light);
-  box-shadow: var(--shadow-medium);
-}
-
-.profile-avatar-placeholder {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-  color: var(--text-white);
-  display: flex;
+.identity-badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  font-size: 11px;
   font-weight: 800;
-  font-size: 32px;
-  box-shadow: var(--shadow-medium);
+  letter-spacing: 1.5px;
+  color: #10b981;
 }
 
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.profile-hero-title {
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: #ffffff;
 }
 
-.profile-name {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  color: var(--text-primary);
+.profile-hero-sub {
+  font-size: 15px;
+  color: #9ca3af;
+  max-width: 600px;
+  line-height: 1.6;
 }
 
-.profile-email {
-  font-size: 13px;
-  color: var(--text-light);
-}
-
-.profile-location {
-  font-size: 14px;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-weight: 500;
-  margin-top: 2px;
-}
-
-/* Edit profile button */
-.profile-edit-btn {
-  background-color: var(--primary-light);
-  border: 1px solid rgba(110, 142, 126, 0.2);
-  color: var(--text-primary);
-  padding: 6px 14px;
-  border-radius: var(--radius-pill);
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: var(--transition-smooth);
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-}
-.profile-edit-btn:hover {
-  background-color: var(--primary-dark);
-  color: var(--bg-primary);
-}
-.theme-dark .profile-edit-btn:hover {
-  color: #060c09;
-  background-color: #e9efea;
-}
-
-/* Wide Desktop Grid Wrapper */
-.profile-desktop-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-@media (min-width: 769px) {
-  .profile-desktop-layout {
-    display: grid;
-    grid-template-columns: 1fr 1.4fr;
-    gap: 30px;
-    align-items: start;
-    margin-top: 10px;
-  }
-}
-
-.profile-left-col, .profile-right-col {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Statistics Grid */
-.profile-stats-grid {
+/* Grid Layout */
+.profile-identity-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
 }
 
-.stat-card {
-  background-color: var(--card-bg);
-  border: var(--border-style);
-  border-radius: var(--radius-lg);
-  padding: 14px 6px;
-  text-align: center;
-  box-shadow: var(--shadow-soft);
-  transition: var(--transition-smooth);
-}
-.stat-card:hover {
-  border-color: var(--border-color-hover);
-  box-shadow: var(--shadow-medium);
-}
-
-.stat-number {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.stat-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  color: var(--text-light);
-  font-weight: 700;
-  margin-top: 2px;
-  letter-spacing: 0.5px;
-}
-
-/* Settings List */
-.settings-list-card {
-  background-color: var(--card-bg);
-  border: var(--border-style);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-soft);
-}
-
-.setting-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: var(--border-style);
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  background: none;
-  width: 100%;
-  text-align: left;
-  border-left: none;
-  border-right: none;
-}
-.setting-item:last-child {
-  border-bottom: none;
-}
-
-.setting-item:hover {
-  background-color: var(--card-hover-bg);
-}
-
-.setting-label-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-primary);
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.setting-icon {
-  color: var(--primary);
-}
-
-/* Form layouts */
-.edit-form-card {
-  background-color: var(--card-bg);
-  border: var(--border-style);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  box-shadow: var(--shadow-medium);
-  width: 100%;
+.identity-left-column,
+.identity-right-column {
   display: flex;
   flex-direction: column;
+  gap: 20px;
+}
+
+/* User Identity Card */
+.identity-user-card {
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: left;
+}
+
+.avatar-wrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid #10b981;
+  flex-shrink: 0;
+}
+
+.user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-avatar-initial {
+  width: 100%;
+  height: 100%;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.identity-info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rank-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #10b981;
+}
+
+.user-name-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.user-handle {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.user-location-tag {
+  font-size: 12px;
+  color: #d1d5db;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.btn-edit-toggle {
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d1d5db;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+}
+
+/* Stats Row */
+.identity-stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
 }
 
-.edit-form-card h3 {
-  font-family: var(--font-serif);
-  font-size: 18px;
-  margin-bottom: 4px;
+.id-stat-card {
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.stat-name {
+  font-size: 11px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.healthy-val .stat-value { color: #10b981; }
+.danger-val .stat-value { color: #f87171; }
+
+/* Edit Profile Card & Preferences */
+.edit-profile-card,
+.preferences-panel {
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.preferences-panel h3,
+.edit-profile-card h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.pref-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+}
+
+.pref-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+.pref-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.btn-logout-identity {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .farmer-identity-container {
+    padding: 20px 4% 40px 4%;
+  }
+
+  .identity-user-card {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .user-location-tag {
+    justify-content: center;
+  }
 }

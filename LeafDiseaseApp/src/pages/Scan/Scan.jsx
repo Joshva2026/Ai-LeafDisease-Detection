@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Camera, UploadCloud, ImageIcon, Video, AlertCircle, X, Check, Info, Loader2 } from "lucide-react";
+import { Camera, UploadCloud, ImageIcon, AlertCircle, X, Check, Info, Loader2, Scan as ScanIcon, Sparkles, CheckCircle2 } from "lucide-react";
 import { t } from "../../data/translations";
 import api from "../../api/api";
 import "./Scan.css";
@@ -27,7 +27,6 @@ function Scan({ onPredictionSuccess, lang }) {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
-  // Clean up camera stream on unmount
   useEffect(() => {
     return () => {
       stopCamera();
@@ -206,6 +205,7 @@ function Scan({ onPredictionSuccess, lang }) {
         setErrorMsg(err.message);
       }
     } finally {
+      clearInterval(stageInterval);
       setLoading(false);
       setIsWakingUp(false);
     }
@@ -220,86 +220,109 @@ function Scan({ onPredictionSuccess, lang }) {
   };
 
   return (
-    <div className="page-wrapper scan-page-wrapper">
-      <div className="scan-header">
-        <h2 className="scan-title">{t("plantDoctor", lang)}</h2>
-        <p className="scan-subtitle">{lang === "ta" ? "இலையைப் படம் பிடித்து நோயைக் கண்டறியவும்." : "Take a photo of a leaf to identify possible diseases."}</p>
-      </div>
+    <div className="scan-chamber-container fade-in-section">
+      
+      {/* DIAGNOSTIC CHAMBER HEADER */}
+      <header className="chamber-header">
+        <div className="chamber-badge">
+          <span className="badge-pulse-dot"></span>
+          <span>THE DIAGNOSTIC CHAMBER</span>
+        </div>
+        <h1 className="chamber-title">{t("plantDoctor", lang)}</h1>
+        <p className="chamber-subtitle">
+          {lang === "ta" ? "இலையைப் படம் பிடித்து நோயைக் கண்டறியவும்." : "Position your leaf inside the optic scanner frame to trigger neural diagnostic evaluation."}
+        </p>
+      </header>
 
-      <div className="scan-content">
+      <div className="chamber-main-workstation">
         {loading ? (
-          <div className="analyzing-state">
-            <div className="preview-img-wrapper analyzing-preview">
-              <img src={image} alt="Preview" className="preview-img dimmed" />
-              <div className="laser-scanner"></div>
-              <div className="scan-ring"></div>
+          /* FRONTEND ANIMATION STAGES DURING REAL PREDICT CALL */
+          <div className="chamber-analyzing-panel glass-card">
+            <div className="chamber-optic-wrapper">
+              <img src={image} alt="Preview" className="chamber-optic-img dimmed" />
+              <div className="chamber-laser-sweep"></div>
+              <div className="chamber-hud-ring"></div>
             </div>
-            <h3 className="analyzing-title">
-              {isWakingUp ? (lang === "ta" ? "சேவையகம் தயாராகிறது..." : "Waking up server...") : stages[analysisStageIndex]}
-            </h3>
-            <p className="analyzing-sub">
-              {isWakingUp ? (lang === "ta" ? "இது சிறிது நேரம் ஆகலாம்." : "This may take a moment.") : (lang === "ta" ? "AI நிலையைக் கண்டறிகிறது..." : `Stage ${analysisStageIndex + 1} of ${stages.length} — AI pattern recognition in progress`)}
-            </p>
+            
+            <div className="chamber-stage-info">
+              <span className="stage-num-badge">STAGE 0{analysisStageIndex + 1} / 05</span>
+              <h3 className="stage-title-text">
+                {isWakingUp ? (lang === "ta" ? "சேவையகம் தயாராகிறது..." : "WAKING UP NEURAL SERVER...") : stages[analysisStageIndex]}
+              </h3>
+              <p className="stage-sub-text">
+                {isWakingUp ? (lang === "ta" ? "இது சிறிது நேரம் ஆகலாம்." : "This may take a moment.") : `MobileNetV2 visual feature evaluation in progress`}
+              </p>
+            </div>
           </div>
         ) : image ? (
-          <div className="image-ready-state">
-            <div className="preview-img-wrapper rounded-preview">
-              <img src={image} alt="Preview" className="preview-img" />
-            </div>
-            
-            <div className="file-info">
-              <span className="file-name">{file?.name || "captured-image.jpg"}</span>
-              <span className="file-size">{file ? (file.size / 1024 / 1024).toFixed(2) + " MB" : ""}</span>
+          /* IMAGE SELECTED PREVIEW STATE */
+          <div className="chamber-ready-panel glass-card">
+            <div className="chamber-optic-wrapper">
+              <img src={image} alt="Preview" className="chamber-optic-img" />
+              <div className="optic-hud-corner top-left"></div>
+              <div className="optic-hud-corner top-right"></div>
+              <div className="optic-hud-corner bottom-left"></div>
+              <div className="optic-hud-corner bottom-right"></div>
             </div>
 
-            <div className="preview-actions">
-              <button className="btn-secondary" onClick={resetAll}>
+            <div className="chamber-file-details">
+              <span className="file-tag">CAPTURED LEAF SPECIMEN</span>
+              <h4 className="file-name-text">{file?.name || "captured-leaf.jpg"}</h4>
+              <span className="file-size-text">{file ? (file.size / 1024 / 1024).toFixed(2) + " MB" : ""}</span>
+            </div>
+
+            <div className="chamber-actions-row">
+              <button className="btn-chamber-secondary" onClick={resetAll}>
                 {lang === "ta" ? "மாற்று" : "Choose Another"}
               </button>
-              <button className="btn-secondary" onClick={() => { startCamera(); }}>
-                {lang === "ta" ? "மீண்டும் எடு" : "Retake"}
+              <button className="btn-chamber-secondary" onClick={startCamera}>
+                {lang === "ta" ? "மீண்டும் எடு" : "Retake Photo"}
               </button>
             </div>
 
-            <button className="btn btn-primary btn-analyze-large" onClick={handleDiagnose}>
-              {t("analyzeLeaf", lang)}
+            <button className="btn btn-primary btn-chamber-diagnose" onClick={handleDiagnose}>
+              <ScanIcon size={20} />
+              <span>{t("analyzeLeaf", lang)}</span>
             </button>
-            
+
             {errorMsg && (
-              <div className="scan-error-card mt-3">
-                <AlertCircle size={18} style={{ flexShrink: 0 }} />
-                <div>
-                  <p style={{ fontWeight: "bold", marginBottom: "4px" }}>{lang === "ta" ? "கணிப்பு தோல்வியுற்றது" : "Prediction failed"}</p>
-                  <p>{errorMsg}</p>
-                </div>
+              <div className="chamber-error-box">
+                <AlertCircle size={18} />
+                <span>{errorMsg}</span>
               </div>
             )}
           </div>
         ) : (
-          <div className="input-selection-state">
-            <div className="scan-mode-tabs compact-tabs">
+          /* SCAN CHAMBER ENTRY & CAPTURE SELECTION */
+          <div className="chamber-entry-panel">
+            
+            <div className="chamber-tabs-selector">
               <button
-                className={`scan-mode-btn ${!useCamera ? "active" : ""}`}
+                className={`chamber-tab ${!useCamera ? "active" : ""}`}
                 onClick={() => { stopCamera(); setUseCamera(false); }}
               >
                 <ImageIcon size={16} />
-                {t("uploadImage", lang)}
+                <span>{t("uploadImage", lang)}</span>
               </button>
               <button
-                className={`scan-mode-btn ${useCamera ? "active" : ""}`}
+                className={`chamber-tab ${useCamera ? "active" : ""}`}
                 onClick={startCamera}
               >
                 <Camera size={16} />
-                {t("useCamera", lang)}
+                <span>{t("useCamera", lang)}</span>
               </button>
             </div>
 
             {!useCamera ? (
-              <div className="upload-card" onClick={() => fileInputRef.current.click()}>
-                <UploadCloud size={32} className="upload-icon" />
+              <div className="chamber-dropzone glass-card" onClick={() => fileInputRef.current.click()}>
+                <div className="dropzone-icon-circle">
+                  <UploadCloud size={32} color="#10b981" />
+                </div>
                 <h4>{t("uploadPrompt", lang)}</h4>
-                <p className="upload-specs">JPG PNG WEBP</p>
-                <button className="btn-gallery">{lang === "ta" ? "கேலரியில் இருந்து தேர்ந்தெடு" : "Choose from Gallery"}</button>
+                <p className="dropzone-specs">Supports High-Resolution JPG, PNG, WEBP Leaf Photos</p>
+                <button className="btn btn-primary btn-gallery-select">
+                  <span>{lang === "ta" ? "கேலரியில் இருந்து தேர்ந்தெடு" : "UPLOAD FROM GALLERY"}</span>
+                </button>
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -309,61 +332,72 @@ function Scan({ onPredictionSuccess, lang }) {
                 />
               </div>
             ) : (
-              <div className="camera-card">
+              <div className="chamber-camera-wrapper glass-card">
                 {cameraStatus === "requesting" && (
-                  <div className="camera-message">
-                    <Loader2 className="spinner" size={24} />
-                    <p>{lang === "ta" ? "கேமரா அனுமதியை கோருகிறது..." : "Requesting camera permission..."}</p>
+                  <div className="camera-state-box">
+                    <Loader2 className="spinner" size={24} color="#10b981" />
+                    <p>{lang === "ta" ? "கேமரா அனுமதியை கோருகிறது..." : "Requesting optical camera access..."}</p>
                   </div>
                 )}
-                
+
                 {cameraStatus === "denied" && (
-                  <div className="camera-message error-msg">
+                  <div className="camera-state-box error">
                     <AlertCircle size={28} />
-                    <p>{lang === "ta" ? "புகைப்படம் எடுக்க கேமரா அனுமதி தேவை." : "Camera permission is required to take a photo."}</p>
-                    <button className="btn btn-primary mt-2" onClick={startCamera}>{lang === "ta" ? "கேமராவை அனுமதி" : "Allow Camera"}</button>
-                    <button className="btn-text mt-2" onClick={() => setUseCamera(false)}>{lang === "ta" ? "கேலரியில் இருந்து பதிவேற்று" : "Upload from Gallery"}</button>
+                    <p>{lang === "ta" ? "புகைப்படம் எடுக்க கேமரா அனுமதி தேவை." : "Camera permission is required."}</p>
+                    <button className="btn btn-primary mt-2" onClick={startCamera}>{lang === "ta" ? "கேமராவை அனுமதி" : "Allow Camera Access"}</button>
                   </div>
                 )}
-                
-                {cameraStatus === "unavailable" && (
-                  <div className="camera-message error-msg">
-                    <AlertCircle size={28} />
-                    <p>{lang === "ta" ? "இந்த சாதனத்தில் கேமரா இல்லை." : "Camera is not available on this device."}</p>
-                    <button className="btn-text mt-2" onClick={() => setUseCamera(false)}>{lang === "ta" ? "கேலரியில் இருந்து பதிவேற்று" : "Upload from Gallery"}</button>
-                  </div>
-                )}
-                
+
                 {cameraStatus === "ready" && (
-                  <div className="live-camera-container">
-                    <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
-                    <div className="camera-controls">
-                      <button className="btn-camera-close" onClick={() => setUseCamera(false)}>
+                  <div className="live-camera-chamber">
+                    <video ref={videoRef} autoPlay playsInline muted className="camera-video-stream" />
+                    <div className="camera-hud-overlay">
+                      <button className="btn-close-cam" onClick={() => setUseCamera(false)}>
                         <X size={20} />
                       </button>
-                      <button className="btn-camera-capture" onClick={capturePhoto}>
-                        <div className="capture-inner"></div>
+                      <button className="btn-capture-trigger" onClick={capturePhoto}>
+                        <div className="trigger-ring"></div>
                       </button>
-                      <div style={{ width: 44 }}></div> {/* Spacer to center the capture button */}
                     </div>
                   </div>
                 )}
               </div>
             )}
-            
-            {!useCamera && (
-               <details className="photo-tips-card">
-                 <summary><Info size={16} /> {lang === "ta" ? "புகைப்பட குறிப்புகள்" : "Photo Tips"}</summary>
-                 <div className="tips-content">
-                    <p><Check size={14} color="var(--color-healthy)" /> {t("tipLighting", lang)}</p>
-                    <p><Check size={14} color="var(--color-healthy)" /> {t("tipVisible", lang)}</p>
-                    <p><Check size={14} color="var(--color-healthy)" /> {t("tipBlur", lang)}</p>
-                 </div>
-               </details>
-            )}
+
+            {/* HOW TO CAPTURE A GOOD LEAF — 3 VISUAL RULES */}
+            <div className="capture-rules-section glass-card">
+              <h3>HOW TO CAPTURE A GOOD LEAF</h3>
+              <div className="rules-grid">
+                <div className="rule-card">
+                  <div className="rule-num">01</div>
+                  <div className="rule-info">
+                    <h4>Use a Clear Leaf</h4>
+                    <p>Ensure single leaf is in sharp focus without heavy shadows.</p>
+                  </div>
+                </div>
+
+                <div className="rule-card">
+                  <div className="rule-num">02</div>
+                  <div className="rule-info">
+                    <h4>Keep Leaf Centered</h4>
+                    <p>Position the lesion zone inside the main optical frame.</p>
+                  </div>
+                </div>
+
+                <div className="rule-card">
+                  <div className="rule-num">03</div>
+                  <div className="rule-info">
+                    <h4>Avoid Extreme Blur</h4>
+                    <p>Hold your camera steady in natural indirect sunlight.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
       </div>
+
     </div>
   );
 }

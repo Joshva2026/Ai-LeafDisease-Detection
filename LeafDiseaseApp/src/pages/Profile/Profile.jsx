@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, MapPin, Bell, Globe, HelpCircle, Shield, LogOut, ChevronRight, Sun, Moon } from "lucide-react";
+import { User, MapPin, Bell, Globe, HelpCircle, Shield, LogOut, ChevronRight, Sun, Moon, Award, Activity, Leaf, CheckCircle2 } from "lucide-react";
 import api from "../../api/api";
 import "./Profile.css";
 
@@ -10,7 +10,6 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
   const [plantsCount, setPlantsCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // Load plants count from local storage
   useEffect(() => {
     const saved = localStorage.getItem(`plants_${user.username}`);
     if (saved) {
@@ -18,7 +17,6 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
     }
   }, [user.username]);
 
-  // Calculations for stats
   const totalScans = history.length;
   const healthyCount = history.filter(s => s.disease.toLowerCase().includes("healthy")).length;
   const diseaseCount = totalScans - healthyCount;
@@ -81,154 +79,157 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
   };
 
   return (
-    <div className="page-wrapper fade-in-section">
-      <div className="profile-header-title-block">
-        <h2 className="guide-title">Plant Intelligence Profile</h2>
-        <p className="guide-subtitle">Manage your field identity, diagnostic history summary, and system preferences.</p>
-      </div>
+    <div className="farmer-identity-container fade-in-section">
+      
+      {/* HEADER */}
+      <header className="profile-hero-header">
+        <div className="identity-badge">
+          <span className="badge-pulse-dot"></span>
+          <span>YOUR PLANT HEALTH JOURNEY</span>
+        </div>
+        <h1 className="profile-hero-title">Farmer Intelligence Dashboard</h1>
+        <p className="profile-hero-sub">
+          Field diagnostic identity, crop growth statistics, and personal account controls.
+        </p>
+      </header>
 
-      <div className="profile-desktop-layout">
+      <div className="profile-identity-grid">
         
-        {/* Left Column: User details and statistics */}
-        <div className="profile-left-col">
-          {/* Header Info */}
-          <div className="profile-header card glass-card">
-            {user.profile_image ? (
-              <img src={user.profile_image} alt={user.username} className="profile-avatar-large" />
-            ) : (
-              <div className="profile-avatar-placeholder">{user.username.charAt(0).toUpperCase()}</div>
-            )}
+        {/* LEFT COLUMN: IDENTITY CARD & GROWTH METRICS */}
+        <div className="identity-left-column">
+          
+          <div className="identity-user-card glass-card">
+            <div className="avatar-wrapper">
+              {user.profile_image ? (
+                <img src={user.profile_image} alt={user.username} className="user-avatar-img" />
+              ) : (
+                <div className="user-avatar-initial">{user.username.charAt(0).toUpperCase()}</div>
+              )}
+            </div>
 
-            <div className="profile-info">
-              <span className="profile-rank-badge">✦ LEAF EXPLORER</span>
-              <h3 className="profile-name">{user.username}</h3>
-              <span className="profile-email">{user.username.toLowerCase()}@leafguard.ai</span>
+            <div className="identity-info-box">
+              <span className="rank-tag">✦ AGRONOMIC EXPLORER</span>
+              <h2 className="user-name-title">{user.username}</h2>
+              <span className="user-handle">{user.username.toLowerCase()}@leafguard.ai</span>
+              
               {user.location && (
-                <span className="profile-location">
-                  <MapPin size={14} color="var(--primary)" />
+                <span className="user-location-tag">
+                  <MapPin size={14} color="#10b981" />
                   {user.location}
                 </span>
               )}
-              <button className="profile-edit-btn" onClick={() => setIsEditing(!isEditing)}>
-                {isEditing ? "Close Form" : "Edit Profile"}
+
+              <button className="btn-edit-toggle" onClick={() => setIsEditing(!isEditing)}>
+                {isEditing ? "Close Form" : "Edit Profile Info"}
               </button>
             </div>
           </div>
 
-          {/* Statistics Grid */}
-          <div className="profile-stats-grid">
-            <div className="stat-card">
-              <div className="stat-number">{totalScans}</div>
-              <div className="stat-label">Scans</div>
+          {/* GROWTH & DIAGNOSTIC STATS */}
+          <div className="identity-stats-row">
+            <div className="id-stat-card glass-card">
+              <span className="stat-value">{totalScans}</span>
+              <span className="stat-name">Leaf Scans</span>
             </div>
-            <div className="stat-card">
-              <div className="stat-number">{plantsCount}</div>
-              <div className="stat-label">Plants</div>
+
+            <div className="id-stat-card glass-card">
+              <span className="stat-value">{plantsCount}</span>
+              <span className="stat-name">Crop Species</span>
             </div>
-            <div className="stat-card">
-              <div className="stat-number">{healthyCount}</div>
-              <div className="stat-label">Healthy</div>
+
+            <div className="id-stat-card glass-card healthy-val">
+              <span className="stat-value">{healthyCount}</span>
+              <span className="stat-name">Healthy Leaves</span>
             </div>
-            <div className="stat-card">
-              <div className="stat-number">{diseaseCount}</div>
-              <div className="stat-label">Diseases</div>
+
+            <div className="id-stat-card glass-card danger-val">
+              <span className="stat-value">{diseaseCount}</span>
+              <span className="stat-name">Pathologies</span>
             </div>
           </div>
+
         </div>
 
-        {/* Right Column: Settings and forms */}
-        <div className="profile-right-col">
-          {/* Editing Form */}
+        {/* RIGHT COLUMN: EDIT FORM & PREFERENCES */}
+        <div className="identity-right-column">
+          
           {isEditing && (
-            <form onSubmit={handleSaveProfile} className="edit-form-card">
-              <h3>Edit Profile Details</h3>
+            <form onSubmit={handleSaveProfile} className="edit-profile-card glass-card">
+              <h3>Update Field Credentials</h3>
               
-              <div className="modal-form-group">
-                <label>Location</label>
+              <div className="form-group-field">
+                <label>Location (City / Region)</label>
                 <input 
                   type="text" 
-                  className="input-field"
+                  className="input-text-box"
                   value={editLocation}
                   onChange={(e) => setEditLocation(e.target.value)}
-                  placeholder="E.g. London, UK"
+                  placeholder="e.g. California, USA"
                 />
               </div>
 
-              <div className="modal-form-group">
+              <div className="form-group-field">
                 <label>Avatar Photo</label>
                 <input 
                   type="file" 
                   accept="image/*"
                   onChange={handleImageChange}
-                  style={{ fontSize: "12px", border: "none", background: "none" }}
+                  className="file-upload-input"
                 />
               </div>
 
               <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? "Saving..." : "Save Changes"}
+                {loading ? "Saving Profile..." : "Save Credentials"}
               </button>
             </form>
           )}
 
-          {/* Settings list */}
-          <div className="settings-list-card">
-            <button className="setting-item" onClick={() => onLangChange(lang === "en" ? "ta" : "en")}>
-              <div className="setting-label-row">
-                <Globe size={18} className="setting-icon" />
-                <span>Language</span>
-              </div>
-              <span style={{ fontSize: "13px", color: "var(--primary)", fontWeight: "700" }}>
-                {lang === "en" ? "English" : "தமிழ்"}
-              </span>
-            </button>
+          {/* PREFERENCES PANEL */}
+          <div className="preferences-panel glass-card">
+            <h3>System Settings & Preferences</h3>
 
-            <button className="setting-item" onClick={onToggleTheme}>
-              <div className="setting-label-row">
-                {theme === "light" ? <Moon size={18} className="setting-icon" /> : <Sun size={18} className="setting-icon" />}
-                <span>Theme Mode</span>
+            <div className="pref-item" onClick={() => onLangChange(lang === "en" ? "ta" : "en")}>
+              <div className="pref-left">
+                <Globe size={18} color="#10b981" />
+                <span>Application Language</span>
               </div>
-              <span style={{ fontSize: "13px", color: "var(--primary)", fontWeight: "700" }}>
-                {theme === "light" ? "Light" : "Dark"}
-              </span>
-            </button>
-
-            <div className="setting-item">
-              <div className="setting-label-row">
-                <Bell size={18} className="setting-icon" />
-                <span>Notifications</span>
-              </div>
-              <ChevronRight size={16} color="var(--text-light)" />
+              <span className="pref-val">{lang === "en" ? "English" : "தமிழ்"}</span>
             </div>
 
-            <div className="setting-item">
-              <div className="setting-label-row">
-                <Shield size={18} className="setting-icon" />
-                <span>Privacy Policy</span>
+            <div className="pref-item" onClick={onToggleTheme}>
+              <div className="pref-left">
+                {theme === "light" ? <Moon size={18} color="#10b981" /> : <Sun size={18} color="#10b981" />}
+                <span>Interface Theme</span>
               </div>
-              <ChevronRight size={16} color="var(--text-light)" />
+              <span className="pref-val">{theme === "light" ? "Light Mode" : "Dark Mode"}</span>
             </div>
 
-            <div className="setting-item">
-              <div className="setting-label-row">
-                <HelpCircle size={18} className="setting-icon" />
-                <span>Help & Support</span>
+            <div className="pref-item">
+              <div className="pref-left">
+                <Bell size={18} color="#10b981" />
+                <span>Disease Spray Alerts</span>
               </div>
-              <ChevronRight size={16} color="var(--text-light)" />
+              <ChevronRight size={16} color="#6b7280" />
+            </div>
+
+            <div className="pref-item">
+              <div className="pref-left">
+                <Shield size={18} color="#10b981" />
+                <span>Data Privacy & Security</span>
+              </div>
+              <ChevronRight size={16} color="#6b7280" />
             </div>
           </div>
 
-          {/* Logout button */}
-          <button 
-            className="btn btn-secondary" 
-            onClick={onLogout} 
-            style={{ color: "var(--color-danger)", borderColor: "rgba(197, 94, 87, 0.2)", gap: "6px" }}
-          >
+          <button className="btn-logout-identity" onClick={onLogout}>
             <LogOut size={16} />
-            Log Out
+            <span>Sign Out of Workstation</span>
           </button>
+
         </div>
 
       </div>
+
     </div>
   );
 }

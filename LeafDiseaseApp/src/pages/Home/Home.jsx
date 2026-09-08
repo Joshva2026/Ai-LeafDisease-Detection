@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Camera, Search, Activity, CheckCircle, Leaf, History, ArrowRight } from "lucide-react";
+import { Camera, Search, Activity, CheckCircle, Leaf, History, ArrowRight, Sparkles, BookOpen, Bot, ShieldCheck } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
 import { getMediaUrl } from "../../utils/mediaUrl";
@@ -16,230 +16,181 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
     else setGreeting(lang === "ta" ? "மாலை வணக்கம்" : "Good evening");
   }, [lang]);
 
-  const recentScans = history.slice(0, 3);
+  const recentScans = history.slice(0, 4);
+  const healthyScansCount = history.filter(h => mapClassName(h.disease).isHealthy).length;
+  const careScansCount = history.filter(h => !mapClassName(h.disease).isHealthy).length;
 
   return (
     <>
       <div className="home-page-wrapper slide-section">
         
-        {/* =======================================
-            MOBILE HOME (App-like, compact)
-            ======================================= */}
-        <div className="mobile-home mobile-only">
-          <header className="m-header">
-            <div className="m-user-info">
-              <span className="m-greeting">{greeting}, {user.username}</span>
-              <h1 className="m-title">Your plant's health,<br/>decoded.</h1>
-            </div>
-            {user.profile_image ? (
-              <img src={user.profile_image} alt={user.username} className="m-avatar" />
-            ) : (
-              <div className="m-avatar-placeholder">{user.username.charAt(0).toUpperCase()}</div>
-            )}
-          </header>
-
-          <div className="m-actions fade-in-section">
-            <button className="m-primary-action" onClick={() => onViewChange("scan")}>
-              <div className="m-action-icon"><Camera size={24} /></div>
-              <div className="m-action-text">
-                <span className="m-action-title">Scan Plant</span>
-                <span className="m-action-sub">Detect diseases instantly</span>
-              </div>
-              <ArrowRight size={20} className="m-action-arrow" />
-            </button>
+        {/* COMMAND CENTER HEADER */}
+        <header className="hub-command-header fade-in-section">
+          <div className="hub-user-badge">
+            <span className="hub-live-dot"></span>
+            <span>PLANT INTELLIGENCE COMMAND CENTER</span>
           </div>
 
-          <div className="m-section fade-in-section">
-            <div className="m-section-header">
-              <h3 className="m-section-title">Plant Health Overview</h3>
-            </div>
-            <div className="m-health-cards">
-              <div className="m-health-card">
-                <span className="m-hc-value">{history.length}</span>
-                <span className="m-hc-label">Total Scans</span>
-              </div>
-              <div className="m-health-card healthy">
-                <span className="m-hc-value">{history.filter(h => mapClassName(h.disease).isHealthy).length}</span>
-                <span className="m-hc-label">Healthy</span>
-              </div>
-              <div className="m-health-card danger">
-                <span className="m-hc-value">{history.filter(h => !mapClassName(h.disease).isHealthy).length}</span>
-                <span className="m-hc-label">Needs Care</span>
-              </div>
-            </div>
-          </div>
+          <h1 className="hub-welcome-title">
+            {greeting}, <span className="user-name-highlight">{user.username}</span>
+          </h1>
 
-          <div className="m-section fade-in-section">
-            <div className="m-section-header">
-              <h3 className="m-section-title">Recent Diagnoses</h3>
-              <button className="m-view-all" onClick={() => onViewChange("history")}>See All</button>
+          <p className="hub-welcome-sub">
+            Your field diagnostic workspace is active. Manage scans, track plant health trends, and consult AI pathology intelligence.
+          </p>
+        </header>
+
+        {/* CENTRAL CONNECTED INTELLIGENCE MODULES GRID */}
+        <section className="hub-network-section fade-in-section">
+          
+          {/* Central Hub Node */}
+          <div className="hub-central-node glass-card">
+            <div className="central-leaf-aura">
+              <svg viewBox="0 0 160 160" className="central-leaf-svg">
+                <path d="M80 15 C130 45 140 115 80 145 C20 115 30 45 80 15 Z" fill="#064e3b" stroke="#34d399" strokeWidth="2" />
+                <path d="M80 15 L80 145" stroke="#6ee7b7" strokeWidth="2" />
+                <circle cx="80" cy="80" r="30" fill="none" stroke="#34d399" strokeWidth="1" strokeDasharray="3 3" className="hub-rotate-ring" />
+              </svg>
             </div>
             
-            {recentScans.length > 0 ? (
-              <div className="m-recent-list">
+            <div className="hub-central-info">
+              <span className="hub-status-tag">CORE DIAGNOSTIC ENGINE</span>
+              <h3>LeafGuard AI Workstation</h3>
+              <p>Connected to 38 crop pathology neural classifiers</p>
+
+              <button className="btn btn-primary hub-scan-cta" onClick={() => onViewChange("scan")}>
+                <Camera size={18} />
+                <span>LAUNCH DIAGNOSTIC SCAN</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Connected Intelligence Modules */}
+          <div className="hub-modules-grid">
+            
+            {/* Module 1: The Leaf Journey */}
+            <div className="hub-module-card glass-card" onClick={() => onViewChange("howto")}>
+              <div className="module-header">
+                <div className="module-icon-box"><Sparkles size={20} color="#10b981" /></div>
+                <span className="module-num">01</span>
+              </div>
+              <h4>THE LEAF JOURNEY</h4>
+              <p>Explore the 6-stage interactive visual pathology process.</p>
+              <div className="module-footer">
+                <span>View Journey</span>
+                <ArrowRight size={14} />
+              </div>
+            </div>
+
+            {/* Module 2: Leaf Memory Archive */}
+            <div className="hub-module-card glass-card" onClick={() => onViewChange("history")}>
+              <div className="module-header">
+                <div className="module-icon-box"><History size={20} color="#34d399" /></div>
+                <span className="module-num">02</span>
+              </div>
+              <h4>LEAF MEMORY ARCHIVE</h4>
+              <p>{history.length} preserved scan records & Grad-CAM timelines.</p>
+              <div className="module-footer">
+                <span>Browse Archive</span>
+                <ArrowRight size={14} />
+              </div>
+            </div>
+
+            {/* Module 3: Botanical Intelligence Library */}
+            <div className="hub-module-card glass-card" onClick={() => onViewChange("guide")}>
+              <div className="module-header">
+                <div className="module-icon-box"><BookOpen size={20} color="#f59e0b" /></div>
+                <span className="module-num">03</span>
+              </div>
+              <h4>BOTANICAL ARCHIVE</h4>
+              <p>Search plant species, symptom guides, and organic remedies.</p>
+              <div className="module-footer">
+                <span>Open Library</span>
+                <ArrowRight size={14} />
+              </div>
+            </div>
+
+            {/* Module 4: AI Doctor Workspace */}
+            <div className="hub-module-card glass-card" onClick={() => onViewChange("profile")}>
+              <div className="module-header">
+                <div className="module-icon-box"><Bot size={20} color="#6366f1" /></div>
+                <span className="module-num">04</span>
+              </div>
+              <h4>AGRICULTURAL AI ROOM</h4>
+              <p>Consult AI agronomic assistant for crop care advice.</p>
+              <div className="module-footer">
+                <span>Enter Workspace</span>
+                <ArrowRight size={14} />
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* RECENT SCAN MEMORY & HEALTH METRICS SECTION */}
+        <section className="hub-metrics-section fade-in-section">
+          <div className="hub-metrics-header">
+            <h3>Field Pathology Status</h3>
+            <span className="hub-subtitle">Real-time breakdown of analyzed specimen history</span>
+          </div>
+
+          <div className="hub-stats-row">
+            <div className="stat-card glass-card">
+              <span className="stat-num">{history.length}</span>
+              <span className="stat-lbl">Total Scans Executed</span>
+            </div>
+
+            <div className="stat-card glass-card healthy-stat">
+              <span className="stat-num">{healthyScansCount}</span>
+              <span className="stat-lbl">Healthy Specimens</span>
+            </div>
+
+            <div className="stat-card glass-card care-stat">
+              <span className="stat-num">{careScansCount}</span>
+              <span className="stat-lbl">Conditions Diagnosed</span>
+            </div>
+          </div>
+
+          {/* Recent Scans Showcase */}
+          {recentScans.length > 0 && (
+            <div className="hub-recent-showcase">
+              <h4>Recent Leaf Memory Specimens</h4>
+              <div className="recent-cards-grid">
                 {recentScans.map((scan, idx) => {
                   const details = mapClassName(scan.disease);
                   return (
-                    <div key={idx} className="m-recent-item glass-card" onClick={() => onSelectPrediction(scan)}>
-                      <img 
-                        src={getMediaUrl(scan.original_url)} 
-                        alt={details.displayName} 
-                        className="m-recent-img" 
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=100";
-                        }}
-                      />
-                      <div className="m-recent-info">
-                        <h4 className="m-recent-name">{details.displayName}</h4>
-                        <span className={`m-recent-status ${details.isHealthy ? 'healthy' : 'danger'}`}>
-                          {details.isHealthy ? 'Healthy' : 'Condition Detected'}
-                        </span>
+                    <div key={idx} className="recent-specimen-card glass-card" onClick={() => onSelectPrediction(scan)}>
+                      <div className="specimen-img-box">
+                        <img 
+                          src={getMediaUrl(scan.original_url)} 
+                          alt={details.displayName} 
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=200";
+                          }}
+                        />
                       </div>
-                      <div className="m-recent-conf">
-                        {Math.round(scan.confidence)}%
+                      <div className="specimen-info">
+                        <h5>{details.displayName}</h5>
+                        <span className={`specimen-status ${details.isHealthy ? 'healthy' : 'danger'}`}>
+                          {details.isHealthy ? 'Healthy Leaf' : 'Pathology Detected'}
+                        </span>
+                        <div className="specimen-conf">
+                          <span>{Math.round(scan.confidence)}% Match</span>
+                        </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
-            ) : (
-              <div className="m-empty-state glass-card">
-                <History size={32} />
-                <p>No recent scans.</p>
-                <span>Tap "Scan a Leaf" to get started.</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-
-        {/* =======================================
-            DESKTOP HOME (Premium Cinematic)
-            ======================================= */}
-        <div className="desktop-home desktop-only">
-          <section className="d-hero fade-in-section">
-            <div className="d-hero-content">
-              <div className="d-hero-badge">
-                <span className="d-badge-dot"></span> AgriSense AI
-              </div>
-              <h1 className="d-hero-title">Smart Farmer<br/>Intelligence Platform.</h1>
-              <p className="d-hero-subtitle">
-                AI-powered plant disease detection, plant intelligence and smart plant care.
-              </p>
-              <div className="d-hero-actions">
-                <button className="d-btn-primary" onClick={() => onViewChange("scan")}>
-                  <Camera size={20} />
-                  Scan Your Plant
-                </button>
-                <button className="d-btn-secondary" onClick={() => onViewChange("guide")}>
-                  <Leaf size={20} />
-                  AI Plant Doctor
-                </button>
-              </div>
             </div>
-            
-            <div className="d-hero-visual">
-              <div className="d-visual-card glass-card">
-                {/* Mockup of a scanning UI using pure SVG and CSS */}
-                <div className="d-visual-svg-container">
-                  <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg" className="d-visual-leaf-svg">
-                    <defs>
-                      <linearGradient id="leafGrad" x1="100" y1="10" x2="100" y2="230" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="#4ade80" stopOpacity="0.8"/>
-                        <stop offset="100%" stopColor="#065f46" stopOpacity="0.9"/>
-                      </linearGradient>
-                      <filter id="aiGlow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="6" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                      </filter>
-                      <filter id="heatPulse" x="-30%" y="-30%" width="160%" height="160%">
-                        <feGaussianBlur stdDeviation="10" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                      </filter>
-                    </defs>
-                    {/* Shadow for depth */}
-                    <path d="M104 234 C104 234, 174 174, 174 104 C174 34, 104 24, 104 24 C104 24, 34 34, 34 104 C34 174, 104 234, 104 234 Z" fill="#022c22" fillOpacity="0.4" filter="url(#aiGlow)"/>
-                    {/* Main Leaf Body */}
-                    <path d="M100 230 C100 230, 170 170, 170 100 C170 30, 100 20, 100 20 C100 20, 30 30, 30 100 C30 170, 100 230, 100 230 Z" fill="url(#leafGrad)"/>
-                    {/* Leaf highlight */}
-                    <path d="M100 230 C100 230, 156 180, 156 110 C156 50, 100 40, 100 40 C100 40, 44 50, 44 110 C44 180, 100 230, 100 230 Z" fill="#10b981" fillOpacity="0.3"/>
-                    {/* Leaf Veins */}
-                    <path d="M100 30V220" stroke="#ecfdf5" strokeWidth="2" strokeLinecap="round" opacity="0.7"/>
-                    <path d="M100 70C116 80 136 84 148 80" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-                    <path d="M100 110C116 120 140 126 152 120" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-                    <path d="M100 150C112 160 132 166 140 164" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-                    <path d="M100 70C84 80 64 84 52 80" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-                    <path d="M100 110C84 120 60 126 48 120" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-                    <path d="M100 150C88 160 68 166 60 164" stroke="#ecfdf5" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-                    
-                    {/* Grad-CAM Inspired Heatmap Blurbs */}
-                    <circle cx="130" cy="100" r="25" fill="#f59e0b" fillOpacity="0.6" filter="url(#heatPulse)" className="heat-pulse-1" />
-                    <circle cx="70" cy="140" r="20" fill="#ef4444" fillOpacity="0.5" filter="url(#heatPulse)" className="heat-pulse-2" />
-                    
-                    {/* AI Data Nodes */}
-                    <circle cx="130" cy="100" r="4" fill="#fef3c7" filter="url(#aiGlow)" className="ai-node" />
-                    <circle cx="70" cy="140" r="4" fill="#fee2e2" filter="url(#aiGlow)" className="ai-node" style={{animationDelay: "1s"}} />
-                    <circle cx="100" cy="70" r="4" fill="#ecfdf5" filter="url(#aiGlow)" className="ai-node" style={{animationDelay: "0.5s"}} />
-                  </svg>
-                  
-                  {/* AI Scanning Beam */}
-                  <div className="d-visual-scanner-bar"></div>
-                  
-                  {/* Floating AI Analysis Card */}
-                  <div className="floating-ai-card glass-card">
-                    <span className="fac-title">AI ANALYSIS</span>
-                    <span className="fac-desc">Leaf structure mapped</span>
-                    <div className="fac-conf">
-                      <span className="fac-dot"></span> 98.5% Confidence
-                    </div>
-                  </div>
-                </div>
-                <div className="d-visual-stats">
-                  <div className="d-stat-row">
-                    <span>Analysis Complete</span>
-                    <span className="d-stat-conf">98.5%</span>
-                  </div>
-                  <div className="d-stat-bar"><div className="d-stat-fill"></div></div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="d-features fade-in-section">
-            <div className="d-section-header">
-              <h2>Intelligent features designed for precision</h2>
-              <p>Everything you need to monitor, diagnose, and treat your crops.</p>
-            </div>
-            
-            <div className="d-feature-grid">
-              <div className="d-feature-card glass-card">
-                <div className="d-fc-icon"><Camera /></div>
-                <h3>Visual Intelligence</h3>
-                <p>Upload or snap a photo of a leaf to instantly detect underlying health conditions.</p>
-              </div>
-              <div className="d-feature-card glass-card">
-                <div className="d-fc-icon"><Activity /></div>
-                <h3>MobileNetV2 Core</h3>
-                <p>Powered by a fine-tuned Convolutional Neural Network trained on thousands of agricultural samples.</p>
-              </div>
-              <div className="d-feature-card glass-card">
-                <div className="d-fc-icon"><Search /></div>
-                <h3>Grad-CAM Heatmaps</h3>
-                <p>Don't just get a diagnosis. See exactly which regions of the leaf triggered the AI's decision.</p>
-              </div>
-              <div className="d-feature-card glass-card">
-                <div className="d-fc-icon"><CheckCircle /></div>
-                <h3>Actionable Treatments</h3>
-                <p>Receive immediate, agronomic advice and prevention strategies for detected diseases.</p>
-              </div>
-            </div>
-          </section>
-        </div>
+          )}
+        </section>
 
       </div>
-      
-      {/* Footer only on desktop */}
+
       <div className="desktop-only"><Footer /></div>
     </>
   );

@@ -1,179 +1,164 @@
 /* =====================================================
-   ABOUT PAGE STYLES
- ===================================================== */
+   THE TECHNOLOGY BEHIND THE LEAF — ABOUT STYLING
+   ===================================================== */
 
-.about-wrapper {
-  padding-bottom: 24px;
+.tech-documentary-container {
+  padding: 40px 6% 60px 6%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
 }
 
-.about-header {
-  text-align: center;
-  padding: 40px 0;
+/* Header */
+.tech-doc-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  text-align: center;
+  gap: 12px;
 }
 
-.about-tag {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 2px;
+.doc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #10b981;
 }
 
-.about-title {
-  font-family: var(--font-serif);
-  font-size: 36px;
-  color: var(--text-primary);
+.doc-title {
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: #ffffff;
 }
 
-@media (min-width: 768px) {
-  .about-title {
-    font-size: 48px;
-  }
-}
-
-.about-subtitle {
-  font-size: 16px;
-  color: var(--text-secondary);
-  max-width: 700px;
+.doc-subtitle {
+  font-size: 15px;
+  color: #9ca3af;
+  max-width: 620px;
   line-height: 1.6;
 }
 
-.about-card {
-  background: var(--card-bg);
-  border: var(--border-style);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  box-shadow: var(--shadow-soft);
-}
-@media (min-width: 768px) {
-  .about-card {
-    padding: 48px;
-  }
+/* Story Flow */
+.doc-story-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 }
 
-.about-heading {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 16px;
-}
-
-.about-text {
-  font-size: 15px;
-  color: var(--text-secondary);
-  line-height: 1.7;
-}
-
-/* Tech Stack Grid */
-.tech-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-top: 24px;
-}
-@media (min-width: 768px) {
-  .tech-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.tech-card {
-  background: var(--bg-secondary);
-  border: var(--border-style);
-  border-radius: var(--radius-md);
+.doc-step-card {
+  width: 100%;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 24px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  transition: transform 0.2s ease;
+}
+
+.doc-step-card.highlight-step {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(6, 78, 59, 0.25) 100%);
+}
+
+.doc-step-header {
+  display: flex;
   align-items: center;
-  text-align: center;
   gap: 12px;
-  transition: var(--transition-smooth);
-}
-.tech-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--primary);
-  background: var(--card-bg);
-  box-shadow: var(--shadow-medium);
 }
 
-.tech-icon {
-  color: var(--primary);
+.step-num {
+  font-size: 13px;
+  font-weight: 900;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.tech-title {
+.doc-step-header h3 {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #ffffff;
+}
+
+.doc-step-card p {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #d1d5db;
+  line-height: 1.6;
 }
 
-.tech-badge {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  background: var(--primary-light);
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-}
-.theme-dark .tech-badge {
-  color: var(--primary-dark);
+.doc-connector {
+  color: #10b981;
+  font-size: 18px;
+  font-weight: bold;
 }
 
-/* Architecture Flow */
-.arch-flow {
+/* Tech Stack Grid */
+.tech-stack-grid-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.tech-stack-grid-section h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.doc-tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.doc-tech-card {
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.arch-node {
-  background: var(--bg-secondary);
-  border: var(--border-style);
-  padding: 12px 24px;
-  border-radius: var(--radius-pill);
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  width: 200px;
   text-align: center;
-  box-shadow: var(--shadow-soft);
+  gap: 10px;
 }
 
-.arch-node.highlight {
-  background: var(--card-bg);
-  border-color: var(--primary);
-  color: var(--primary-dark);
-}
-.theme-dark .arch-node.highlight {
-  color: var(--text-primary);
+.doc-tech-card h4 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
 }
 
-.arch-node.highlight-ai {
-  background: var(--primary-dark);
-  color: var(--bg-primary);
-  border: none;
-  font-weight: 700;
-}
-.theme-dark .arch-node.highlight-ai {
-  background: var(--primary);
-  color: var(--bg-primary);
+.doc-tech-card span {
+  font-size: 12px;
+  color: #9ca3af;
 }
 
-.arch-node.final {
-  background: var(--accent);
-  color: var(--primary-dark);
-  border: none;
-  font-weight: 700;
-}
-
-.arch-arrow {
-  color: var(--text-light);
-  font-size: 20px;
+@media (max-width: 640px) {
+  .tech-documentary-container {
+    padding: 20px 4% 40px 4%;
+  }
 }

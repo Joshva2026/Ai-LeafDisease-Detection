@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Leaf, Sun, Moon, LogOut, Menu, X, Home, Camera, Library, History, User2 } from "lucide-react";
+import { Leaf, Sun, Moon, LogOut, Menu, X, Home, Camera, Library, History, User2, Sparkles } from "lucide-react";
 import { t } from "../../data/translations";
 import "./navbar.css";
 
@@ -8,9 +8,11 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const links = [
+    { id: "howto", label: "Journey", icon: Sparkles },
     { id: "home", label: t("home", lang), icon: Home },
     { id: "scan", label: t("scan", lang), icon: Camera },
     { id: "history", label: t("history", lang), icon: History },
+    { id: "guide", label: "Library", icon: Library },
     { id: "about", label: "About", icon: Library },
     { id: "profile", label: t("profile", lang), icon: User2 }
   ];
