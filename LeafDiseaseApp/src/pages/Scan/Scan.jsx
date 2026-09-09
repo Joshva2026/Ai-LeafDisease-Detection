@@ -28,6 +28,13 @@ function Scan({ onPredictionSuccess, lang }) {
   const streamRef = useRef(null);
 
   useEffect(() => {
+    if (cameraStatus === "ready" && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch((err) => console.error("Video play error:", err));
+    }
+  }, [cameraStatus]);
+
+  useEffect(() => {
     return () => {
       stopCamera();
     };
@@ -45,14 +52,14 @@ function Scan({ onPredictionSuccess, lang }) {
         setCameraStatus("unavailable");
         return;
       }
-      const constraints = {
-        video: { facingMode: "environment" } 
-      };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      } catch (e) {
+        // Fallback for laptop/desktop webcams without rear camera
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
       }
+      streamRef.current = stream;
       setCameraStatus("ready");
     } catch (err) {
       console.error("Camera access error:", err);

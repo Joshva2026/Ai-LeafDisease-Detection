@@ -1,969 +1,631 @@
 /* =====================================================
-   LEAFGUARD AI — CINEMATIC PRODUCT FILM & WORKSTATION STYLING
+   LEAFGUARD AI — CINEMATIC FILM & LAB WORKSTATION STYLING
    ===================================================== */
 
 .auth-master-wrapper {
   min-height: 100vh;
   width: 100%;
-  background-color: var(--bg-primary, #060c09);
-  color: var(--text-primary, #eaeaea);
+  background-color: #040806;
+  color: #f3f4f6;
   position: relative;
   overflow-x: hidden;
   font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
 }
 
-/* Background Ambient Glows */
+/* Background Volumetric Ambient Glow */
 .auth-ambient-glow {
   position: fixed;
-  top: -20vw;
-  left: 15vw;
-  width: 70vw;
-  height: 70vw;
+  top: -25vw;
+  left: 10vw;
+  width: 80vw;
+  height: 80vw;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.09) 0%, rgba(6, 12, 9, 0) 70%);
-  filter: blur(140px);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(4, 8, 6, 0) 70%);
+  filter: blur(160px);
   pointer-events: none;
   z-index: 0;
 }
 
 /* =====================================================
-   TOP NAVIGATION BAR
+   PHASE 0 — PUBLIC LANDING FILM EXPERIENCE
    ===================================================== */
-.film-nav {
-  position: sticky;
-  top: 0;
-  left: 0;
+.phase0-landing-film {
+  min-height: 100vh;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 10;
+}
+
+.phase0-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 6%;
-  background: rgba(6, 12, 9, 0.75);
-  backdrop-filter: blur(12px);
+  padding: 20px 6%;
+  background: rgba(4, 8, 6, 0.85);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  z-index: 50;
 }
 
-.film-nav-brand {
+.phase0-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.film-logo-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.film-brand-title {
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 2px;
   color: #ffffff;
 }
 
-.film-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.btn-film-secondary {
+.btn-phase0-signin {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #d1d5db;
-  padding: 8px 16px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  padding: 8px 18px;
   border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.btn-film-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
+.btn-phase0-signin:hover {
+  background: rgba(16, 185, 129, 0.15);
   color: #ffffff;
 }
 
-.btn-film-primary {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border: none;
-  color: #ffffff;
-  padding: 9px 18px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
-  transition: all 0.2s ease;
-}
-
-.btn-film-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.38);
-}
-
-/* =====================================================
-   FILM SCENES MASTER LAYOUT
-   ===================================================== */
-.film-scene {
-  min-height: 90vh;
-  width: 100%;
+.phase0-hero-viewport {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 60px 6%;
-  position: relative;
-  z-index: 1;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.scene-content {
-  max-width: 900px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   text-align: center;
-  gap: 24px;
 }
 
-.scene-number-tag {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 5px 14px;
-  border-radius: 20px;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  text-transform: uppercase;
-}
-
-.scene-statement {
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: #f3f4f6;
-  line-height: 1.25;
-  max-width: 760px;
-}
-
-.scene-subtext {
-  font-size: 16px;
-  color: #9ca3af;
-  line-height: 1.6;
-  max-width: 620px;
-}
-
-.btn-scene-next {
-  margin-top: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #d1d5db;
-  padding: 10px 22px;
-  border-radius: 24px;
-  font-size: 13px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.25 ease;
-}
-
-.btn-scene-next:hover {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.4);
-  color: #ffffff;
-}
-
-/* =====================================================
-   SCENE 01 — OPENING
-   ===================================================== */
-.scene-opening {
-  min-height: 92vh;
-  justify-content: center;
-}
-
-.opening-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  border-radius: 20px;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #10b981;
-}
-
-.badge-pulse-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #10b981;
-  box-shadow: 0 0 10px #10b981;
-  animation: pulseDot 2s infinite;
-}
-
-.opening-title {
-  font-size: clamp(40px, 8vw, 72px);
-  font-weight: 900;
-  letter-spacing: -1.5px;
-  background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  line-height: 1.1;
-  margin-top: 8px;
-}
-
-.opening-subtitle {
-  font-size: clamp(18px, 3vw, 26px);
-  font-style: italic;
-  font-weight: 300;
-  color: #6ee7b7;
-  max-width: 600px;
-}
-
-.opening-scroll-hint {
-  margin-top: 40px;
+.phase0-hero-content {
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  color: #6b7280;
-  font-size: 12px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: color 0.2s ease;
+  gap: 28px;
 }
 
-.opening-scroll-hint:hover {
-  color: #10b981;
-}
-
-.bounce-arrow {
-  animation: bounceArrow 2s infinite;
-}
-
-/* =====================================================
-   SCENE 02 — THE LEAF
-   ===================================================== */
-.leaf-protagonist-wrapper {
+.phase0-leaf-container {
   position: relative;
   width: 220px;
   height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
 }
 
-.botanical-leaf-svg {
-  width: 180px;
-  height: 180px;
-  filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.4));
+.phase0-protagonist-leaf {
+  width: 190px;
+  height: 190px;
+  filter: drop-shadow(0 0 35px rgba(16, 185, 129, 0.45));
   animation: leafFloat 4s ease-in-out infinite;
 }
 
-.leaf-reticle {
-  transform-origin: center;
-  animation: reticleRotate 12s linear infinite;
-}
-
-.leaf-aura-glow {
-  position: absolute;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
-  filter: blur(20px);
-  z-index: -1;
-}
-
-/* =====================================================
-   SCENE 03 — AI SCANNING
-   ===================================================== */
-.scan-canvas-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.scan-leaf-frame {
-  position: relative;
-  width: 200px;
-  height: 200px;
-  border-radius: 16px;
-  background: rgba(16, 185, 129, 0.04);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.scan-leaf-svg {
-  width: 150px;
-  height: 150px;
-}
-
-.laser-scan-bar {
+.phase0-scan-laser {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, transparent 0%, #34d399 50%, transparent 100%);
-  box-shadow: 0 0 15px #34d399, 0 0 30px #10b981;
+  background: linear-gradient(90deg, transparent, #34d399, transparent);
+  box-shadow: 0 0 20px #34d399;
   animation: laserSweep 3s ease-in-out infinite;
 }
 
-.scan-hud-corner {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-color: #10b981;
-  border-style: solid;
-}
-
-.scan-hud-corner.top-left { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
-.scan-hud-corner.top-right { top: 8px; right: 8px; border-width: 2px 2px 0 0; }
-.scan-hud-corner.bottom-left { bottom: 8px; left: 8px; border-width: 0 0 2px 2px; }
-.scan-hud-corner.bottom-right { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
-
-.scan-overlays-column {
+.phase0-typography {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  text-align: left;
-}
-
-.scan-overlay-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  color: #34d399;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.hotspot-pulse { animation: pulseDot 1.5s infinite; }
-.hotspot-pulse-delay { animation: pulseDot 1.5s infinite 0.75s; }
-
-/* =====================================================
-   SCENE 04 — VISUAL INTELLIGENCE
-   ===================================================== */
-.intelligence-dual-view {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin: 20px 0;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.intel-card {
-  width: 220px;
-  border-radius: 16px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.intel-card.highlight-card {
-  border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.15);
-}
-
-.intel-card-header {
-  display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.p0-tag {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #9ca3af;
-}
-
-.intel-visual-box {
-  height: 140px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.original-box { background: #0c1a14; }
-.gradcam-box { background: #071510; }
-
-.intel-svg {
-  width: 100px;
-  height: 100px;
-}
-
-.intel-tag {
-  position: absolute;
-  bottom: 8px;
-  font-size: 10px;
-  color: #6b7280;
-}
-
-.attention-tag {
-  color: #f87171;
-  font-weight: 700;
-}
-
-.intel-divider {
+  font-weight: 800;
+  letter-spacing: 3px;
   color: #10b981;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-/* =====================================================
-   SCENE 05 — DIAGNOSIS REVEAL
-   ===================================================== */
-.demo-diagnosis-card {
-  width: 100%;
-  max-width: 580px;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 4px 14px;
   border-radius: 20px;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-  text-align: left;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
-.demo-watermark-banner {
-  background: linear-gradient(90deg, rgba(239, 68, 68, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 8px 20px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: #fca5a5;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.demo-card-body {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.demo-result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.demo-condition-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.demo-confidence {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.conf-value {
-  font-size: 24px;
+.p0-headline {
+  font-size: clamp(36px, 7vw, 64px);
   font-weight: 900;
-  color: #10b981;
-}
-
-.conf-label {
-  font-size: 10px;
-  color: #9ca3af;
-  text-transform: uppercase;
-}
-
-.demo-details-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 16px;
-  border-radius: 12px;
-}
-
-.demo-detail-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.detail-label {
-  font-size: 10px;
-  color: #6b7280;
-  text-transform: uppercase;
-}
-
-.detail-val {
-  font-size: 13px;
-  font-weight: 600;
-  color: #e5e7eb;
-}
-
-.warning-text { color: #f59e0b; }
-.success-text { color: #34d399; }
-
-/* =====================================================
-   SCENE 06 — HOW LEAFGUARD WORKS (CONNECTED JOURNEY)
-   ===================================================== */
-.connected-journey-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 520px;
-  margin: 20px 0;
-  position: relative;
-}
-
-.journey-step-node {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  padding: 16px 20px;
-  border-radius: 14px;
-  text-align: left;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.journey-step-node:hover {
-  transform: translateX(4px);
-  border-color: rgba(16, 185, 129, 0.5);
-}
-
-.node-marker {
-  font-size: 14px;
-  font-weight: 900;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.12);
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.node-icon {
-  color: #34d399;
-  flex-shrink: 0;
-}
-
-.node-info h4 {
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
   color: #ffffff;
-  margin-bottom: 2px;
+  margin-top: 8px;
 }
 
-.node-info p {
-  font-size: 12px;
-  color: #9ca3af;
-  line-height: 1.4;
-}
-
-.journey-connector {
-  color: #10b981;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-/* =====================================================
-   SCENE 07 — FINAL CTA
-   ===================================================== */
-.scene-final-cta {
-  min-height: 85vh;
-}
-
-.final-cta-visual {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-  animation: leafFloat 4s ease-in-out infinite;
-}
-
-.final-headline {
-  font-size: clamp(28px, 5vw, 44px);
-  font-weight: 900;
-  color: #ffffff;
-  line-height: 1.2;
-}
-
-.final-subheadline {
+.p0-subline {
   font-size: clamp(20px, 3vw, 28px);
-  font-weight: 300;
   font-style: italic;
+  font-weight: 300;
   color: #6ee7b7;
 }
 
-.final-cta-buttons {
-  display: flex;
-  gap: 16px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.cta-main-btn {
-  padding: 14px 32px;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cta-sub-btn {
-  padding: 14px 28px;
-  font-size: 14px;
-  font-weight: 700;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e5e7eb;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.final-footer-note {
-  margin-top: 36px;
+.p0-brand-sub {
   font-size: 12px;
   color: #6b7280;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  margin-top: 6px;
 }
 
-/* =====================================================
-   DIAGNOSTIC WORKSTATION LOGIN VIEW
-   ===================================================== */
-.auth-workstation-view {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px 6% 60px 6%;
-  position: relative;
-  z-index: 10;
-}
-
-.workstation-header-bar {
-  width: 100%;
-  max-width: 500px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.btn-back-overview {
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.btn-back-overview:hover {
-  color: #10b981;
-}
-
-.workstation-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #e5e7eb;
-}
-
-.workstation-container {
-  width: 100%;
-  max-width: 480px;
-}
-
-.workstation-glass-panel {
-  border-radius: 24px;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  padding: 36px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.workstation-title-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 8px;
-}
-
-.workstation-icon-badge {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 4px;
-}
-
-.workstation-title-box h2 {
-  font-size: 22px;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.workstation-title-box p {
-  font-size: 13px;
-  color: #9ca3af;
-  line-height: 1.5;
-}
-
-.workstation-tabs {
-  display: flex;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 4px;
+.btn-p0-enter {
+  padding: 16px 36px;
   border-radius: 12px;
-  gap: 4px;
-}
-
-.workstation-tab {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.workstation-tab.active {
-  background: rgba(16, 185, 129, 0.2);
-  color: #ffffff;
-  border: 1px solid rgba(16, 185, 129, 0.4);
-}
-
-.workstation-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.workstation-error-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 12px 16px;
-  border-radius: 10px;
-  color: #fca5a5;
-  font-size: 13px;
-}
-
-.workstation-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  text-align: left;
-}
-
-.input-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #d1d5db;
-}
-
-.input-field-box {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 16px;
-  border-radius: 10px;
-  transition: border-color 0.2s ease;
 }
 
-.input-field-box:focus-within {
-  border-color: #10b981;
-}
-
-.field-icon {
-  color: #6b7280;
-}
-
-.input-field-box input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #ffffff;
-  font-size: 14px;
-  width: 100%;
-}
-
-.input-file-box {
-  position: relative;
-}
-
-.file-input-hidden {
-  display: none;
-}
-
-.file-input-btn {
+.scroll-indicator-down {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-  color: #9ca3af;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.file-input-btn:hover {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: #10b981;
-  color: #34d399;
-}
-
-.workstation-submit-btn {
-  margin-top: 8px;
-  padding: 14px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border: none;
-  color: #ffffff;
-  font-size: 14px;
+  gap: 6px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 1px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
-  transition: all 0.2s ease;
-}
-
-.workstation-submit-btn:hover:not(:disabled) {
-  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.45);
-}
-
-.workstation-submit-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.workstation-footer {
-  text-align: center;
-  font-size: 11px;
+  letter-spacing: 2px;
   color: #6b7280;
+  margin-top: 30px;
 }
 
-/* =====================================================
-   KEYFRAME ANIMATIONS
-   ===================================================== */
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.3); }
+.pulse-arrow {
+  animation: bounceDown 2s infinite;
 }
 
-@keyframes bounceArrow {
+@keyframes bounceDown {
   0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
   40% { transform: translateY(6px); }
   60% { transform: translateY(3px); }
 }
 
-@keyframes leafFloat {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(2deg); }
+/* =====================================================
+   LANDING SCROLL STORY SECTIONS
+   ===================================================== */
+.phase0-story-section {
+  min-height: 85vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 6%;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-@keyframes reticleRotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.story-content-box {
+  max-width: 850px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+}
+
+.story-chapter-num {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 4px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.story-visual-graphic {
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.story-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.3));
+}
+
+.story-heading {
+  font-size: clamp(32px, 5.5vw, 52px);
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.highlight-text {
+  color: #34d399;
+}
+
+.highlight-text-bright {
+  color: #6ee7b7;
+  text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+}
+
+.huge-heading {
+  font-size: clamp(38px, 6.5vw, 64px);
+}
+
+.story-desc {
+  font-size: clamp(15px, 2.2vw, 19px);
+  color: #9ca3af;
+  line-height: 1.6;
+  max-width: 650px;
+}
+
+/* Machine Pipeline Flow */
+.machine-pipeline-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.pipe-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: rgba(4, 39, 30, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  min-width: 110px;
+}
+
+.pipe-arrow {
+  font-size: 20px;
+  color: #34d399;
+}
+
+.btn-p0-enter-large {
+  padding: 18px 44px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 12px 36px rgba(16, 185, 129, 0.45);
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  cursor: pointer;
+  border: none;
+  color: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-p0-enter-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 44px rgba(16, 185, 129, 0.6);
+}
+
+/* =====================================================
+   PHASE 1 — LOGIN: "ENTER THE LAB" (60/40 SPLIT)
+   ===================================================== */
+.phase1-lab-view {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 6% 60px 6%;
+  position: relative;
+  z-index: 10;
+}
+
+.lab-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.btn-back-film {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-back-film:hover { color: #10b981; }
+
+.lab-brand-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+}
+
+.lab-split-layout {
+  display: flex;
+  gap: 36px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.lab-visual-column {
+  flex: 1.3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.lab-visual-frame {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  border-radius: 24px;
+  background: rgba(16, 185, 129, 0.03);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.lab-leaf-svg {
+  width: 240px;
+  height: 240px;
+  filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.3));
+}
+
+.lab-laser-beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #34d399, transparent);
+  box-shadow: 0 0 20px #34d399;
+  animation: laserSweep 3s ease-in-out infinite;
+}
+
+.lab-visual-tagline {
+  font-size: 15px;
+  color: #9ca3af;
+  font-style: italic;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.lab-auth-column {
+  flex: 1;
+  max-width: 440px;
+  width: 100%;
+}
+
+.lab-auth-panel {
+  border-radius: 24px;
+  background: rgba(12, 22, 17, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.lab-sys-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #10b981;
+}
+
+.lab-panel-header h2 {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.lab-panel-header p {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.lab-tabs-row {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px;
+  border-radius: 10px;
+  gap: 4px;
+}
+
+.lab-tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.lab-tab.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.lab-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lab-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 12px;
+}
+
+.lab-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lab-input-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #d1d5db;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+.input-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 13px;
+  width: 100%;
+}
+
+.lab-submit-btn {
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* =====================================================
+   PHASE 2 — POST-LOGIN CINEMATIC TRANSITION FILM
+   ===================================================== */
+.post-login-transition-film {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #040806;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.transition-leaf-silhouette {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+
+.transition-leaf-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.6));
+}
+
+.transition-laser-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #34d399;
+  box-shadow: 0 0 20px #34d399;
+  animation: laserSweep 1.5s ease-in-out infinite;
+}
+
+.transition-text-container {
+  text-align: center;
+}
+
+.trans-text {
+  font-size: clamp(24px, 5vw, 40px);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.trans-text-final {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.trans-chapter-tag {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #10b981;
+}
+
+.trans-text-final h1 {
+  font-size: clamp(36px, 7vw, 56px);
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: #ffffff;
+}
+
+/* Animations */
+@keyframes leafFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes laserSweep {
@@ -972,78 +634,19 @@
   100% { top: 0%; opacity: 0.8; }
 }
 
-/* Fade In Utility */
-.fade-in-element {
-  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* =====================================================
-   ACCESSIBILITY & PREFERS-REDUCED-MOTION
-   ===================================================== */
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .badge-pulse-dot,
-  .bounce-arrow,
-  .botanical-leaf-svg,
-  .leaf-reticle,
-  .laser-scan-bar,
-  .hotspot-pulse,
-  .hotspot-pulse-delay,
-  .final-cta-visual,
-  .fade-in-element {
+  .phase0-protagonist-leaf,
+  .phase0-scan-laser,
+  .lab-laser-beam,
+  .transition-laser-sweep {
     animation: none !important;
-    transform: none !important;
-    transition: none !important;
   }
 }
 
-/* =====================================================
-   RESPONSIVE BREAKPOINTS (320px, 375px, 390px, 430px)
-   ===================================================== */
+/* Mobile Breakpoints */
 @media (max-width: 640px) {
-  .film-nav {
-    padding: 14px 4%;
-  }
-
-  .film-brand-title {
-    font-size: 15px;
-  }
-
-  .film-scene {
-    padding: 40px 4%;
-    min-height: 85vh;
-  }
-
-  .scene-statement {
-    font-size: 24px;
-  }
-
-  .scene-subtext {
-    font-size: 14px;
-  }
-
-  .scan-canvas-wrapper {
-    gap: 20px;
-  }
-
-  .intelligence-dual-view {
-    gap: 16px;
-  }
-
-  .intel-card {
-    width: 100%;
-    max-width: 260px;
-  }
-
-  .intel-divider {
-    transform: rotate(90deg);
-  }
-
-  .workstation-glass-panel {
-    padding: 24px 18px;
-  }
+  .phase0-nav { padding: 14px 4%; }
+  .phase0-hero-viewport { padding: 40px 4%; }
+  .phase1-lab-view { padding: 14px 4% 40px 4%; }
 }

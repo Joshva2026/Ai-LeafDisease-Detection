@@ -19,6 +19,9 @@ app = Flask(__name__)
 # Removed 10 MB limit to allow high-res images
 CORS(app)
 
+from routes.ai import ai_bp
+app.register_blueprint(ai_bp)
+
 # Initialize Rate Limiter
 limiter = Limiter(
     key_func=get_remote_address,
@@ -544,98 +547,205 @@ def history():
 
 
 # ==========================================
-# GEMINI AI CHATBOT ROUTE
+# NVIDIA & GEMINI AI INTEGRATION
 # ==========================================
+def call_nvidia_ai(user_prompt, system_prompt):
+    nvidia_key = os.getenv("NVIDIA_API_KEY", "").strip()
+    if not nvidia_key or nvidia_key in ("YOUR_NVIDIA_KEY_HERE", "YOUR_API_KEY_HERE"):
+        return None
+
+    try:
+        url = "https://integrate.api.nvidia.com/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {nvidia_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "meta/llama-3.1-70b-instruct",
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            "temperature": 0.2,
+            "max_tokens": 1024
+        }
+        res = requests.post(url, json=payload, headers=headers, timeout=12)
+        if res.status_code == 200:
+            data = res.json()
+            if "choices" in data and len(data["choices"]) > 0:
+                return data["choices"][0]["message"]["content"]
+    except Exception as e:
+        print("NVIDIA AI API request failed:", e)
+    return None
+
+def call_gemini_ai(user_prompt, system_prompt):
+    gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if not gemini_key or gemini_key in ("YOUR_API_KEY_HERE", ""):
+        return None
+
+    models = ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-2.5-flash-lite", "gemini-1.5-flash"]
+    for model_name in models:
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1/models/{model_name}:generateContent?key={gemini_key}"
+            headers = {"Content-Type": "application/json"}
+            payload = {
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [{"text": f"{system_prompt}\n\nUser Question: {user_prompt}"}]
+                    }
+                ]
+            }
+            res = requests.post(url, json=payload, headers=headers, timeout=10)
+            if res.status_code == 200:
+                return res.json()["candidates"][0]["content"]["parts"][0]["text"]
+        except Exception as e:
+            print(f"Gemini model {model_name} failed:", e)
+    return None
+
+
+@app.route("/api/ai/farmer-report", methods=["POST"])
+@limiter.limit("20 per minute")
+def farmer_report():
+    data = request.json or {}
+    disease = data.get("disease", "")
+    plant = data.get("plant", "")
+    confidence = data.get("confidence", 0)
+    lang = data.get("lang", "en")
+
+    if not disease:
+        return jsonify({"success": False, "error": "Disease identification is required"}), 400
+
+    is_ta = (lang == "ta")
+
+    if is_ta:
+        system_prompt = (
+            "You are LeafGuard AI Farmer Specialist. The user's crop was diagnosed by MobileNetV2. "
+            "You MUST generate the entire report strictly in Tamil (தமிழ்). "
+            "Never contradict the predicted disease or change confidence. "
+            "Output clear, actionable agronomic advice including summary, symptoms, causes, immediate treatment, and prevention."
+        )
+        user_prompt = (
+            f"பயிர்: {plant}, நோய்: {disease}, நம்பிக்கை: {confidence}%. "
+            "இந்த நோய்க்கான விரிவான விவசாயி அறிக்கையை தமிழில் வழங்கவும்."
+        )
+    else:
+        system_prompt = (
+            "You are LeafGuard AI Farmer Specialist. The crop was diagnosed by MobileNetV2. "
+            "Never contradict the predicted disease or change confidence. "
+            "Output clear, structured agronomic advice including summary, symptoms, causes, immediate treatment, and prevention."
+        )
+        user_prompt = (
+            f"Crop: {plant}, Condition: {disease}, Confidence: {confidence}%. "
+            "Provide a detailed farmer advice report."
+        )
+
+    # Try NVIDIA AI first, then Gemini AI
+    ai_reply = call_nvidia_ai(user_prompt, system_prompt)
+    provider = "nvidia_ai"
+    if not ai_reply:
+        ai_reply = call_gemini_ai(user_prompt, system_prompt)
+        provider = "gemini_ai"
+
+    if ai_reply:
+        return jsonify({
+            "success": True,
+            "provider": provider,
+            "report": ai_reply
+        })
+    else:
+        # Fallback offline structured report
+        if is_ta:
+            fallback_report = (
+                f"🌾 **LeafGuard விவசாயி அறிக்கை (ஆஃப்லைன் பயன்முறை)**\n\n"
+                f"**பயிற்சி கண்டறிதல்:** {plant} — {disease}\n"
+                f"**நம்பிக்கை:** {confidence}%\n\n"
+                "**உடனடி நடவடிக்கைகள்:**\n"
+                "1. பாதிக்கப்பட்ட இலையை அகற்றி தனியாக வைக்கவும்.\n"
+                "2. இலையின் மேல் தண்ணீர் தெளிப்பதைத் தவிர்க்கவும்.\n"
+                "3. தேவைப்பட்டால் தாமிர அடிப்படையிலான பூசணக்கொல்லியைப் பயன்படுத்தவும்.\n"
+                "4. கருவிகளைப் பயன்படுத்திய பின் கிருமி நீக்கம் செய்யவும்."
+            )
+        else:
+            fallback_report = (
+                f"🌾 **LeafGuard Agronomic Advisory (Offline Mode)**\n\n"
+                f"**Diagnosed Condition:** {plant} — {disease}\n"
+                f"**AI Confidence:** {confidence}%\n\n"
+                "**Action Plan:**\n"
+                "1. **Isolate infected leaves** immediately to block spore dispersion.\n"
+                "2. **Water at the soil base** rather than sprinkling over leaves.\n"
+                "3. **Apply recommended organic or copper-based fungicides** early in the morning.\n"
+                "4. **Disinfect pruning shears** between plant cuts."
+            )
+        return jsonify({
+            "success": True,
+            "provider": "offline_rules",
+            "report": fallback_report
+        })
+
+
 @app.route("/api/chat", methods=["POST"])
 @limiter.limit("20 per minute")
 def chat():
     data = request.json or {}
     message = data.get("message")
-    context = data.get("context", "") # E.g., current diagnosed disease info
+    context = data.get("context", "")
+    lang = data.get("lang", "en")
 
     if not message:
         return jsonify({"success": False, "error": "Message content is required"}), 400
 
-    gemini_api_key = os.getenv("GEMINI_API_KEY", "")
-    if gemini_api_key in ("", "YOUR_API_KEY_HERE"):
-        gemini_api_key = ""
+    is_ta = (lang == "ta")
 
-    # System instruction tailored for the agri-bot
-    system_prompt = (
-        "You are LeafGuard AI, an expert agricultural bot and plant pathologist. "
-        "Provide accurate, actionable, and helpful suggestions regarding leaf diseases, "
-        "soil care, pesticides, organic farming methods, and general crop health. "
-        "Keep your advice clear, friendly, and structured. "
-    )
-    if context:
-        system_prompt += f"Context: The user's plant was just diagnosed with '{context}'."
-
-    if gemini_api_key:
-        models_to_try = [
-            "gemini-3.5-flash",
-            "gemini-3.6-flash",
-            "gemini-2.5-flash-lite",
-            "gemini-1.5-flash"
-        ]
-        last_error = None
-        for model_name in models_to_try:
-            try:
-                url = f"https://generativelanguage.googleapis.com/v1/models/{model_name}:generateContent?key={gemini_api_key}"
-                headers = {
-                    "Content-Type": "application/json"
-                }
-                payload = {
-                    "contents": [
-                        {
-                            "role": "user",
-                            "parts": [
-                                {"text": f"{system_prompt}\n\nUser Question: {message}"}
-                            ]
-                        }
-                    ]
-                }
-                response = requests.post(url, json=payload, headers=headers, timeout=10)
-                if response.status_code == 200:
-                    reply = response.json()["candidates"][0]["content"]["parts"][0]["text"]
-                    return jsonify({"success": True, "reply": reply})
-                else:
-                    last_error = f"API Error ({response.status_code}) for model {model_name}: {response.text}"
-            except Exception as e:
-                last_error = f"Request error for model {model_name}: {str(e)}"
-        
-        return jsonify({
-            "success": False,
-            "error": f"All Gemini model attempts failed. Last error: {last_error}"
-        }), 500
+    if is_ta:
+        system_prompt = (
+            "You are LeafGuard AI, an expert agricultural bot and plant pathologist. "
+            "You MUST reply in Tamil (தமிழ்). "
+            "Provide accurate, actionable, and helpful suggestions regarding leaf diseases, soil care, pesticides, and organic farming methods."
+        )
     else:
-        # Fallback Mock/Static Response if Gemini API Key is not set yet
-        msg_lower = message.lower()
+        system_prompt = (
+            "You are LeafGuard AI, an expert agricultural bot and plant pathologist. "
+            "Provide accurate, actionable, and helpful suggestions regarding leaf diseases, soil care, pesticides, and organic farming methods."
+        )
+
+    if context:
+        system_prompt += f" Context: Current diagnosed condition is '{context}'."
+
+    # Try NVIDIA AI first
+    reply = call_nvidia_ai(message, system_prompt)
+    if not reply:
+        # Fallback to Gemini AI
+        reply = call_gemini_ai(message, system_prompt)
+
+    if reply:
+        return jsonify({"success": True, "reply": reply})
+
+    # Offline expert fallback
+    msg_lower = message.lower()
+    if is_ta:
+        reply = (
+            "🌿 **LeafGuard AI உதவி (ஆஃப்லைன்):**\n\n"
+            "உங்கள் பயிர் பாதுகாப்பு தொடர்பான கேள்விகளுக்கு பதில் அளிக்கத் தயார்.\n"
+            "1. பாதிக்கப்பட்ட இலைகளை உடனடியாக அகற்றவும்.\n"
+            "2. வேர்களுக்கு மட்டும் நீர் பாய்ச்சவும்.\n"
+            "3. இயற்கை உரம் மற்றும் பூச்சிக்கொல்லிகளைப் பயன்படுத்தவும்."
+        )
+    else:
         if "rust" in msg_lower or "spot" in msg_lower or "blight" in msg_lower or "rot" in msg_lower:
             reply = (
-                "🌿 **LeafGuard Assistant (Offline Mode):**\n\n"
-                "It looks like you are asking about a fungal/bacterial leaf disease (like Blight, Rot, or Spot).\n"
-                "Here are some immediate recommendation rules:\n"
-                "1. **Isolate Affected Plants**: Remove the diseased leaves immediately to prevent the spores from spreading.\n"
-                "2. **Water at the Base**: Avoid overhead sprinkler watering. Wet leaves invite fungal growth.\n"
-                "3. **Fungicide**: For severe infections, apply copper-based or sulfur-based fungicides early in the morning.\n"
-                "4. **Sanitation**: Clean your pruning tools with rubbing alcohol between plants.\n\n"
-                "*Configure your `GEMINI_API_KEY` in the environment to unlock full LLM-powered chats!*"
-            )
-        elif "fertilizer" in msg_lower or "soil" in msg_lower or "compost" in msg_lower:
-            reply = (
-                "🌱 **LeafGuard Assistant (Offline Mode):**\n\n"
-                "For soil health and nourishment:\n"
-                "- Use rich organic compost to enhance micro-nutrient availability.\n"
-                "- Add balanced N-P-K fertilizer appropriate for your specific crop type (e.g. nitrogen for leafy growth, phosphorus for root development).\n\n"
-                "*Configure your `GEMINI_API_KEY` to chat dynamically with the AI.*"
+                "🌿 **LeafGuard AI Assistant (Offline Mode):**\n\n"
+                "1. **Isolate Affected Plants**: Remove diseased leaves immediately to prevent spore dispersion.\n"
+                "2. **Water at the Soil Base**: Avoid overhead foliage sprinkler watering.\n"
+                "3. **Targeted Treatment**: Apply copper or sulfur-based organic fungicides early in the morning."
             )
         else:
             reply = (
                 "👋 **Welcome to LeafGuard AI Assistant!**\n\n"
-                "I can help you with plant care tips, pesticide choices, and disease treatments.\n\n"
-                "*(Please set the `GEMINI_API_KEY` environment variable on the host computer to enable full AI chat capability!)*"
+                "I am ready to help you with plant pathology, soil care, and crop protection advice."
             )
-        return jsonify({"success": True, "reply": reply})
+
+    return jsonify({"success": True, "reply": reply})
 
 
 if __name__ == "__main__":

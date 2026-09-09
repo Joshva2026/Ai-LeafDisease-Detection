@@ -45,23 +45,23 @@ function PlantGuide({ onViewChange, lang }) {
 
   const getPlantUrl = (plantName) => {
     const urls = {
-      "Apple": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200",
-      "Blueberry": "https://images.unsplash.com/photo-1498557850523-fd3d118b962e?w=200",
-      "Cherry": "https://images.unsplash.com/photo-1528825871115-3581a5387919?w=200",
-      "Corn": "https://images.unsplash.com/photo-1551754625-702377370d6a?w=200",
-      "Grape": "https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=200",
-      "Orange": "https://images.unsplash.com/photo-1549880181-56a44cf4a9a1?w=200",
-      "Peach": "https://images.unsplash.com/photo-1595124250246-70cf3c437780?w=200",
-      "Pepper": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=200",
-      "Potato": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=200",
-      "Raspberry": "https://images.unsplash.com/photo-1577069861033-55d04cec4ef5?w=200",
-      "Soybean": "https://images.unsplash.com/photo-1599933333938-4c919a3b6ef9?w=200",
-      "Squash": "https://images.unsplash.com/photo-1506543730435-e2c1d4553a84?w=200",
-      "Strawberry": "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=200",
-      "Tomato": "https://images.unsplash.com/photo-1592841200221-a6898f307bac?w=200"
+      "Apple": "https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?w=400",
+      "Blueberry": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400",
+      "Cherry": "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=400",
+      "Corn": "https://images.unsplash.com/photo-1595855759920-86582396756a?w=400",
+      "Grape": "https://images.unsplash.com/photo-1530708112151-5b9b7405267e?w=400",
+      "Orange": "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400",
+      "Peach": "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400",
+      "Pepper": "https://images.unsplash.com/photo-1592417817098-8f3d6ef23a85?w=400",
+      "Potato": "https://images.unsplash.com/photo-1589923188900-85dae523342b?w=400",
+      "Raspberry": "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400",
+      "Soybean": "https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=400",
+      "Squash": "https://images.unsplash.com/photo-1506543730435-e2c1d4553a84?w=400",
+      "Strawberry": "https://images.unsplash.com/photo-1587049352847-4a222e784d38?w=400",
+      "Tomato": "https://images.unsplash.com/photo-1592841200221-a6898f307bac?w=400"
     };
 
-    return urls[plantName] || "https://images.unsplash.com/photo-1530708112151-5b9b7405267e?w=200";
+    return urls[plantName] || "https://images.unsplash.com/photo-1530708112151-5b9b7405267e?w=400";
   };
 
   if (activeDisease) {

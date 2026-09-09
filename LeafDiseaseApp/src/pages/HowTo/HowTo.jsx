@@ -8,8 +8,6 @@ import "./HowTo.css";
 function HowTo({ onViewChange, lang }) {
   const [activeScene, setActiveScene] = useState(1);
 
-  const totalScenes = 6;
-
   const scrollToScene = (sceneNum) => {
     setActiveScene(sceneNum);
     const elem = document.getElementById(`howto-scene-${sceneNum}`);
@@ -21,7 +19,7 @@ function HowTo({ onViewChange, lang }) {
   return (
     <div className="howto-master-container fade-in-section">
       
-      {/* Fixed Journey Scene Counter Bar */}
+      {/* Fixed Journey Progress Bar */}
       <div className="howto-progress-bar">
         <div className="howto-progress-info">
           <span className="howto-step-badge">CHAPTER 01</span>
@@ -44,7 +42,7 @@ function HowTo({ onViewChange, lang }) {
       {/* SCENE 01 — THE LEAF */}
       <section id="howto-scene-1" className="howto-scene scene-leaf-intro">
         <div className="howto-scene-content">
-          <span className="scene-ch-tag">01 / THE LEAF</span>
+          <span className="scene-ch-tag">SCENE 01 / 06</span>
           
           <div className="macro-leaf-hero">
             <svg viewBox="0 0 240 240" className="macro-leaf-svg">
@@ -58,7 +56,7 @@ function HowTo({ onViewChange, lang }) {
               <circle cx="120" cy="120" r="100" fill="url(#macroLeafGlow)" className="aura-pulse" />
               <path 
                 d="M120 30 C190 70 200 170 120 210 C40 170 50 70 120 30 Z" 
-                fill="#064e3b" 
+                fill="#04271e" 
                 stroke="#34d399" 
                 strokeWidth="2" 
                 className="macro-leaf-body"
@@ -72,15 +70,15 @@ function HowTo({ onViewChange, lang }) {
           </div>
 
           <h1 className="howto-headline">
-            "Before we diagnose a plant,<br />we listen to its leaf."
+            IT STARTS WITH A LEAF.
           </h1>
           
           <p className="howto-description">
-            Leaves are living biological sensors. Every spot, discoloration, and structural lesion reflects cellular interactions between host and pathogen.
+            "Every surface carries information. Microscopic cell walls retain the earliest signals of plant pathology."
           </p>
 
           <button className="btn-howto-next" onClick={() => scrollToScene(2)}>
-            <span>Proceed to Step 01: Capture</span>
+            <span>Scene 02: Capture</span>
             <ArrowDown size={18} />
           </button>
         </div>
@@ -89,7 +87,7 @@ function HowTo({ onViewChange, lang }) {
       {/* SCENE 02 — CAPTURE */}
       <section id="howto-scene-2" className="howto-scene scene-capture">
         <div className="howto-scene-content">
-          <span className="scene-ch-tag">02 / CAPTURE</span>
+          <span className="scene-ch-tag">SCENE 02 / 06</span>
           
           <div className="camera-frame-simulation">
             <div className="viewfinder-box">
@@ -108,32 +106,23 @@ function HowTo({ onViewChange, lang }) {
               </div>
             </div>
 
-            <div className="capture-instructions-card">
-              <div className="rule-item">
-                <CheckCircle2 size={16} color="#10b981" />
-                <span>Focus on a single, clear leaf</span>
-              </div>
-              <div className="rule-item">
-                <CheckCircle2 size={16} color="#10b981" />
-                <span>Keep natural daylight lighting</span>
-              </div>
-              <div className="rule-item">
-                <CheckCircle2 size={16} color="#10b981" />
-                <span>Center the affected lesion area</span>
-              </div>
+            <div className="capture-rules-spatial">
+              <div className="rule-pill"><CheckCircle2 size={16} color="#10b981" /><span>CLEAR</span></div>
+              <div className="rule-pill"><CheckCircle2 size={16} color="#10b981" /><span>CENTERED</span></div>
+              <div className="rule-pill"><CheckCircle2 size={16} color="#10b981" /><span>SHARP</span></div>
             </div>
           </div>
 
           <h2 className="howto-headline">
-            Capture: Give LeafGuard a Clear View
+            CAPTURE THE SIGNAL.
           </h2>
 
           <p className="howto-description">
-            A high-contrast photograph ensures that microscopic edge boundaries and color distributions enter the deep network without distortion.
+            Give LeafGuard a clear view. High-contrast framing ensures edge boundaries enter the deep neural network without distortion.
           </p>
 
           <button className="btn-howto-next" onClick={() => scrollToScene(3)}>
-            <span>Proceed to Step 02: Analyze</span>
+            <span>Scene 03: Analyze</span>
             <ArrowDown size={18} />
           </button>
         </div>
@@ -142,48 +131,35 @@ function HowTo({ onViewChange, lang }) {
       {/* SCENE 03 — ANALYZE */}
       <section id="howto-scene-3" className="howto-scene scene-analyze">
         <div className="howto-scene-content">
-          <span className="scene-ch-tag">03 / ANALYZE</span>
+          <span className="scene-ch-tag">SCENE 03 / 06</span>
           
           <div className="analysis-grid-simulation">
             <div className="scan-grid-box">
               <svg viewBox="0 0 200 200" className="grid-leaf">
-                <path d="M100 20 C160 60 170 140 100 180 C30 140 40 60 100 20 Z" fill="#042f2e" stroke="#10b981" strokeWidth="1.5" />
+                <path d="M100 20 C160 60 170 140 100 180 C30 140 40 60 100 20 Z" fill="#04271e" stroke="#10b981" strokeWidth="1.5" />
                 <line x1="0" y1="50" x2="200" y2="50" stroke="rgba(16, 185, 129, 0.2)" />
                 <line x1="0" y1="100" x2="200" y2="100" stroke="rgba(16, 185, 129, 0.2)" />
                 <line x1="0" y1="150" x2="200" y2="150" stroke="rgba(16, 185, 129, 0.2)" />
-                <line x1="50" y1="0" x2="50" y2="200" stroke="rgba(16, 185, 129, 0.2)" />
-                <line x1="100" y1="0" x2="100" y2="200" stroke="rgba(16, 185, 129, 0.2)" />
-                <line x1="150" y1="0" x2="150" y2="200" stroke="rgba(16, 185, 129, 0.2)" />
               </svg>
               <div className="scan-laser-line"></div>
             </div>
 
             <div className="neural-nodes-list">
-              <div className="node-badge active">
-                <BrainCircuit size={16} />
-                <span>MobileNetV2 Feature Extraction</span>
-              </div>
-              <div className="node-badge active">
-                <Sparkles size={16} />
-                <span>38 Crop Pathology Filters</span>
-              </div>
-              <div className="node-badge active">
-                <Scan size={16} />
-                <span>Morphological Pattern Matching</span>
-              </div>
+              <div className="node-badge active"><BrainCircuit size={16} /><span>MobileNetV2 Convolutions</span></div>
+              <div className="node-badge active"><Sparkles size={16} /><span>38 Pathology Filters</span></div>
             </div>
           </div>
 
           <h2 className="howto-headline">
-            Analyze: Neural Pattern Examination
+            THE MODEL LOOKS BEYOND THE SURFACE.
           </h2>
 
           <p className="howto-description">
-            Convolutional neural layers evaluate hierarchical textures from edge lines up to complex necrotic lesions in milliseconds.
+            MobileNetV2 neural feature maps sweep thousands of parameters to recognize morphological anomalies in milliseconds.
           </p>
 
           <button className="btn-howto-next" onClick={() => scrollToScene(4)}>
-            <span>Proceed to Step 03: Visualize</span>
+            <span>Scene 04: Visualize</span>
             <ArrowDown size={18} />
           </button>
         </div>
@@ -192,18 +168,17 @@ function HowTo({ onViewChange, lang }) {
       {/* SCENE 04 — VISUALIZE */}
       <section id="howto-scene-4" className="howto-scene scene-visualize">
         <div className="howto-scene-content">
-          <span className="scene-ch-tag">04 / VISUALIZE</span>
+          <span className="scene-ch-tag">SCENE 04 / 06</span>
           
           <div className="visual-evidence-split">
             <div className="split-side original-side">
-              <span className="split-label">01 / INPUT IMAGE</span>
+              <span className="split-label">01 / ORIGINAL INPUT</span>
               <div className="split-canvas">
                 <svg viewBox="0 0 160 160">
                   <path d="M80 15 C130 45 140 115 80 145 C20 115 30 45 80 15 Z" fill="#143828" stroke="#34d399" strokeWidth="1.5" />
                   <circle cx="70" cy="70" r="16" fill="#3f1c19" stroke="#ef4444" strokeWidth="1" />
                 </svg>
               </div>
-              <p className="split-sub">Visible Leaf Tissue</p>
             </div>
 
             <div className="split-divider">
@@ -211,7 +186,7 @@ function HowTo({ onViewChange, lang }) {
             </div>
 
             <div className="split-side gradcam-side">
-              <span className="split-label">02 / GRAD-CAM HEATMAP</span>
+              <span className="split-label">02 / NEURAL ATTENTION (GRAD-CAM)</span>
               <div className="split-canvas gradcam-canvas">
                 <svg viewBox="0 0 160 160">
                   <path d="M80 15 C130 45 140 115 80 145 C20 115 30 45 80 15 Z" fill="#0b2419" stroke="#10b981" strokeWidth="1.5" />
@@ -224,20 +199,19 @@ function HowTo({ onViewChange, lang }) {
                   <circle cx="70" cy="70" r="34" fill="url(#howtoGradCam)" />
                 </svg>
               </div>
-              <p className="split-sub attention-text">Neural Attention Hotspots</p>
             </div>
           </div>
 
           <h2 className="howto-headline">
-            Visualize: See Where the AI Found Evidence
+            NOW WE CAN SEE WHERE THE MODEL LOOKED.
           </h2>
 
           <p className="howto-description">
-            Grad-CAM heatmap overlays reveal the exact mathematical activation zones that drove the model's classification.
+            Grad-CAM heatmap overlays map mathematical activation hotspots onto the leaf image, eliminating AI black-box ambiguity.
           </p>
 
           <button className="btn-howto-next" onClick={() => scrollToScene(5)}>
-            <span>Proceed to Step 04: Understand</span>
+            <span>Scene 05: Understand</span>
             <ArrowDown size={18} />
           </button>
         </div>
@@ -246,38 +220,25 @@ function HowTo({ onViewChange, lang }) {
       {/* SCENE 05 — UNDERSTAND */}
       <section id="howto-scene-5" className="howto-scene scene-understand">
         <div className="howto-scene-content">
-          <span className="scene-ch-tag">05 / UNDERSTAND</span>
+          <span className="scene-ch-tag">SCENE 05 / 06</span>
           
-          <div className="understand-cards-layout">
-            <div className="u-card">
-              <div className="u-card-icon"><Eye size={20} color="#34d399" /></div>
-              <h4>Disease Classification</h4>
-              <p>Identifies exact species & pathogen taxonomy with high confidence.</p>
-            </div>
-
-            <div className="u-card">
-              <div className="u-card-icon"><Sparkles size={20} color="#f59e0b" /></div>
-              <h4>Diagnostic Breakdown</h4>
-              <p>Explains symptoms, primary triggers, and severity level.</p>
-            </div>
-
-            <div className="u-card">
-              <div className="u-card-icon"><ShieldCheck size={20} color="#10b981" /></div>
-              <h4>Agronomic Advice</h4>
-              <p>Delivers practical biological and chemical treatment guidance.</p>
-            </div>
+          <div className="spatial-nodes-layout">
+            <div className="spatial-node"><span className="sn-title">SYMPTOMS</span><span className="sn-desc">Necrotic spots & yellowing halo</span></div>
+            <div className="spatial-node"><span className="sn-title">CAUSE</span><span className="sn-desc">Alternaria fungal spores</span></div>
+            <div className="spatial-node"><span className="sn-title">SEVERITY</span><span className="sn-desc">Stage 2 Moderate Spread</span></div>
+            <div className="spatial-node"><span className="sn-title">ACTION</span><span className="sn-desc">Apply organic copper spray</span></div>
           </div>
 
           <h2 className="howto-headline">
-            Understand: Turn Signals into Actionable Insight
+            UNDERSTAND THE SIGNAL.
           </h2>
 
           <p className="howto-description">
-            Transform raw machine visual signals into structured agronomic knowledge tailored to your plant's condition.
+            Turn visual neural evidence into clear, actionable agronomic knowledge tailored to your plant's exact condition.
           </p>
 
           <button className="btn-howto-next" onClick={() => scrollToScene(6)}>
-            <span>Proceed to Step 05: Act & Protect</span>
+            <span>Scene 06: Act & Protect</span>
             <ArrowDown size={18} />
           </button>
         </div>
@@ -286,28 +247,26 @@ function HowTo({ onViewChange, lang }) {
       {/* SCENE 06 — ACT & FINAL SCAN CTA */}
       <section id="howto-scene-6" className="howto-scene scene-act-final">
         <div className="howto-scene-content">
-          <span className="scene-ch-tag">06 / ACT & PROTECT</span>
+          <span className="scene-ch-tag">SCENE 06 / 06</span>
           
-          <div className="act-transformation-visual">
-            <div className="healthy-leaf-aura">
-              <svg viewBox="0 0 160 160" className="healthy-leaf-svg">
-                <path d="M80 15 C130 45 140 115 80 145 C20 115 30 45 80 15 Z" fill="linear-gradient(135deg, #10b981, #059669)" stroke="#6ee7b7" strokeWidth="2" />
-                <path d="M80 15 L80 145" stroke="#a7f3d0" strokeWidth="2" />
-              </svg>
-            </div>
+          <div className="act-healthy-visual">
+            <svg viewBox="0 0 160 160" className="healthy-leaf-svg">
+              <path d="M80 15 C130 45 140 115 80 145 C20 115 30 45 80 15 Z" fill="#04271e" stroke="#34d399" strokeWidth="2" />
+              <path d="M80 15 L80 145" stroke="#6ee7b7" strokeWidth="2" />
+            </svg>
           </div>
 
           <h2 className="final-prompt-headline">
-            "YOUR PLANT IS TRYING<br />TO TELL YOU SOMETHING."
+            ACT BEFORE THE DAMAGE SPREADS.
           </h2>
 
           <p className="final-prompt-subheadline">
-            ARE YOU READY TO LISTEN?
+            "Your plant is trying to tell you something. Are you ready to listen?"
           </p>
 
           <div className="howto-final-actions">
             <button className="btn btn-primary start-scan-cta" onClick={() => onViewChange("scan")}>
-              <span>START SCANNING</span>
+              <span>START SCANNING →</span>
               <Scan size={20} />
             </button>
           </div>

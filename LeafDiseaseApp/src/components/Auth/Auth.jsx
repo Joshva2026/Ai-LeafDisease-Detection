@@ -2,7 +2,7 @@ import { useState } from "react";
 import { 
   User, Lock, ArrowRight, Leaf, ShieldAlert, MapPin, Camera, 
   BrainCircuit, Eye, ShieldCheck, ChevronDown, Sparkles, Activity, 
-  Layers, Scan, CheckCircle2, ArrowDown
+  Layers, Scan, CheckCircle2, ArrowDown, Play
 } from "lucide-react";
 import api from "../../api/api";
 import "./Auth.css";
@@ -16,6 +16,10 @@ function Auth({ onLoginSuccess }) {
   const [profileImage, setProfileImage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // PHASE 2 TRANSITION STATE
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionStep, setTransitionStep] = useState(1);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -36,7 +40,7 @@ function Auth({ onLoginSuccess }) {
           } else {
             if (height > MAX_SIZE) {
               width *= MAX_SIZE / height;
-              width = MAX_SIZE;
+              height = MAX_SIZE;
             }
           }
           canvas.width = width;
@@ -65,8 +69,25 @@ function Auth({ onLoginSuccess }) {
       const response = await api.post(endpoint, payload);
       if (response.data.success) {
         if (isLogin) {
-          localStorage.setItem("user", JSON.stringify(response.data.user));
-          onLoginSuccess(response.data.user);
+          const userObj = response.data.user;
+          localStorage.setItem("user", JSON.stringify(userObj));
+          
+          // TRIGGER PHASE 2 POST-LOGIN TRANSITION FILM
+          setIsTransitioning(true);
+          setTransitionStep(1);
+
+          setTimeout(() => {
+            setTransitionStep(2);
+          }, 1400);
+
+          setTimeout(() => {
+            setTransitionStep(3);
+          }, 2800);
+
+          setTimeout(() => {
+            onLoginSuccess(userObj);
+          }, 4200);
+
         } else {
           setIsLogin(true);
           setError("Account created successfully! Please login with your credentials.");
@@ -79,531 +100,340 @@ function Auth({ onLoginSuccess }) {
     }
   };
 
-  const scrollToNextScene = (nextSceneId) => {
-    const elem = document.getElementById(nextSceneId);
-    if (elem) {
-      elem.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <div className="auth-master-wrapper">
       
-      {/* Background ambient lighting */}
+      {/* PHASE 2 — POST LOGIN CINEMATIC TRANSITION FILM OVERLAY */}
+      {isTransitioning && (
+        <div className="post-login-transition-film">
+          <div className="transition-leaf-silhouette">
+            <svg viewBox="0 0 200 200" className="transition-leaf-svg">
+              <path d="M100 20 C160 60 170 140 100 180 C30 140 40 60 100 20 Z" fill="none" stroke="#10b981" strokeWidth="2" className="trans-leaf-path" />
+              <path d="M100 20 L100 180" stroke="#34d399" strokeWidth="2" />
+            </svg>
+            <div className="transition-laser-sweep"></div>
+          </div>
+
+          <div className="transition-text-container">
+            {transitionStep === 1 && (
+              <h2 className="trans-text slow-reveal">"BEFORE WE DIAGNOSE A PLANT..."</h2>
+            )}
+            {transitionStep === 2 && (
+              <h2 className="trans-text slow-reveal">"...WE LISTEN TO ITS LEAF."</h2>
+            )}
+            {transitionStep === 3 && (
+              <div className="trans-text-final slow-reveal">
+                <span className="trans-chapter-tag">CHAPTER 01</span>
+                <h1>THE LEAF JOURNEY</h1>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* BACKGROUND VOLUMETRIC GLOW */}
       <div className="auth-ambient-glow"></div>
 
       {!showForm ? (
-        <div className="auth-landing-film">
+        /* PHASE 0 — PUBLIC LANDING FILM EXPERIENCE */
+        <div className="phase0-landing-film">
           
-          {/* Subtle Top Navigation Bar */}
-          <nav className="film-nav">
-            <div className="film-nav-brand">
-              <div className="film-logo-icon">
-                <Leaf size={22} color="var(--primary, #10b981)" />
-              </div>
-              <span className="film-brand-title">LEAFGUARD AI</span>
+          <nav className="phase0-nav">
+            <div className="phase0-brand">
+              <Leaf size={22} color="#10b981" />
+              <span>LEAFGUARD AI</span>
             </div>
-            <div className="film-nav-actions">
-              <button className="btn-film-secondary" onClick={() => setShowForm(true)}>
-                Sign In
-              </button>
-              <button className="btn-film-primary" onClick={() => setShowForm(true)}>
-                <span>Enter Workstation</span>
-                <ArrowRight size={16} />
-              </button>
-            </div>
+            <button className="btn-phase0-signin" onClick={() => setShowForm(true)}>
+              Enter Lab
+            </button>
           </nav>
 
-          {/* SCENE 01 — OPENING */}
-          <section id="scene-01" className="film-scene scene-opening">
-            <div className="scene-content">
-              <div className="opening-badge fade-in-element">
-                <span className="badge-pulse-dot"></span>
-                <span>LEAFGUARD AI PRODUCT FILM</span>
-              </div>
+          {/* SCENE 00 — HERO */}
+          <section className="phase0-hero-viewport">
+            <div className="phase0-hero-content">
               
-              <h1 className="opening-title slow-reveal">
-                LEAFGUARD AI
-              </h1>
-              
-              <p className="opening-subtitle slow-reveal-delay">
-                "Every leaf carries a signal."
-              </p>
-
-              <div className="opening-scroll-hint fade-in-element" onClick={() => scrollToNextScene("scene-02")}>
-                <span>Begin Film Journey</span>
-                <ChevronDown size={20} className="bounce-arrow" />
-              </div>
-            </div>
-          </section>
-
-          {/* SCENE 02 — THE LEAF */}
-          <section id="scene-02" className="film-scene scene-leaf">
-            <div className="scene-content">
-              <span className="scene-number-tag">SCENE 01 / 06</span>
-              
-              <div className="leaf-protagonist-wrapper">
-                <div className="leaf-visual-frame">
-                  <svg viewBox="0 0 200 200" className="botanical-leaf-svg">
-                    <defs>
-                      <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#10b981" stopOpacity="0.9" />
-                        <stop offset="50%" stopColor="#059669" stopOpacity="0.7" />
-                        <stop offset="100%" stopColor="#064e3b" stopOpacity="0.5" />
-                      </linearGradient>
-                      <linearGradient id="veinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#6ee7b7" stopOpacity="0.9" />
-                        <stop offset="100%" stopColor="#10b981" stopOpacity="0.3" />
-                      </linearGradient>
-                    </defs>
-                    <path 
-                      d="M100 20 C160 60 170 140 100 180 C30 140 40 60 100 20 Z" 
-                      fill="url(#leafGrad)" 
-                      stroke="#34d399" 
-                      strokeWidth="1.5" 
-                      className="leaf-main-path"
-                    />
-                    <path d="M100 20 L100 180" stroke="url(#veinGrad)" strokeWidth="2" />
-                    <path d="M100 60 C120 70 140 75 150 80" stroke="url(#veinGrad)" strokeWidth="1.2" fill="none" />
-                    <path d="M100 60 C80 70 60 75 50 80" stroke="url(#veinGrad)" strokeWidth="1.2" fill="none" />
-                    <path d="M100 100 C125 110 145 115 155 120" stroke="url(#veinGrad)" strokeWidth="1.2" fill="none" />
-                    <path d="M100 100 C75 110 55 115 45 120" stroke="url(#veinGrad)" strokeWidth="1.2" fill="none" />
-                    <circle cx="100" cy="100" r="40" fill="none" stroke="#6ee7b7" strokeWidth="0.8" strokeDasharray="3 3" className="leaf-reticle" />
-                  </svg>
-                  <div className="leaf-aura-glow"></div>
-                </div>
+              <div className="phase0-leaf-container">
+                <svg viewBox="0 0 240 240" className="phase0-protagonist-leaf">
+                  <defs>
+                    <radialGradient id="p0Glow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+                    </radialGradient>
+                  </defs>
+                  <path 
+                    d="M120 20 C190 60 200 180 120 220 C40 180 50 60 120 20 Z" 
+                    fill="#04271e" 
+                    stroke="#10b981" 
+                    strokeWidth="1.5" 
+                    className="p0-leaf-body"
+                  />
+                  <path d="M120 20 L120 220" stroke="#34d399" strokeWidth="2" />
+                  <path d="M120 70 Q150 85 170 90" stroke="#34d399" strokeWidth="1.2" fill="none" opacity="0.6" />
+                  <path d="M120 70 Q90 85 70 90" stroke="#34d399" strokeWidth="1.2" fill="none" opacity="0.6" />
+                  <path d="M120 130 Q160 145 180 150" stroke="#34d399" strokeWidth="1.2" fill="none" opacity="0.6" />
+                  <path d="M120 130 Q80 145 60 150" stroke="#34d399" strokeWidth="1.2" fill="none" opacity="0.6" />
+                </svg>
+                <div className="phase0-scan-laser"></div>
               </div>
 
-              <h2 className="scene-statement">
-                "One photograph can reveal what your plant is telling you."
-              </h2>
-              <p className="scene-subtext">
-                Microscopic cellular structures retain the earliest signatures of fungal, bacterial, and viral pathology.
-              </p>
-
-              <button className="btn-scene-next" onClick={() => scrollToNextScene("scene-03")}>
-                <span>Examine Visual Scan</span>
-                <ArrowDown size={16} />
-              </button>
-            </div>
-          </section>
-
-          {/* SCENE 03 — AI SCANNING */}
-          <section id="scene-03" className="film-scene scene-scanning">
-            <div className="scene-content">
-              <span className="scene-number-tag">SCENE 02 / 06</span>
-              
-              <div className="scan-canvas-wrapper">
-                <div className="scan-leaf-frame">
-                  <svg viewBox="0 0 200 200" className="scan-leaf-svg">
-                    <path 
-                      d="M100 20 C160 60 170 140 100 180 C30 140 40 60 100 20 Z" 
-                      fill="rgba(16, 185, 129, 0.15)" 
-                      stroke="#10b981" 
-                      strokeWidth="1.5" 
-                    />
-                    <line x1="20" y1="100" x2="180" y2="100" stroke="#34d399" strokeWidth="1" strokeDasharray="4 4" />
-                    <circle cx="85" cy="85" r="14" fill="rgba(239, 68, 68, 0.25)" stroke="#ef4444" strokeWidth="1.5" className="hotspot-pulse" />
-                    <circle cx="125" cy="120" r="10" fill="rgba(245, 158, 11, 0.25)" stroke="#f59e0b" strokeWidth="1.5" className="hotspot-pulse-delay" />
-                  </svg>
-                  
-                  {/* Scanning Laser Bar */}
-                  <div className="laser-scan-bar"></div>
-                  <div className="scan-hud-corner top-left"></div>
-                  <div className="scan-hud-corner top-right"></div>
-                  <div className="scan-hud-corner bottom-left"></div>
-                  <div className="scan-hud-corner bottom-right"></div>
-                </div>
-
-                {/* Animated Technical Status Overlays */}
-                <div className="scan-overlays-column">
-                  <div className="scan-overlay-badge active">
-                    <Camera size={16} />
-                    <span>01 CAPTURING HIGH-RES SURFACE</span>
-                  </div>
-                  <div className="scan-overlay-badge active">
-                    <Scan size={16} />
-                    <span>02 EXAMINING CELLULAR STRUCTURE</span>
-                  </div>
-                  <div className="scan-overlay-badge active">
-                    <BrainCircuit size={16} />
-                    <span>03 ANALYZING NEURAL PATTERNS</span>
-                  </div>
-                </div>
+              <div className="phase0-typography">
+                <span className="p0-tag">CINEMATIC AI PRODUCT FILM</span>
+                <h1 className="p0-headline">EVERY LEAF<br />CARRIES A SIGNAL.</h1>
+                <p className="p0-subline">"We learn to read it."</p>
+                <p className="p0-brand-sub">LEAFGUARD AI — AI-POWERED PLANT INTELLIGENCE</p>
               </div>
 
-              <h2 className="scene-statement">
-                Real-Time Neural Pattern Examination
-              </h2>
-              <p className="scene-subtext">
-                MobileNetV2 visual feature maps sweep millions of parameters to identify morphological anomalies.
-              </p>
-
-              <button className="btn-scene-next" onClick={() => scrollToNextScene("scene-04")}>
-                <span>View Visual Evidence</span>
-                <ArrowDown size={16} />
-              </button>
-            </div>
-          </section>
-
-          {/* SCENE 04 — VISUAL INTELLIGENCE */}
-          <section id="scene-04" className="film-scene scene-intelligence">
-            <div className="scene-content">
-              <span className="scene-number-tag">SCENE 03 / 06</span>
-              
-              <h2 className="scene-statement">
-                Beneath the Surface: Visual Evidence
-              </h2>
-              <p className="scene-subtext">
-                Grad-CAM neural attention overlays transform raw visual input into interpretable diagnostic heatmaps.
-              </p>
-
-              <div className="intelligence-dual-view">
-                <div className="intel-card">
-                  <div className="intel-card-header">
-                    <Camera size={16} />
-                    <span>ORIGINAL LEAF PHOTO</span>
-                  </div>
-                  <div className="intel-visual-box original-box">
-                    <svg viewBox="0 0 160 160" className="intel-svg">
-                      <path d="M80 15 C130 45 140 115 80 145 C20 115 30 45 80 15 Z" fill="#1b382b" stroke="#34d399" strokeWidth="1.5" />
-                      <circle cx="70" cy="70" r="16" fill="#42201d" stroke="#f87171" strokeWidth="1" />
-                    </svg>
-                    <span className="intel-tag">RGB Input Layer</span>
-                  </div>
-                </div>
-
-                <div className="intel-divider">
-                  <div className="intel-arrow">→</div>
-                </div>
-
-                <div className="intel-card highlight-card">
-                  <div className="intel-card-header">
-                    <Eye size={16} color="#10b981" />
-                    <span>AI VISUAL EVIDENCE (GRAD-CAM)</span>
-                  </div>
-                  <div className="intel-visual-box gradcam-box">
-                    <svg viewBox="0 0 160 160" className="intel-svg">
-                      <path d="M80 15 C130 45 140 115 80 145 C20 115 30 45 80 15 Z" fill="#0f291e" stroke="#10b981" strokeWidth="1.5" />
-                      <radialGradient id="gradcamDemo" cx="45%" cy="45%" r="40%">
-                        <stop offset="0%" stopColor="#ef4444" stopOpacity="0.95" />
-                        <stop offset="45%" stopColor="#f59e0b" stopOpacity="0.8" />
-                        <stop offset="80%" stopColor="#10b981" stopOpacity="0.3" />
-                        <stop offset="100%" stopColor="transparent" stopOpacity="0" />
-                      </radialGradient>
-                      <circle cx="70" cy="70" r="32" fill="url(#gradcamDemo)" />
-                      <circle cx="70" cy="70" r="12" fill="none" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2" />
-                    </svg>
-                    <span className="intel-tag attention-tag">Neural Activation Hotspot</span>
-                  </div>
-                </div>
-              </div>
-
-              <button className="btn-scene-next" onClick={() => scrollToNextScene("scene-05")}>
-                <span>See Demonstration Diagnosis</span>
-                <ArrowDown size={16} />
-              </button>
-            </div>
-          </section>
-
-          {/* SCENE 05 — DIAGNOSIS REVEAL */}
-          <section id="scene-05" className="film-scene scene-diagnosis-demo">
-            <div className="scene-content">
-              <span className="scene-number-tag">SCENE 04 / 06</span>
-              
-              <div className="demo-diagnosis-card glass-card">
-                <div className="demo-watermark-banner">
-                  <Sparkles size={14} />
-                  <span>EXAMPLE ANALYSIS — DEMONSTRATION VIEW</span>
-                </div>
-
-                <div className="demo-card-body">
-                  <div className="demo-result-header">
-                    <div className="demo-condition-badge">
-                      <ShieldAlert size={18} color="#ef4444" />
-                      <span>Early Blight (Alternaria solani)</span>
-                    </div>
-                    <div className="demo-confidence">
-                      <span className="conf-value">98.4%</span>
-                      <span className="conf-label">Confidence Match</span>
-                    </div>
-                  </div>
-
-                  <div className="demo-details-grid">
-                    <div className="demo-detail-item">
-                      <span className="detail-label">Host Plant</span>
-                      <span className="detail-val">Tomato (Solanum lycopersicum)</span>
-                    </div>
-                    <div className="demo-detail-item">
-                      <span className="detail-label">Severity Assessment</span>
-                      <span className="detail-val warning-text">Stage 2 — Moderate Lesions</span>
-                    </div>
-                    <div className="demo-detail-item">
-                      <span className="detail-label">Neural Verification</span>
-                      <span className="detail-val success-text">Grad-CAM Hotspots Confirmed</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <h2 className="scene-statement">
-                Instant Actionable Agronomic Intelligence
-              </h2>
-              <p className="scene-subtext">
-                Every scan provides accurate classification, visual validation, and step-by-step treatment guidance.
-              </p>
-
-              <button className="btn-scene-next" onClick={() => scrollToNextScene("scene-06")}>
-                <span>Explore The 5-Step Journey</span>
-                <ArrowDown size={16} />
-              </button>
-            </div>
-          </section>
-
-          {/* SCENE 06 — HOW LEAFGUARD WORKS (CONNECTED SINGLE-FLOW JOURNEY) */}
-          <section id="scene-06" className="film-scene scene-journey">
-            <div className="scene-content">
-              <span className="scene-number-tag">SCENE 05 / 06</span>
-              
-              <h2 className="scene-statement">
-                How LeafGuard Decodes Plant Health
-              </h2>
-              <p className="scene-subtext">
-                A connected, continuous 5-stage diagnostic pipeline from field photograph to treatment action.
-              </p>
-
-              <div className="connected-journey-container">
-                <div className="journey-flow-line"></div>
-
-                <div className="journey-step-node">
-                  <div className="node-marker">01</div>
-                  <div className="node-icon"><Camera size={22} /></div>
-                  <div className="node-info">
-                    <h4>01 CAPTURE</h4>
-                    <p>Take a clear leaf photo via mobile camera or upload from gallery.</p>
-                  </div>
-                </div>
-
-                <div className="journey-connector">↓</div>
-
-                <div className="journey-step-node">
-                  <div className="node-marker">02</div>
-                  <div className="node-icon"><BrainCircuit size={22} /></div>
-                  <div className="node-info">
-                    <h4>02 ANALYZE</h4>
-                    <p>MobileNetV2 neural networks examine cellular and morphological patterns.</p>
-                  </div>
-                </div>
-
-                <div className="journey-connector">↓</div>
-
-                <div className="journey-step-node">
-                  <div className="node-marker">03</div>
-                  <div className="node-icon"><Eye size={22} /></div>
-                  <div className="node-info">
-                    <h4>03 VISUALIZE</h4>
-                    <p>Grad-CAM pinpoints exact neural attention hotspots on the leaf image.</p>
-                  </div>
-                </div>
-
-                <div className="journey-connector">↓</div>
-
-                <div className="journey-step-node">
-                  <div className="node-marker">04</div>
-                  <div className="node-icon"><Sparkles size={22} /></div>
-                  <div className="node-info">
-                    <h4>04 UNDERSTAND</h4>
-                    <p>Review immediate condition diagnosis, percentage confidence, and symptoms.</p>
-                  </div>
-                </div>
-
-                <div className="journey-connector">↓</div>
-
-                <div className="journey-step-node">
-                  <div className="node-marker">05</div>
-                  <div className="node-icon"><ShieldCheck size={22} /></div>
-                  <div className="node-info">
-                    <h4>05 ACT</h4>
-                    <p>Apply targeted organic remedies, treatment plans, and spray schedules.</p>
-                  </div>
-                </div>
-              </div>
-
-              <button className="btn-scene-next" onClick={() => scrollToNextScene("scene-07")}>
-                <span>Proceed To Final Scene</span>
-                <ArrowDown size={16} />
-              </button>
-            </div>
-          </section>
-
-          {/* SCENE 07 — FINAL CTA */}
-          <section id="scene-07" className="film-scene scene-final-cta">
-            <div className="scene-content">
-              <span className="scene-number-tag">SCENE 06 / 06</span>
-              
-              <div className="final-cta-visual">
-                <Leaf size={48} color="var(--primary, #10b981)" className="final-leaf-icon" />
-              </div>
-
-              <h2 className="final-headline">
-                "Your plant is trying to tell you something."
-              </h2>
-              
-              <p className="final-subheadline">
-                Are you ready to listen?
-              </p>
-
-              <div className="final-cta-buttons">
-                <button className="btn btn-primary cta-main-btn" onClick={() => setShowForm(true)}>
-                  <span>SCAN A LEAF</span>
-                  <Scan size={20} />
-                </button>
-
-                <button className="btn btn-secondary cta-sub-btn" onClick={() => setShowForm(true)}>
-                  <span>SIGN IN TO WORKSTATION</span>
-                  <ArrowRight size={18} />
+              <div className="phase0-cta-row">
+                <button className="btn btn-primary btn-p0-enter" onClick={() => setShowForm(true)}>
+                  <span>ENTER THE EXPERIENCE</span>
+                  <Play size={16} fill="currentColor" />
                 </button>
               </div>
 
-              <p className="final-footer-note">
-                LeafGuard AI • Next-Gen Plant Pathology Platform
+              <div className="scroll-indicator-down">
+                <span>SCROLL TO DISCOVER THE STORY</span>
+                <ArrowDown size={14} className="pulse-arrow" />
+              </div>
+
+            </div>
+          </section>
+
+          {/* LANDING SCROLL STORY — SECTION 1: THE PROBLEM */}
+          <section className="phase0-story-section problem-section">
+            <div className="story-content-box">
+              <span className="story-chapter-num">01 / THE PROBLEM</span>
+              <div className="story-visual-graphic damaged-leaf-visual">
+                <svg viewBox="0 0 200 200" className="story-svg">
+                  <path d="M100 20 C160 60 170 140 100 180 C30 140 40 60 100 20 Z" fill="#180e0a" stroke="#ef4444" strokeWidth="1.5" />
+                  <circle cx="120" cy="80" r="16" fill="#ef4444" opacity="0.3" />
+                  <circle cx="85" cy="120" r="22" fill="#ef4444" opacity="0.25" />
+                  <path d="M100 20 L100 180" stroke="#f87171" strokeWidth="1.5" strokeDasharray="3 3" />
+                </svg>
+              </div>
+              <h2 className="story-heading">
+                A PLANT CAN'T SPEAK.<br />
+                <span className="highlight-text">BUT ITS LEAVES CAN.</span>
+              </h2>
+              <p className="story-desc">
+                Silent visual signals appear long before crop destruction occurs. Early detection is the difference between yield loss and total recovery.
               </p>
+            </div>
+          </section>
+
+          {/* LANDING SCROLL STORY — SECTION 2: THE SIGNAL */}
+          <section className="phase0-story-section signal-section">
+            <div className="story-content-box">
+              <span className="story-chapter-num">02 / THE SIGNAL</span>
+              <div className="story-visual-graphic vein-map-visual">
+                <svg viewBox="0 0 200 200" className="story-svg">
+                  <path d="M100 20 C160 60 170 140 100 180 C30 140 40 60 100 20 Z" fill="#04271e" stroke="#10b981" strokeWidth="1.5" />
+                  <line x1="100" y1="20" x2="100" y2="180" stroke="#34d399" strokeWidth="2" />
+                  <circle cx="100" cy="70" r="4" fill="#34d399" className="pulse-node" />
+                  <circle cx="130" cy="95" r="4" fill="#34d399" className="pulse-node" />
+                  <circle cx="70" cy="135" r="4" fill="#34d399" className="pulse-node" />
+                </svg>
+              </div>
+              <h2 className="story-heading">
+                COLOR. TEXTURE. PATTERN.<br />
+                <span className="highlight-text">EVERY DETAIL CARRIES INFORMATION.</span>
+              </h2>
+              <p className="story-desc">
+                Microscopic chlorotic rings, necrotic lesions, and vein discoloration hold exact biological telemetry that computer vision decodes in milliseconds.
+              </p>
+            </div>
+          </section>
+
+          {/* LANDING SCROLL STORY — SECTION 3: THE MACHINE */}
+          <section className="phase0-story-section machine-section">
+            <div className="story-content-box">
+              <span className="story-chapter-num">03 / THE MACHINE</span>
+              <div className="machine-pipeline-flow">
+                <div className="pipe-node">
+                  <Scan size={24} color="#10b981" />
+                  <span>IMAGE</span>
+                </div>
+                <div className="pipe-arrow">→</div>
+                <div className="pipe-node">
+                  <Layers size={24} color="#10b981" />
+                  <span>FEATURES</span>
+                </div>
+                <div className="pipe-arrow">→</div>
+                <div className="pipe-node">
+                  <BrainCircuit size={24} color="#10b981" />
+                  <span>NEURAL NET</span>
+                </div>
+                <div className="pipe-arrow">→</div>
+                <div className="pipe-node">
+                  <Activity size={24} color="#10b981" />
+                  <span>DIAGNOSIS</span>
+                </div>
+              </div>
+              <h2 className="story-heading">
+                THE MODEL LOOKS<br />
+                <span className="highlight-text">DEEP BEYOND THE SURFACE.</span>
+              </h2>
+              <p className="story-desc">
+                MobileNetV2 neural feature extractors combined with Grad-CAM explainability heatmaps illuminate precisely where attention was focused.
+              </p>
+            </div>
+          </section>
+
+          {/* LANDING SCROLL STORY — SECTION 4: THE ANSWER */}
+          <section className="phase0-story-section answer-section">
+            <div className="story-content-box center-text">
+              <span className="story-chapter-num">04 / THE ANSWER</span>
+              <h2 className="story-heading huge-heading">
+                "WHAT IF WE COULD<br />
+                <span className="highlight-text-bright">READ THE SIGNAL?"</span>
+              </h2>
+              <p className="story-desc max-width-p">
+                Experience agricultural diagnostic intelligence designed for instant crop diagnosis, transparent heatmaps, and actionable treatment strategy.
+              </p>
+              <div className="answer-cta-box">
+                <button className="btn btn-primary btn-p0-enter-large" onClick={() => setShowForm(true)}>
+                  <span>ENTER LEAFGUARD LAB</span>
+                  <ArrowRight size={20} />
+                </button>
+              </div>
             </div>
           </section>
 
         </div>
       ) : (
-        /* VISUALLY DISTINCT CINEMATIC AUTHENTICATION WORKSTATION */
-        <div className="auth-workstation-view fade-in-element">
+        /* PHASE 1 — LOGIN: "ENTER THE LAB" (60/40 CINEMATIC SPLIT) */
+        <div className="phase1-lab-view fade-in-element">
           
-          <div className="workstation-header-bar">
-            <button className="btn-back-overview" onClick={() => setShowForm(false)}>
-              ← Back to Product Overview
+          <div className="lab-header-bar">
+            <button className="btn-back-film" onClick={() => setShowForm(false)}>
+              ← Back to Product Film
             </button>
-            <div className="workstation-brand">
-              <Leaf size={20} color="var(--primary, #10b981)" />
-              <span>LEAFGUARD WORKSTATION</span>
+            <div className="lab-brand-title">
+              <Leaf size={20} color="#10b981" />
+              <span>LEAFGUARD AI LAB</span>
             </div>
           </div>
 
-          <div className="workstation-container">
-            <div className="workstation-glass-panel">
-              
-              <div className="workstation-title-box">
-                <div className="workstation-icon-badge">
-                  <Activity size={24} color="var(--primary, #10b981)" />
-                </div>
-                <h2>Diagnostic System Access</h2>
-                <p>Authenticate to access the deep neural scan engine and pathology archive.</p>
+          <div className="lab-split-layout">
+            
+            {/* LEFT 60%: CINEMATIC VISUAL SYSTEM */}
+            <div className="lab-visual-column desktop-only">
+              <div className="lab-visual-frame">
+                <svg viewBox="0 0 200 200" className="lab-leaf-svg">
+                  <path d="M100 20 C160 60 170 140 100 180 C30 140 40 60 100 20 Z" fill="#04271e" stroke="#10b981" strokeWidth="1.5" />
+                  <line x1="20" y1="100" x2="180" y2="100" stroke="#34d399" strokeWidth="1" strokeDasharray="4 4" />
+                </svg>
+                <div className="lab-laser-beam"></div>
               </div>
+              <p className="lab-visual-tagline">
+                "Plants cannot speak. Their leaves show signs. LeafGuard interprets those signs with neural computer vision."
+              </p>
+            </div>
 
-              {/* Login / Register Tab Selector */}
-              <div className="workstation-tabs">
-                <button
-                  type="button"
-                  className={`workstation-tab ${isLogin ? "active" : ""}`}
-                  onClick={() => { setIsLogin(true); setError(""); }}
-                >
-                  <User size={16} />
-                  <span>SIGN IN</span>
-                </button>
-                <button
-                  type="button"
-                  className={`workstation-tab ${!isLogin ? "active" : ""}`}
-                  onClick={() => { setIsLogin(false); setError(""); }}
-                >
-                  <ShieldCheck size={16} />
-                  <span>CREATE ACCOUNT</span>
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="workstation-form">
-                {error && (
-                  <div className="workstation-error-box">
-                    <ShieldAlert size={18} />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                <div className="workstation-input-wrapper">
-                  <label className="input-label">Username</label>
-                  <div className="input-field-box">
-                    <User size={18} className="field-icon" />
-                    <input
-                      type="text"
-                      placeholder="Enter your username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      required
-                    />
-                  </div>
+            {/* RIGHT 40%: INTEGRATED WORKSTATION LOGIN */}
+            <div className="lab-auth-column">
+              <div className="lab-auth-panel glass-card">
+                
+                <div className="lab-panel-header">
+                  <span className="lab-sys-tag">DIAGNOSTIC WORKSTATION</span>
+                  <h2>ENTER THE LAB</h2>
+                  <p>Identify yourself. The leaf journey begins here.</p>
                 </div>
 
-                <div className="workstation-input-wrapper">
-                  <label className="input-label">Password</label>
-                  <div className="input-field-box">
-                    <Lock size={18} className="field-icon" />
-                    <input
-                      type="password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
+                <div className="lab-tabs-row">
+                  <button
+                    type="button"
+                    className={`lab-tab ${isLogin ? "active" : ""}`}
+                    onClick={() => { setIsLogin(true); setError(""); }}
+                  >
+                    SIGN IN
+                  </button>
+                  <button
+                    type="button"
+                    className={`lab-tab ${!isLogin ? "active" : ""}`}
+                    onClick={() => { setIsLogin(false); setError(""); }}
+                  >
+                    CREATE ACCOUNT
+                  </button>
                 </div>
 
-                {!isLogin && (
-                  <>
-                    <div className="workstation-input-wrapper">
-                      <label className="input-label">Location (City / Region)</label>
-                      <div className="input-field-box">
-                        <MapPin size={18} className="field-icon" />
-                        <input
-                          type="text"
-                          placeholder="e.g. California, USA or Coimbatore, India"
-                          value={location}
-                          onChange={(e) => setLocation(e.target.value)}
-                        />
-                      </div>
+                <form onSubmit={handleSubmit} className="lab-form">
+                  {error && (
+                    <div className="lab-error-banner">
+                      <ShieldAlert size={18} />
+                      <span>{error}</span>
                     </div>
+                  )}
 
-                    <div className="workstation-input-wrapper">
-                      <label className="input-label">Profile Avatar (Optional)</label>
-                      <div className="input-file-box">
+                  <div className="lab-input-group">
+                    <label>Username</label>
+                    <div className="input-box">
+                      <User size={18} className="field-icon" />
+                      <input
+                        type="text"
+                        placeholder="Enter your username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="lab-input-group">
+                    <label>Password</label>
+                    <div className="input-box">
+                      <Lock size={18} className="field-icon" />
+                      <input
+                        type="password"
+                        placeholder="Enter password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {!isLogin && (
+                    <>
+                      <div className="lab-input-group">
+                        <label>Location (City / Region)</label>
+                        <div className="input-box">
+                          <MapPin size={18} className="field-icon" />
+                          <input
+                            type="text"
+                            placeholder="e.g. California, USA"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="lab-input-group">
+                        <label>Profile Avatar</label>
                         <input
                           type="file"
                           accept="image/*"
                           onChange={handleImageChange}
-                          className="file-input-hidden"
-                          id="avatarUpload"
+                          className="file-input-btn"
                         />
-                        <label htmlFor="avatarUpload" className="file-input-btn">
-                          <Camera size={16} />
-                          <span>{profileImage ? "Avatar Uploaded ✓" : "Choose Profile Photo"}</span>
-                        </label>
                       </div>
-                    </div>
-                  </>
-                )}
-
-                <button type="submit" className="btn btn-primary workstation-submit-btn" disabled={loading}>
-                  {loading ? (
-                    <span>Authenticating System...</span>
-                  ) : (
-                    <>
-                      <span>{isLogin ? "ENTER WORKSTATION" : "CREATE WORKSTATION ACCOUNT"}</span>
-                      <ArrowRight size={18} />
                     </>
                   )}
-                </button>
-              </form>
 
-              <div className="workstation-footer">
-                <span>Protected by LeafGuard Encrypted Session Tokens</span>
+                  <button type="submit" className="btn btn-primary lab-submit-btn" disabled={loading}>
+                    {loading ? (
+                      <span>AUTHENTICATING...</span>
+                    ) : (
+                      <>
+                        <span>{isLogin ? "ENTER LEAFGUARD" : "CREATE WORKSTATION"}</span>
+                        <ArrowRight size={18} />
+                      </>
+                    )}
+                  </button>
+                </form>
+
               </div>
-
             </div>
+
           </div>
 
         </div>

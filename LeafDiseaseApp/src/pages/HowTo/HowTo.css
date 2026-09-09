@@ -5,8 +5,8 @@
 .howto-master-container {
   min-height: 100vh;
   width: 100%;
-  background-color: var(--bg-primary, #060c09);
-  color: var(--text-primary, #eaeaea);
+  background-color: #040806;
+  color: #f3f4f6;
   position: relative;
   overflow-x: hidden;
   padding-top: 60px;
@@ -19,7 +19,7 @@
   left: 0;
   width: 100%;
   padding: 12px 6%;
-  background: rgba(6, 12, 9, 0.85);
+  background: rgba(4, 8, 6, 0.9);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
@@ -47,8 +47,8 @@
 
 .howto-step-title {
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
   color: #ffffff;
 }
 
@@ -65,7 +65,7 @@
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -74,7 +74,7 @@
   background: #10b981;
   border-color: #10b981;
   color: #ffffff;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
 }
 
 /* Master Scene Layout */
@@ -110,11 +110,11 @@
 }
 
 .howto-headline {
-  font-size: clamp(28px, 5vw, 42px);
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-size: clamp(32px, 6vw, 52px);
+  font-weight: 900;
+  letter-spacing: -1px;
   color: #ffffff;
-  line-height: 1.25;
+  line-height: 1.15;
 }
 
 .howto-description {
@@ -217,23 +217,25 @@
   justify-content: center;
 }
 
-.capture-instructions-card {
+.capture-rules-spatial {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 16px 24px;
-  border-radius: 14px;
-  text-align: left;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.rule-item {
+.rule-pill {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
   font-size: 13px;
-  color: #d1d5db;
+  font-weight: 800;
+  letter-spacing: 1px;
 }
 
 /* Scene 3 Analysis Grid */
@@ -250,7 +252,7 @@
   width: 180px;
   height: 180px;
   border-radius: 16px;
-  background: rgba(4, 47, 46, 0.6);
+  background: rgba(4, 39, 30, 0.6);
   border: 1px solid rgba(16, 185, 129, 0.3);
   display: flex;
   align-items: center;
@@ -258,10 +260,7 @@
   overflow: hidden;
 }
 
-.grid-leaf {
-  width: 140px;
-  height: 140px;
-}
+.grid-leaf { width: 140px; height: 140px; }
 
 .scan-laser-line {
   position: absolute;
@@ -308,16 +307,14 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(12, 22, 17, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 16px;
   border-radius: 16px;
   width: 200px;
 }
 
-.gradcam-side {
-  border-color: rgba(16, 185, 129, 0.4);
-}
+.gradcam-side { border-color: rgba(16, 185, 129, 0.4); }
 
 .split-label {
   font-size: 10px;
@@ -335,65 +332,43 @@
   justify-content: center;
 }
 
-.split-sub {
-  font-size: 12px;
-  color: #9ca3af;
-}
+.split-divider { color: #10b981; }
 
-.attention-text {
-  color: #f87171;
-  font-weight: 700;
-}
-
-.split-divider {
-  color: #10b981;
-}
-
-/* Scene 5 Understand Cards */
-.understand-cards-layout {
+/* Scene 5 Understand Spatial Nodes */
+.spatial-nodes-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   width: 100%;
   margin: 16px 0;
 }
 
-.u-card {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  padding: 20px;
-  border-radius: 16px;
+.spatial-node {
+  background: rgba(12, 22, 17, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 18px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 10px;
+  gap: 4px;
+  text-align: left;
 }
 
-.u-card-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: rgba(16, 185, 129, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.u-card h4 {
-  font-size: 15px;
+.sn-title {
+  font-size: 11px;
   font-weight: 800;
-  color: #ffffff;
+  letter-spacing: 1.5px;
+  color: #10b981;
 }
 
-.u-card p {
+.sn-desc {
   font-size: 13px;
-  color: #9ca3af;
-  line-height: 1.4;
+  color: #f3f4f6;
+  font-weight: 600;
 }
 
 /* Scene 6 Act & Final Scan CTA */
-.act-transformation-visual {
+.act-healthy-visual {
   width: 100px;
   height: 100px;
   display: flex;
@@ -437,7 +412,6 @@
   gap: 12px;
 }
 
-/* Animations */
 @keyframes auraPulse {
   0%, 100% { transform: scale(1); opacity: 0.8; }
   50% { transform: scale(1.1); opacity: 0.5; }
@@ -449,30 +423,9 @@
   100% { top: 0%; opacity: 0.8; }
 }
 
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .aura-pulse,
-  .scan-laser-line {
-    animation: none !important;
-  }
-}
-
-/* Responsive */
 @media (max-width: 640px) {
-  .howto-progress-bar {
-    top: 50px;
-    padding: 8px 4%;
-  }
-
-  .howto-step-title {
-    display: none;
-  }
-
-  .howto-scene {
-    padding: 60px 4% 40px 4%;
-  }
-
-  .split-divider {
-    transform: rotate(90deg);
-  }
+  .howto-progress-bar { top: 50px; padding: 8px 4%; }
+  .howto-step-title { display: none; }
+  .howto-scene { padding: 60px 4% 40px 4%; }
+  .split-divider { transform: rotate(90deg); }
 }

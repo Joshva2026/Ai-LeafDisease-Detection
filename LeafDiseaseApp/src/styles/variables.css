@@ -4,32 +4,32 @@
  ===================================================== */
 
 :root {
-  /* Colors (Light Theme Defaults) */
-  --bg-primary: #F8FAF7;      /* Warm off-white with subtle green tint */
-  --bg-secondary: #EFF3EF;    /* Very soft sage-tinted background */
-  --primary: #4E876A;         /* Fresh Emerald / Leaf Green Accent */
-  --primary-hover: #3D6B53;
-  --primary-light: #EBF2ED;   /* Faint green background for tags */
-  --primary-dark: #16221D;    /* Deep Forest Green / Charcoal (Typography) */
-  --secondary: #5A6A64;       /* Muted gray-green */
-  --accent: #E5B3B0;          /* Subtle Dusty Pink */
-  --accent-light: #F9ECEB;
-  --accent-dark: #A57370;
-  --card-bg: rgba(255, 255, 255, 0.82); /* Semi-transparent glass surface */
-  --card-hover-bg: rgba(255, 255, 255, 0.9);
+  /* Colors (Dark Cinematic Defaults) */
+  --bg-primary: #040806;      /* Near-black cinematic background */
+  --bg-secondary: #08120d;    /* Dark botanical depth */
+  --primary: #10b981;         /* Emerald Green Accent */
+  --primary-hover: #059669;
+  --primary-light: rgba(16, 185, 129, 0.15);
+  --primary-dark: #064e3b;
+  --secondary: #6b7280;
+  --accent: #34d399;
+  --accent-light: rgba(52, 211, 153, 0.15);
+  --accent-dark: #059669;
+  --card-bg: rgba(12, 22, 17, 0.75); /* Dark glass surface */
+  --card-hover-bg: rgba(16, 30, 23, 0.85);
   
   /* Status Colors */
-  --color-healthy: #3D8C61;   /* Natural Emerald Green */
-  --color-healthy-light: rgba(61, 140, 97, 0.08);
-  --color-warning: #D1893F;   /* Warm Ochre */
-  --color-warning-light: rgba(209, 137, 63, 0.08);
-  --color-danger: #C55E57;    /* Rust Red / Severe Risk */
-  --color-danger-light: rgba(197, 94, 87, 0.08);
+  --color-healthy: #10b981;
+  --color-healthy-light: rgba(16, 185, 129, 0.12);
+  --color-warning: #f59e0b;
+  --color-warning-light: rgba(245, 158, 11, 0.12);
+  --color-danger: #ef4444;
+  --color-danger-light: rgba(239, 68, 68, 0.12);
   
   /* Typography Colors */
-  --text-primary: #16221D;    /* Deep Forest charcoal for high contrast */
-  --text-secondary: #5A6A64;  /* Muted Sage text */
-  --text-light: #8CA295;      /* Light Sage Text */
+  --text-primary: #f3f4f6;    /* Bright white for high contrast */
+  --text-secondary: #9ca3af;  /* Muted silver text */
+  --text-light: #6b7280;      /* Muted gray text */
   --text-white: #FFFFFF;
   
   /* Borders */
