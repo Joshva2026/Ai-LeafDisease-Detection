@@ -42,10 +42,15 @@ export function saveHistory(username, history) {
     const trimmed = sanitized.slice(0, MAX_HISTORY_ENTRIES);
     localStorage.setItem(`history_${username}`, JSON.stringify(trimmed));
   } catch (e) {
-    // Handle quota exceeded: remove the offending key and log a warning
-    if (e.name === 'QuotaExceededError' || e.message.includes('quota')) {
-      console.warn(`Quota exceeded for history_${username}. Removing key.`);
-      localStorage.removeItem(`history_${username}`);
+    // Handle quota exceeded gracefully by trimming older entries without wiping history
+    if (e.name === 'QuotaExceededError' || (e.message && e.message.includes('quota'))) {
+      console.warn(`Quota exceeded for history_${username}. Trimming history to 10 entries.`);
+      try {
+        const trimmed10 = history.slice(0, 10);
+        localStorage.setItem(`history_${username}`, JSON.stringify(trimmed10));
+      } catch (err) {
+        console.error("Could not save trimmed history", err);
+      }
     } else {
       console.warn("Failed to save history for", username, e);
     }

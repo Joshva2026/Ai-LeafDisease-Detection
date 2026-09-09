@@ -55,10 +55,12 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
     });
 
     result.sort((a, b) => {
+      const tsA = (a && a.timestamp) ? String(a.timestamp) : "";
+      const tsB = (b && b.timestamp) ? String(b.timestamp) : "";
       if (sortOrder === "newest") {
-        return b.timestamp.localeCompare(a.timestamp);
+        return tsB.localeCompare(tsA);
       } else {
-        return a.timestamp.localeCompare(b.timestamp);
+        return tsA.localeCompare(tsB);
       }
     });
 
@@ -68,6 +70,8 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
   const toggleSort = () => {
     setSortOrder(prev => prev === "newest" ? "oldest" : "newest");
   };
+
+  const safeHistory = Array.isArray(history) ? history : [];
 
   return (
     <div className="leaf-memory-container fade-in-section">
@@ -102,7 +106,7 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
             className={`memory-tab ${filter === "all" ? "active" : ""}`}
             onClick={() => setFilter("all")}
           >
-            {lang === "ta" ? "அனைத்தும்" : "All Memory"} ({history.length})
+            {lang === "ta" ? "அனைத்தும்" : "All Memory"} ({safeHistory.length})
           </button>
           <button
             className={`memory-tab ${filter === "healthy" ? "active" : ""}`}
@@ -126,14 +130,22 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
 
       {/* TIMELINE SPECIMEN GRID */}
       <div className="memory-timeline-content">
-        {filteredAndSortedList.length === 0 ? (
-          <div className="memory-empty-card glass-card">
-            <HistoryIcon size={40} className="empty-icon" />
-            <h3>No Leaf Memory Records Found</h3>
-            <p>No scans match your current filter or search terms. Perform a new diagnostic scan to add specimens.</p>
-            <button className="btn btn-primary mt-3" onClick={() => onViewChange("scan")}>
-              Launch Scan Chamber
+        {safeHistory.length === 0 ? (
+          <div className="memory-empty-card glass-card" style={{ textAlignment: "center", padding: "48px 24px" }}>
+            <HistoryIcon size={48} className="empty-icon" style={{ color: "#34d399", marginBottom: "16px" }} />
+            <h3 style={{ fontSize: "20px", color: "#ffffff", marginBottom: "8px" }}>LEAF MEMORY ARCHIVE IS EMPTY</h3>
+            <p style={{ color: "#9ca3af", maxWidth: "460px", margin: "0 auto 20px auto", lineHeight: "1.6" }}>
+              No specimens analyzed yet. Your analyzed leaves, Grad-CAM heatmaps, and AI Farmer Reports will be preserved here.
+            </p>
+            <button className="btn btn-primary" onClick={() => onViewChange("scan")} style={{ maxWidth: "240px", margin: "0 auto" }}>
+              START FIRST SCAN
             </button>
+          </div>
+        ) : filteredAndSortedList.length === 0 ? (
+          <div className="memory-empty-card glass-card" style={{ textAlignment: "center", padding: "40px 24px" }}>
+            <Search size={40} className="empty-icon" style={{ color: "#9ca3af", marginBottom: "12px" }} />
+            <h3 style={{ color: "#ffffff" }}>No Matching Specimens Found</h3>
+            <p style={{ color: "#9ca3af" }}>No scans match "{searchQuery}". Try clearing your search query or switching filters.</p>
           </div>
         ) : (
           <div className="specimen-timeline-list">

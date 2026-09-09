@@ -1,196 +1,270 @@
-import { useState } from "react";
-import { Search, ArrowLeft, Info, HelpCircle, Activity, Stethoscope, ShieldCheck, AlertOctagon, BookOpen } from "lucide-react";
-import { mapClassName } from "../../data/diseaseHelper";
-import { t } from "../../data/translations";
+import { useState, useMemo } from "react";
+import { Search, ArrowLeft, Info, Activity, Stethoscope, ShieldCheck, Maximize2, X, Sparkles, Filter, Leaf } from "lucide-react";
+import { plantGuideData } from "../../data/plantGuideData";
 import diseaseData from "../../data/diseaseData";
 import "./PlantGuide.css";
 
 function PlantGuide({ onViewChange, lang }) {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedSpecies, setSelectedSpecies] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeDiseaseKey, setActiveDiseaseKey] = useState(null);
+  const [activeSpecimen, setActiveSpecimen] = useState(null);
+  const [fullscreenImage, setFullscreenImage] = useState(null);
 
-  const diseasesList = Object.keys(diseaseData).map(key => {
-    const parsed = mapClassName(key, lang);
-    return {
-      key,
-      ...parsed,
-      description: diseaseData[key].description,
-      symptoms: diseaseData[key].symptoms,
-      treatment: diseaseData[key].treatment,
-      prevention: diseaseData[key].prevention
-    };
-  });
+  // Available unique species
+  const speciesList = useMemo(() => {
+    const set = new Set();
+    plantGuideData.forEach(item => set.add(item.species));
+    return ["all", ...Array.from(set)];
+  }, []);
 
   const categories = [
-    { id: "all", label: lang === "ta" ? "அனைத்தும்" : "All Species" },
-    { id: "healthy", label: lang === "ta" ? "ஆரோக்கியமான" : "Healthy" },
-    { id: "fungal", label: lang === "ta" ? "பூஞ்சை" : "Fungal" },
-    { id: "bacterial", label: lang === "ta" ? "பாக்டீரியா" : "Bacterial" },
-    { id: "viral", label: lang === "ta" ? "வைரஸ்" : "Viral" }
+    { id: "all", label: lang === "ta" ? "அனைத்தும்" : "ALL" },
+    { id: "healthy", label: lang === "ta" ? "ஆரோக்கியமான" : "HEALTHY" },
+    { id: "bacterial", label: lang === "ta" ? "பாக்டீரியா" : "BACTERIAL" },
+    { id: "fungal", label: lang === "ta" ? "பூஞ்சை" : "FUNGAL" },
+    { id: "viral", label: lang === "ta" ? "வைரஸ்" : "VIRAL" }
   ];
 
-  const filteredDiseases = diseasesList.filter(item => {
-    const matchesSearch = 
-      item.plantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.diseaseName.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (selectedCategory === "all") return matchesSearch;
-    if (selectedCategory === "healthy") return matchesSearch && item.isHealthy;
-    
-    return matchesSearch && item.status.toLowerCase() === selectedCategory.toLowerCase();
-  });
+  const filteredSpecimens = useMemo(() => {
+    return plantGuideData.filter(item => {
+      const query = searchQuery.toLowerCase();
+      const matchesSearch = 
+        item.species.toLowerCase().includes(query) ||
+        item.diseaseName.toLowerCase().includes(query) ||
+        item.latin.toLowerCase().includes(query);
 
-  const activeDisease = diseasesList.find(d => d.key === activeDiseaseKey);
+      const matchesCategory = (selectedCategory === "all") || (item.category === selectedCategory);
+      const matchesSpecies = (selectedSpecies === "all") || (item.species.toLowerCase() === selectedSpecies.toLowerCase());
 
-  const getPlantUrl = (plantName) => {
-    const p = (plantName || "").toLowerCase().replace(/[^a-z]/g, "");
-    const supported = ["apple", "blueberry", "cherry", "corn", "grape", "orange", "peach", "pepper", "potato", "raspberry", "soybean", "squash", "strawberry", "tomato"];
-    if (supported.includes(p)) {
-      return `/assets/plant_guide/${p}_leaf.jpg`;
-    }
-    return "/assets/plant_guide/apple_leaf.jpg";
-  };
+      return matchesSearch && matchesCategory && matchesSpecies;
+    });
+  }, [searchQuery, selectedCategory, selectedSpecies]);
 
-  if (activeDisease) {
-    return (
-      <div className="botanical-archive-container fade-in-section">
-        <div className="archive-detail-header">
-          <button className="btn-back-archive" onClick={() => setActiveDiseaseKey(null)}>
-            <ArrowLeft size={18} />
-            <span>Back to Botanical Archive</span>
-          </button>
-          <span className="archive-specimen-id">TAXONOMY RECORD #{activeDisease.key.toUpperCase()}</span>
-        </div>
-
-        <div className="archive-detail-card glass-card">
-          <div className="detail-hero-box">
-            <img src={getPlantUrl(activeDisease.plantName)} alt={activeDisease.plantName} className="detail-hero-img" />
-            <div className="detail-hero-overlay">
-              <span className="detail-plant-tag">{activeDisease.plantName}</span>
-              <h2>{activeDisease.diseaseName}</h2>
-            </div>
-          </div>
-
-          <div className="detail-sections-grid">
-            <div className="d-section-block">
-              <div className="d-sec-head">
-                <Info size={16} color="#10b981" />
-                <h4>Description & Pathology Overview</h4>
-              </div>
-              <p>{activeDisease.description}</p>
-            </div>
-
-            {!activeDisease.isHealthy && (
-              <>
-                <div className="d-section-block">
-                  <div className="d-sec-head">
-                    <Activity size={16} color="#f59e0b" />
-                    <h4>Recognized Symptoms</h4>
-                  </div>
-                  <ul>
-                    {activeDisease.symptoms.map((s, i) => <li key={i}>{s}</li>)}
-                  </ul>
-                </div>
-
-                <div className="d-section-block">
-                  <div className="d-sec-head">
-                    <Stethoscope size={16} color="#34d399" />
-                    <h4>Recommended Agronomic Treatment</h4>
-                  </div>
-                  <p>{activeDisease.treatment}</p>
-                </div>
-              </>
-            )}
-
-            <div className="d-section-block">
-              <div className="d-sec-head">
-                <ShieldCheck size={16} color="#10b981" />
-                <h4>Long-Term Prevention Strategy</h4>
-              </div>
-              <p>{activeDisease.prevention}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Group specimens by species if showing all or specific species
+  const groupedBySpecies = useMemo(() => {
+    const map = {};
+    filteredSpecimens.forEach(item => {
+      if (!map[item.species]) map[item.species] = [];
+      map[item.species].push(item);
+    });
+    return map;
+  }, [filteredSpecimens]);
 
   return (
-    <div className="botanical-archive-container fade-in-section">
+    <div className="botanical-archive-page fade-in-section">
       
-      {/* HEADER */}
-      <header className="archive-header">
+      {/* ARCHIVE HERO HEADER */}
+      <header className="archive-hero">
         <div className="archive-badge">
           <span className="badge-pulse-dot"></span>
-          <span>BOTANICAL ARCHIVE & ENCYCLOPEDIA</span>
+          <span>BOTANICAL ARCHIVE</span>
         </div>
-        <h1 className="archive-title">Explore Plant Intelligence</h1>
+        <h1 className="archive-title">Know The Leaf. Understand The Disease.</h1>
         <p className="archive-subtitle">
-          A living botanical library covering 38 crop pathology classifications, symptoms, organic care, and disease prevention.
+          An editorial specimen library powered by 38 dataset leaf pathology classes. Inspect real leaf specimens across 14 crop species.
         </p>
       </header>
 
-      {/* CONTROLS */}
-      <div className="archive-controls glass-card">
+      {/* ARCHIVE CONTROLS & FILTERING BAR */}
+      <div className="archive-bar glass-card">
+        {/* Search Input */}
         <div className="archive-search-box">
-          <Search size={16} className="search-icon" />
+          <Search size={18} className="search-icon" />
           <input
             type="text"
-            placeholder={lang === "ta" ? "நோய்கள் அல்லது பயிர்களைத் தேடுக..." : "Search crops, pathogens, or symptoms..."}
+            placeholder={lang === "ta" ? "பயிர் அல்லது நோயை தேடுங்கள்..." : "Search botanical archive (e.g. Tomato, Early Blight)..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="archive-search-input"
           />
         </div>
 
-        <div className="archive-categories-row">
+        {/* Category Tabs */}
+        <div className="archive-category-tabs">
           {categories.map((cat) => (
             <button
               key={cat.id}
-              className={`archive-cat-btn ${selectedCategory === cat.id ? "active" : ""}`}
+              className={`archive-cat-tab ${selectedCategory === cat.id ? "active" : ""}`}
               onClick={() => setSelectedCategory(cat.id)}
             >
               {cat.label}
             </button>
           ))}
         </div>
+
+        {/* Species Filter Pills */}
+        <div className="archive-species-pills">
+          <span className="species-filter-lbl">SPECIES:</span>
+          {speciesList.map((sp) => (
+            <button
+              key={sp}
+              className={`species-pill ${selectedSpecies === sp ? "active" : ""}`}
+              onClick={() => setSelectedSpecies(sp)}
+            >
+              {sp === "all" ? "ALL SPECIES" : sp.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* SPECIES CARDS GRID */}
-      <div className="archive-grid">
-        {filteredDiseases.length === 0 ? (
-          <div className="archive-empty glass-card">
-            <AlertOctagon size={36} color="#9ca3af" />
-            <p>No botanical records found matching criteria.</p>
+      {/* BOTANICAL SPECIMENS GRID BY SPECIES */}
+      <div className="archive-specimen-viewport">
+        {Object.keys(groupedBySpecies).length === 0 ? (
+          <div className="archive-empty-card glass-card">
+            <Leaf size={44} style={{ color: "#34d399", marginBottom: "12px" }} />
+            <h3>No Specimens Match Your Criteria</h3>
+            <p>Try searching for another plant species or resetting your filter tabs.</p>
           </div>
         ) : (
-          filteredDiseases.map((item) => (
-            <div 
-              key={item.key} 
-              className="species-card glass-card"
-              onClick={() => setActiveDiseaseKey(item.key)}
-            >
-              <div className="species-img-box">
-                <img src={getPlantUrl(item.plantName)} alt={item.plantName} />
-              </div>
+          Object.entries(groupedBySpecies).map(([speciesName, items]) => (
+            <section key={speciesName} className="species-block-section">
               
-              <div className="species-info">
-                <span className="species-crop-name">{item.plantName}</span>
-                <h4 className="species-disease-name">{item.diseaseName}</h4>
-                <p className="species-desc-snippet">{item.description}</p>
+              <div className="species-block-header">
+                <div className="species-title-group">
+                  <h2 className="species-main-name">{speciesName.toUpperCase()}</h2>
+                  <span className="species-latin-name">{items[0]?.latin}</span>
+                </div>
+                <span className="species-count-badge">{items.length} REAL DATASET SPECIMENS</span>
               </div>
 
-              <div className="species-footer">
-                <span className={`status-pill ${item.isHealthy ? 'healthy' : 'danger'}`}>
-                  {item.isHealthy ? 'Healthy' : item.severity || 'Condition'}
-                </span>
-                <span className="btn-read-more">View Profile →</span>
+              <div className="specimens-editorial-grid">
+                {items.map((specimen) => {
+                  const diseaseMeta = diseaseData[specimen.key] || {};
+                  
+                  return (
+                    <div 
+                      key={specimen.id} 
+                      className={`editorial-specimen-card glass-card ${specimen.category}`}
+                      onClick={() => setActiveSpecimen(specimen)}
+                    >
+                      <div className="specimen-img-frame">
+                        <img 
+                          src={specimen.image} 
+                          alt={`${specimen.species} - ${specimen.diseaseName}`}
+                          className="specimen-real-img" 
+                        />
+                        <div className={`category-tag ${specimen.category}`}>
+                          {specimen.category.toUpperCase()}
+                        </div>
+                        <button 
+                          className="btn-zoom-img"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setFullscreenImage(specimen.image);
+                          }}
+                          title="Zoom Specimen Image"
+                        >
+                          <Maximize2 size={14} />
+                        </button>
+                      </div>
+
+                      <div className="specimen-card-content">
+                        <span className="specimen-crop-tag">{specimen.species}</span>
+                        <h3 className="specimen-disease-heading">{specimen.diseaseName}</h3>
+                        
+                        <p className="specimen-visual-desc">
+                          {specimen.visuals}
+                        </p>
+
+                        <div className="specimen-card-footer">
+                          <span className="specimen-key-code">#{specimen.key.split('___')[1] || 'healthy'}</span>
+                          <button className="btn-explore-specimen">
+                            <span>Inspect</span>
+                            <Sparkles size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+
+            </section>
           ))
         )}
       </div>
+
+      {/* SPECIMEN EXPANDABLE DETAIL MODAL */}
+      {activeSpecimen && (
+        <div className="specimen-detail-modal-overlay" onClick={() => setActiveSpecimen(null)}>
+          <div className="specimen-detail-modal glass-card" onClick={(e) => e.stopPropagation()}>
+            
+            <div className="modal-top-bar">
+              <span className="modal-specimen-code">BOTANICAL RECORD #{activeSpecimen.key}</span>
+              <button className="modal-close-btn" onClick={() => setActiveSpecimen(null)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-body-layout">
+              <div className="modal-img-column">
+                <img 
+                  src={activeSpecimen.image} 
+                  alt={activeSpecimen.diseaseName} 
+                  className="modal-specimen-img"
+                  onClick={() => setFullscreenImage(activeSpecimen.image)}
+                />
+                <span className="modal-zoom-hint">Click image to enlarge high-res specimen</span>
+              </div>
+
+              <div className="modal-info-column">
+                <span className="modal-species-tag">{activeSpecimen.species} ({activeSpecimen.latin})</span>
+                <h2 className="modal-disease-title">{activeSpecimen.diseaseName}</h2>
+
+                <div className="modal-section">
+                  <h4><Info size={16} color="#10b981" /> Description</h4>
+                  <p>{activeSpecimen.description}</p>
+                </div>
+
+                <div className="modal-section">
+                  <h4><Activity size={16} color="#f59e0b" /> Visual Pathology Characteristics</h4>
+                  <p>{activeSpecimen.visuals}</p>
+                </div>
+
+                {diseaseData[activeSpecimen.key] && (
+                  <>
+                    <div className="modal-section">
+                      <h4><Stethoscope size={16} color="#34d399" /> Agronomic Treatment</h4>
+                      <p>{diseaseData[activeSpecimen.key].treatment}</p>
+                    </div>
+
+                    <div className="modal-section">
+                      <h4><ShieldCheck size={16} color="#60a5fa" /> Prevention Strategy</h4>
+                      <p>{diseaseData[activeSpecimen.key].prevention}</p>
+                    </div>
+                  </>
+                )}
+
+                <button 
+                  className="btn btn-primary btn-modal-scan-this"
+                  onClick={() => {
+                    setActiveSpecimen(null);
+                    onViewChange("scan");
+                  }}
+                >
+                  <Sparkles size={16} />
+                  <span>Scan A Similar Specimen</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* FULLSCREEN HIGH-RES IMAGE VIEWER */}
+      {fullscreenImage && (
+        <div className="fullscreen-viewer slide-section" onClick={() => setFullscreenImage(null)}>
+          <div className="fs-header">
+            <span>High-Resolution Dataset Specimen</span>
+            <button className="fs-close" onClick={() => setFullscreenImage(null)}><X size={24}/></button>
+          </div>
+          <div className="fs-img-container">
+            <img src={fullscreenImage} alt="Fullscreen Specimen" className="fs-img" />
+          </div>
+        </div>
+      )}
 
     </div>
   );
