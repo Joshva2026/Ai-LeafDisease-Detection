@@ -58,11 +58,17 @@ function Home({ user, history, onViewChange, onSelectPrediction, lang }) {
               <h3>LeafGuard AI Workstation</h3>
               <p>Connected to 38 crop pathology neural classifiers</p>
 
-              <button className="btn btn-primary hub-scan-cta" onClick={() => onViewChange("scan")}>
-                <Camera size={18} />
-                <span>LAUNCH DIAGNOSTIC SCAN</span>
-                <ArrowRight size={16} />
-              </button>
+              <div className="hub-cta-group" style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", width: "100%" }}>
+                <button className="btn btn-primary hub-scan-cta" onClick={() => onViewChange("scan")}>
+                  <Camera size={18} />
+                  <span>START SCANNING</span>
+                  <ArrowRight size={16} />
+                </button>
+                <button className="btn btn-secondary hub-howto-cta" onClick={() => onViewChange("howto")}>
+                  <BookOpen size={18} />
+                  <span>HOW IT WORKS</span>
+                </button>
+              </div>
             </div>
           </div>
 

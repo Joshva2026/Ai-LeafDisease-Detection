@@ -74,8 +74,8 @@ function Chatbot({ currentDisease }) {
             <div className="chat-title">
               <Bot size={20} className="bot-header-icon" />
               <div>
-                <h4>AI Plant Doctor</h4>
-                <p>Powered by AgriSense AI</p>
+                <h4>NVIDIA AI DOCTOR</h4>
+                <p>Powered by NVIDIA AI Engine</p>
               </div>
             </div>
             <button className="chat-close-btn" onClick={() => setIsOpen(false)}>

@@ -23,66 +23,66 @@ function About() {
         {/* DOCUMENTARY SCENE STEPS */}
         <div className="doc-story-flow">
           
-          {/* STEP 01: THE PROBLEM */}
+          {/* STEP 01: LEAF */}
           <div className="doc-step-card glass-card">
             <div className="doc-step-header">
               <span className="step-num">01</span>
-              <h3>THE AGRICULTURAL CHALLENGE</h3>
+              <h3>THE LEAF SPECIMEN</h3>
             </div>
             <p>
-              Crop diseases account for up to 40% of annual global food production losses. Early microscopic detection before symptoms become widespread is essential for food security and targeted agronomic intervention.
+              A plant leaf's surface morphology, stomatal discoloration, and cellular lesions serve as the foundational biological signal. LeafGuard captures high-resolution specimen photos directly via mobile camera or file upload.
             </p>
           </div>
 
           <div className="doc-connector">↓</div>
 
-          {/* STEP 02: THE LEAF AS A SIGNAL */}
-          <div className="doc-step-card glass-card">
-            <div className="doc-step-header">
-              <span className="step-num">02</span>
-              <h3>THE LEAF AS A SIGNAL</h3>
-            </div>
-            <p>
-              A plant leaf's surface morphology, stomatal discoloration, and cellular necrosis act as an immediate visual signal. LeafGuard captures these features directly via smartphone cameras or gallery uploads.
-            </p>
-          </div>
-
-          <div className="doc-connector">↓</div>
-
-          {/* STEP 03: COMPUTER VISION & MOBILENETV2 */}
+          {/* STEP 02: MOBILENETV2 */}
           <div className="doc-step-card glass-card highlight-step">
             <div className="doc-step-header">
-              <span className="step-num">03</span>
+              <span className="step-num">02</span>
               <h3>MOBILENETV2 NEURAL ARCHITECTURE</h3>
             </div>
             <p>
-              Our core classification pipeline leverages MobileNetV2 depthwise separable convolutions, optimized to evaluate 38 crop pathology classes with high precision and sub-second execution speeds.
+              Our deep learning pipeline passes the preprocessed leaf image through a MobileNetV2 neural network utilizing depthwise separable convolutions for rapid, lightweight feature extraction.
             </p>
           </div>
 
           <div className="doc-connector">↓</div>
 
-          {/* STEP 04: GRAD-CAM VISUAL EXPLAINABILITY */}
+          {/* STEP 03: DISEASE DETECTION */}
+          <div className="doc-step-card glass-card highlight-step">
+            <div className="doc-step-header">
+              <span className="step-num">03</span>
+              <h3>DISEASE DETECTION (38 PATHOLOGY CLASSES)</h3>
+            </div>
+            <p>
+              The trained model evaluates 38 distinct crop pathology classes across 14 plant species, calculating precise prediction confidence scores and identifying healthy vs diseased leaves.
+            </p>
+          </div>
+
+          <div className="doc-connector">↓</div>
+
+          {/* STEP 04: GRAD-CAM */}
           <div className="doc-step-card glass-card highlight-step">
             <div className="doc-step-header">
               <span className="step-num">04</span>
-              <h3>GRAD-CAM NEURAL EXPLAINABILITY</h3>
+              <h3>GRAD-CAM HEATMAP VISUAL EXPLAINABILITY</h3>
             </div>
             <p>
-              Rather than serving as a black-box AI, LeafGuard computes Gradient-weighted Class Activation Mapping (Grad-CAM) to project activation heatmaps onto the original leaf photo, proving exactly where the AI detected evidence.
+              Rather than functioning as an unexplainable black box, LeafGuard computes Gradient-weighted Class Activation Mapping (Grad-CAM) to project visual attention heatmaps over the original specimen photo.
             </p>
           </div>
 
           <div className="doc-connector">↓</div>
 
-          {/* STEP 05: THE FARMER & FIELD ACTION */}
+          {/* STEP 05: AI EXPLANATION */}
           <div className="doc-step-card glass-card">
             <div className="doc-step-header">
               <span className="step-num">05</span>
-              <h3>ACTIONABLE FIELD AGRONOMY</h3>
+              <h3>AI EXPLANATION & AGRONOMIC ADVISORY</h3>
             </div>
             <p>
-              Neural predictions are immediately paired with actionable treatment steps, organic remedies, and spray scheduling recommendations so farmers can protect their crops before diseases spread.
+              Neural diagnostic outputs are paired with deep agronomic insights powered by NVIDIA AI, generating dynamic multi-section advisory reports for immediate field treatment and disease prevention.
             </p>
           </div>
 

@@ -173,6 +173,8 @@
   color: var(--text-primary);
   font-size: 13px;
   line-height: 1.45;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .chat-bubble-row.user .chat-bubble {

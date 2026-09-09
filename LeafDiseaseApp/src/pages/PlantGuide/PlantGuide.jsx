@@ -44,24 +44,12 @@ function PlantGuide({ onViewChange, lang }) {
   const activeDisease = diseasesList.find(d => d.key === activeDiseaseKey);
 
   const getPlantUrl = (plantName) => {
-    const urls = {
-      "Apple": "https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?w=400",
-      "Blueberry": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400",
-      "Cherry": "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=400",
-      "Corn": "https://images.unsplash.com/photo-1595855759920-86582396756a?w=400",
-      "Grape": "https://images.unsplash.com/photo-1530708112151-5b9b7405267e?w=400",
-      "Orange": "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=400",
-      "Peach": "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=400",
-      "Pepper": "https://images.unsplash.com/photo-1592417817098-8f3d6ef23a85?w=400",
-      "Potato": "https://images.unsplash.com/photo-1589923188900-85dae523342b?w=400",
-      "Raspberry": "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400",
-      "Soybean": "https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=400",
-      "Squash": "https://images.unsplash.com/photo-1506543730435-e2c1d4553a84?w=400",
-      "Strawberry": "https://images.unsplash.com/photo-1587049352847-4a222e784d38?w=400",
-      "Tomato": "https://images.unsplash.com/photo-1592841200221-a6898f307bac?w=400"
-    };
-
-    return urls[plantName] || "https://images.unsplash.com/photo-1530708112151-5b9b7405267e?w=400";
+    const p = (plantName || "").toLowerCase().replace(/[^a-z]/g, "");
+    const supported = ["apple", "blueberry", "cherry", "corn", "grape", "orange", "peach", "pepper", "potato", "raspberry", "soybean", "squash", "strawberry", "tomato"];
+    if (supported.includes(p)) {
+      return `/assets/plant_guide/${p}_leaf.jpg`;
+    }
+    return "/assets/plant_guide/apple_leaf.jpg";
   };
 
   if (activeDisease) {
