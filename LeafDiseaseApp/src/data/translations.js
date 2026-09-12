@@ -110,6 +110,8 @@ export const translations = {
     retry: "Retry",
     
     // Dataset info
+    monitoring: "Monitoring",
+    farmerAdvice: "Farmer Advice",
     severity: "Severity",
     status: "Type",
     high: "High",
@@ -275,7 +277,7 @@ export const translations = {
     leafDiagnosis: "இலை கண்டறிதல் முடிவு",
     originalImage: "பதிவேற்றிய படம்",
     attentionMap: "கவன வரைபடம் (Grad-CAM)",
-    attentionExplanation: "வழிகாட்டப்பட்ட பகுதிகள் AI கணிப்பில் செல்வாக்கு செலுத்திய பகுதிகளைக் காட்டுகின்றன.",
+    attentionExplanation: "வழிகாட்டப்பட்ட பகுதிகள் AI கணிப்பில் செல்வாக்கு செலுத்திய பகுிகளைக் காட்டுகின்றன.",
     topPredictions: "சிறந்த பொருத்த கணிப்புகள்",
     aboutCondition: "இந்த நோய் நிலை பற்றி",
     commonSymptoms: "பொதுவான அறிகுறிகள்",
@@ -298,6 +300,8 @@ export const translations = {
     retry: "மீண்டும் முயற்சிக்கவும்",
     
     // Dataset info
+    monitoring: "கண்காணிப்பு",
+    farmerAdvice: "விவசாயிகளுக்கு ஆலோசனை",
     severity: "தீவிரம்",
     status: "வகை",
     high: "அதிகம்",

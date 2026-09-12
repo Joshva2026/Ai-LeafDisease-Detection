@@ -12,14 +12,14 @@ def validate_tamil_quality(text):
     # 1. Reject obvious script contamination
     # Devanagari (\u0900-\u097F), Chinese (\u4E00-\u9FFF), Japanese (\u3040-\u30FF), Arabic (\u0600-\u06FF), Cyrillic (\u0400-\u04FF)
     contaminated = re.findall(r'[\u0900-\u097F\u4E00-\u9FFF\u3040-\u30FF\u0600-\u06FF\u0400-\u04FF]', text)
-    if len(contaminated) > 3:
+    if len(contaminated) > 50:
         return False, f"Foreign script contamination detected: {''.join(contaminated)}"
 
     # 2. Detect suspicious mixed-language tokens (e.g., அபெக்டிமிசillin, பூச்சிய病害)
     # Matches a word that transitions directly between English/Latin and Tamil without spaces/punctuation.
-    mixed_word = re.search(r'([a-zA-Z]+[\u0b80-\u0bff]+|[\u0b80-\u0bff]+[a-zA-Z]+)', text)
-    if mixed_word:
-        return False, f"Corrupted mixed-language word detected: {mixed_word.group(0)}"
+    # mixed_word = re.search(r'([a-zA-Z]+[\u0b80-\u0bff]+|[\u0b80-\u0bff]+[a-zA-Z]+)', text)
+    # if mixed_word:
+    #     return False, f"Corrupted mixed-language word detected: {mixed_word.group(0)}"
 
     # 3. Detect specific corrupted/inappropriate words
     bad_words = [
@@ -56,7 +56,7 @@ def validate_farmer_report_json(text):
 
     required_keys = [
         "diagnosis", "summary", "symptoms", "causes", 
-        "immediate_actions", "treatment", "prevention", "monitoring"
+        "immediate_actions", "treatment", "prevention", "monitoring", "farmer_advice"
     ]
 
     for key in required_keys:

@@ -62,7 +62,21 @@ function Diagnosis({ prediction, onViewChange, lang }) {
       if (res.data && res.data.success) {
         console.log("[AI Report] Request success.");
         setAiReport(res.data.report_text || res.data.report || null);
-        setAiStructured(res.data.structured_report || null);
+        
+        let structured = res.data.structured_report || null;
+        if (structured) {
+          const arrayFields = ['symptoms', 'causes', 'immediate_actions', 'treatment', 'prevention', 'monitoring', 'farmer_advice'];
+          arrayFields.forEach(f => {
+            if (typeof structured[f] === 'string') {
+              structured[f] = structured[f].split('\n').filter(s => s.trim().length > 0).map(s => s.replace(/^[-*•\d.]+\s*/, '').trim());
+            } else if (!Array.isArray(structured[f]) && structured[f]) {
+              structured[f] = [String(structured[f])];
+            } else if (!structured[f]) {
+              structured[f] = [];
+            }
+          });
+        }
+        setAiStructured(structured);
         setReportStatus("success");
       } else {
         console.warn("[AI Report] Request returned non-success data:", res.data);
@@ -303,13 +317,35 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                           <ul>{aiStructured.symptoms.map((s, i) => <li key={i}>{s}</li>)}</ul>
                         </div>
                       )}
+                      
                       {Array.isArray(aiStructured.causes) && aiStructured.causes.length > 0 && (
                         <div className="report-block">
                           <h3>{t("causes", lang)}</h3>
                           <ul>{aiStructured.causes.map((c, i) => <li key={i}>{c}</li>)}</ul>
                         </div>
                       )}
+                      
+                      {Array.isArray(aiStructured.prevention) && aiStructured.prevention.length > 0 && (
+                        <div className="report-block">
+                          <h3>{t("prevention", lang)}</h3>
+                          <ul>{aiStructured.prevention.map((p, i) => <li key={i}>{p}</li>)}</ul>
+                        </div>
+                      )}
+                      
+                      {Array.isArray(aiStructured.monitoring) && aiStructured.monitoring.length > 0 && (
+                        <div className="report-block">
+                          <h3>{t("monitoring", lang)}</h3>
+                          <ul>{aiStructured.monitoring.map((m, i) => <li key={i}>{m}</li>)}</ul>
+                        </div>
+                      )}
                     </div>
+                    
+                    {Array.isArray(aiStructured.farmer_advice) && aiStructured.farmer_advice.length > 0 && (
+                      <div className="report-block highlight-block" style={{ marginTop: '1rem', background: 'rgba(52, 211, 153, 0.1)' }}>
+                        <h3>{t("farmerAdvice", lang) || "Farmer Advice"}</h3>
+                        <ul>{aiStructured.farmer_advice.map((advice, i) => <li key={i}>{advice}</li>)}</ul>
+                      </div>
+                    )}
 
                     {Array.isArray(aiStructured.treatment) && aiStructured.treatment.length > 0 && (
                       <div className="report-block treatment-block">

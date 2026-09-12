@@ -13,9 +13,13 @@ def farmer_report():
     plant = data.get("plant", "Crop")
     disease = data.get("disease", "")
     confidence = data.get("confidence", 0)
-    lang = data.get("language") or data.get("lang") or "en"
-    is_ta = (lang == "ta")
-
+    lang_raw = str(data.get("language") or data.get("lang") or "en").lower()
+    if lang_raw in ["ta", "tamil", "தமிழ்"]:
+        lang = "ta"
+        is_ta = True
+    else:
+        lang = "en"
+        is_ta = False
     if not disease:
         return jsonify({"success": False, "error": "Disease identification required"}), 400
 
@@ -36,9 +40,10 @@ def farmer_report():
             "IMPORTANT: Your entire response MUST be strictly in Tamil and English ONLY.\n"
             "For Tamil output:\n"
             "Write natural Tamil using Tamil script.\n"
+            "CRITICAL: If you do not know the exact Tamil word for a color (like Olive) or term, write it in English. NEVER use Japanese (Katakana/Hiragana), Chinese, or Hindi.\n"
             "Do not generate Devanagari. Do not generate Chinese characters. Do not generate Japanese characters. Do not generate Korean characters.\n"
             "Do not generate unrelated foreign-language words.\n"
-            "English is allowed ONLY for: scientific names, disease names in parentheses, technical identifiers, model names, standard units, percentages, pH, unavoidable technical terminology.\n"
+            "English is allowed ONLY for: scientific names, disease names in parentheses, technical identifiers, model names, standard units, percentages, pH, colors, unavoidable technical terminology.\n"
             "Never mix unrelated languages inside Tamil words.\n"
             "Do not invent pesticide names, fungicide names, insecticides, antibiotics, or fertilizers.\n"
             "Do not invent chemical dosages, concentrations, or spray intervals.\n"
@@ -47,8 +52,8 @@ def farmer_report():
             "Do not claim laboratory confirmation.\n"
             "The supplied CNN disease prediction is authoritative.\n"
             "Do not change the supplied disease or crop.\n"
-            "Provide the report STRICTLY in JSON format with exactly these 8 keys (in English), and all values in Tamil:\n"
-            "- diagnosis\n- summary\n- symptoms\n- causes\n- immediate_actions\n- treatment\n- prevention\n- monitoring\n"
+            "Provide the report STRICTLY in JSON format with exactly these 9 keys (in English), and all values in Tamil:\n"
+            "- diagnosis\n- summary\n- symptoms\n- causes\n- immediate_actions\n- treatment\n- prevention\n- monitoring\n- farmer_advice\n"
             "Do not output markdown or conversational filler outside the JSON.\n"
         )
         user_prompt = (
@@ -68,8 +73,8 @@ def farmer_report():
             "   Prefer: 'Use only locally registered products and follow the product label and agricultural extension guidance.'\n"
             "6. Provide safe, actionable agronomic advice.\n"
             "7. Output must be entirely in simple, clear English.\n"
-            "8. Output must be STRICTLY valid JSON with these 8 keys:\n"
-            "- diagnosis\n- summary\n- symptoms\n- causes\n- immediate_actions\n- treatment\n- prevention\n- monitoring\n"
+            "8. Output must be STRICTLY valid JSON with these 9 keys:\n"
+            "- diagnosis\n- summary\n- symptoms\n- causes\n- immediate_actions\n- treatment\n- prevention\n- monitoring\n- farmer_advice\n"
             "Do not output markdown or conversational filler outside the JSON.\n"
         )
         user_prompt = (

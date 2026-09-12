@@ -6,13 +6,13 @@ data = {
     "disease": "Apple___Apple_scab",
     "plant": "Apple",
     "confidence": 98.5,
-    "language": "en"
+    "language": "ta"
 }
 
 try:
     print(f"Testing {url} ...")
     r = requests.post(url, json=data)
     print(f"Status Code: {r.status_code}")
-    print(f"Response: {json.dumps(r.json(), indent=2, ensure_ascii=False)}")
+    print(f"Response: {json.dumps(r.json(), indent=2, ensure_ascii=True)}")
 except Exception as e:
     print(f"Error: {e}")
