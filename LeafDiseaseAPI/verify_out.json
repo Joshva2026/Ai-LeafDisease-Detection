@@ -1,0 +1,47 @@
+{
+  "ai_doctor_en": {
+    "status": 200,
+    "duration_sec": 10.01,
+    "response": {
+      "provider": "nvidia_ai",
+      "reply": "Hello. Yellowing leaves (chlorosis) in tomatoes can stem from several causes, including nutrient deficiencies, water stress, or disease.\n\nTo give you the best advice, I need a bit more information. **Please describe the pattern and location of the yellowing:**\n\n*   **Older leaves first?** (Often indicates Nitrogen or Magnesium deficiency, or late blight).\n*   **Newer leaves first?** (Often indicates Iron, Manganese, or Viral infection).\n*   **Between the veins?** (Could be Iron, Manganese, or Viral infection like Tomato Yellow Leaf Curl).\n*   **On the veins?** (Could be Zinc or Manganese deficiency).\n*   **Yellow spots with brown centers?** (Could be Early Blight or Septoria Leaf Spot).\n*   **Yellowing along the edges?** (Could be Potassium deficiency or over-fertilization/salt burn).\n\n**In the meantime, here are general best practices:**\n\n1.  **Check Watering:** Ensure the soil is moist but well-drained. Overwatering can drown roots and cause yellowing; underwatering stresses the plant.\n2.  **Inspect for Pests:** Check the undersides of leaves for spider mites or aphids.\n3.  **Airflow:** Ensure plants are spaced adequately to promote airflow, which helps prevent fungal diseases.\n\n**Please provide the leaf pattern details so I can give you a more specific diagnosis and recommendation.**",
+      "response": "Hello. Yellowing leaves (chlorosis) in tomatoes can stem from several causes, including nutrient deficiencies, water stress, or disease.\n\nTo give you the best advice, I need a bit more information. **Please describe the pattern and location of the yellowing:**\n\n*   **Older leaves first?** (Often indicates Nitrogen or Magnesium deficiency, or late blight).\n*   **Newer leaves first?** (Often indicates Iron, Manganese, or Viral infection).\n*   **Between the veins?** (Could be Iron, Manganese, or Viral infection like Tomato Yellow Leaf Curl).\n*   **On the veins?** (Could be Zinc or Manganese deficiency).\n*   **Yellow spots with brown centers?** (Could be Early Blight or Septoria Leaf Spot).\n*   **Yellowing along the edges?** (Could be Potassium deficiency or over-fertilization/salt burn).\n\n**In the meantime, here are general best practices:**\n\n1.  **Check Watering:** Ensure the soil is moist but well-drained. Overwatering can drown roots and cause yellowing; underwatering stresses the plant.\n2.  **Inspect for Pests:** Check the undersides of leaves for spider mites or aphids.\n3.  **Airflow:** Ensure plants are spaced adequately to promote airflow, which helps prevent fungal diseases.\n\n**Please provide the leaf pattern details so I can give you a more specific diagnosis and recommendation.**",
+      "success": true
+    }
+  },
+  "ai_doctor_ta": {
+    "status": 503,
+    "duration_sec": 19.65,
+    "response": {
+      "error": "AI அறிக்கை தற்போது கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.",
+      "nvidia_debug_error": "Tamil Validation failed: Foreign script contamination detected: ाइसंपर्ककरकेाइडिकдозれば治療",
+      "provider": "none",
+      "success": false
+    }
+  },
+  "farmer_report_en": {
+    "status": 200,
+    "duration_sec": 11.89,
+    "response": {
+      "language": "en",
+      "provider": "nvidia_ai",
+      "report_text": "",
+      "structured_report": {
+        "causes": "The disease is caused by the fungus Alternaria solani. It spreads via spores carried by wind, rain, or garden tools. The pathogen overwinters in plant debris and soil. High humidity, warm temperatures, and poor air circulation favor disease development.",
+        "diagnosis": "Tomato Early Blight",
+        "immediate_actions": "Remove and destroy infected lower leaves to improve air flow and slow spread. Avoid overhead watering to keep foliage dry. Ensure proper spacing between plants for better ventilation.",
+        "monitoring": "Inspect plants weekly, especially lower leaves, for new spots. Monitor weather conditions; humidity above 85% increases risk. Keep a log of symptom progression. If the disease spreads rapidly despite treatment, consult a local agriculture officer for targeted advice.",
+        "prevention": "Practice crop rotation, avoiding planting tomatoes or related crops (peppers, eggplants) in the same spot for at least 2-3 years. Use mulch to prevent soil splash onto leaves. Water at the base of plants, not over the foliage. Select resistant varieties when available. Remove all plant debris at the end of the season.",
+        "summary": "Early blight is a common fungal disease affecting tomato plants. It is characterized by dark, concentric spots on leaves and stems, which can lead to defoliation and reduced yield if not managed. The disease thrives in warm, humid conditions and typically affects older leaves first.",
+        "symptoms": "Small, dark brown spots appear on lower leaves, often with a yellow halo. Spots develop concentric rings, giving a 'target' appearance. Lesions may enlarge and merge, causing leaves to yellow and drop. Dark, leathery spots can also form on fruit, especially near the stem.",
+        "treatment": "Apply a fungicide containing chlorothalonil or copper-based products according to label instructions. Begin treatment at the first sign of symptoms and repeat at intervals specified on the product label. For organic options, neem oil or potassium bicarbonate can be used, though they may be less effective than synthetic fungicides."
+      },
+      "success": true
+    }
+  },
+  "farmer_report_ta": {
+    "status": "error",
+    "duration_sec": 15.92,
+    "error": "Expecting value: line 1 column 1 (char 0)"
+  }
+}
