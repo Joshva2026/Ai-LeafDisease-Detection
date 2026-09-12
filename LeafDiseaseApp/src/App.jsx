@@ -27,7 +27,7 @@ function App() {
   const [prediction, setPrediction] = useState(null);
   const [history, setHistory] = useState([]);
   const [lang, setLang] = useState(() => {
-    return localStorage.getItem("lang") || "en";
+    return localStorage.getItem("lang") || "ta";
   });
   const [view, setView] = useState("howto"); // "howto", "home", "myplants", "scan", "history", "profile", "diagnosis"
   const [theme, setTheme] = useState(() => {

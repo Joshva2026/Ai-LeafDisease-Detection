@@ -1,0 +1,114 @@
+{
+  "validation": [
+    {
+      "Test": "Green leaf",
+      "Result": "ERROR",
+      "Predict": "NO",
+      "Reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "Test": "Yellow diseased leaf",
+      "Result": "ERROR",
+      "Predict": "NO",
+      "Reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "Test": "Brown diseased leaf",
+      "Result": "ERROR",
+      "Predict": "NO",
+      "Reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "Test": "Damaged leaf",
+      "Result": "ERROR",
+      "Predict": "NO",
+      "Reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "Test": "Face",
+      "Result": "REJECT",
+      "Predict": "NO",
+      "Reason": "Low prediction confidence. The image might not be a supported plant leaf."
+    },
+    {
+      "Test": "Hand",
+      "Result": "ERROR",
+      "Predict": "NO",
+      "Reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "Test": "Car",
+      "Result": "REJECT",
+      "Predict": "NO",
+      "Reason": "🌿 இது இலை படம் போல தெரியவில்லை. தயவுசெய்து நோய் பாதிக்கப்பட்ட இலை அல்லது ஆரோக்கியமான இலை ஒன்றை மட்டும் தெளிவாக படம் எடுத்து மீண்டும் முயற்சி செய்யுங்கள்."
+    },
+    {
+      "Test": "Building",
+      "Result": "REJECT",
+      "Predict": "NO",
+      "Reason": "🌿 இது இலை படம் போல தெரியவில்லை. தயவுசெய்து நோய் பாதிக்கப்பட்ட இலை அல்லது ஆரோக்கியமான இலை ஒன்றை மட்டும் தெளிவாக படம் எடுத்து மீண்டும் முயற்சி செய்யுங்கள்."
+    },
+    {
+      "Test": "Phone",
+      "Result": "REJECT",
+      "Predict": "NO",
+      "Reason": "Low prediction confidence. The image might not be a supported plant leaf."
+    },
+    {
+      "Test": "Laptop",
+      "Result": "ACCEPT",
+      "Predict": "YES",
+      "Reason": "Valid leaf"
+    },
+    {
+      "Test": "Food",
+      "Result": "ACCEPT",
+      "Predict": "YES",
+      "Reason": "Valid leaf"
+    },
+    {
+      "Test": "Animal",
+      "Result": "ACCEPT",
+      "Predict": "YES",
+      "Reason": "Valid leaf"
+    },
+    {
+      "Test": "Soil",
+      "Result": "ERROR",
+      "Predict": "NO",
+      "Reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "Test": "Sky",
+      "Result": "ERROR",
+      "Predict": "NO",
+      "Reason": "HTTP Error 404: Not Found"
+    }
+  ],
+  "ai_doctor": {
+    "status": 200,
+    "provider": "nvidia_ai",
+    "reply": "தக்காளி இலையில் பழுப்பு நிற புள்ளிகள் வரும் நிலையில், இது பொதுவாக **பொறுமை நோய் (Anthracnose)** எனப்படும் ஒரு குண்டு நோயால் ஏற்படும்து. இந்த நோய் பழங்"
+  },
+  "farmer_report": {
+    "status": 200,
+    "provider": "nvidia_ai",
+    "keys": [
+      "causes",
+      "diagnosis",
+      "immediate_actions",
+      "monitoring",
+      "prevention",
+      "summary",
+      "symptoms",
+      "treatment"
+    ],
+    "sample": "#  நோய் கண்டறிதல்",
+    "symptoms": [
+      "பட்டிகளில்:** பட்டிகளின் கீழ் பகுதியில், மஞ்சapai நிறம் அல்லது கருமinescent (வெப்பமருத்து) நிறத்தில் oval வடிவமான குண்டு lesions தோன்றுகின்றன.",
+      "Lesions க்கு 특徵ம்:** lesions க்கு மையம் சிரமியானவையாக இருக்கும் மற்றும் அத periphery (வெளி) கருமinescent நிறம் கொண்டிருக்கும்.",
+      "தண்டிகளில்:** தண்டிகளில் lesions தோன்றி, தண்டி வெப்பமருத்து மாறி, premature (முன் காலத்தில்) சீழ்க்கொள்ளலாம்.",
+      "பழங்களில்:** பாதிக்கப்பட்ட பழங்களில் குண்டு lesions தோன்றி, அவை மடிப்படிக்கும் மற்றும் சड़க்கூடலாம்."
+    ]
+  }
+}

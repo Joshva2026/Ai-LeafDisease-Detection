@@ -58,11 +58,11 @@ function PlantGuide({ onViewChange, lang }) {
       <header className="archive-hero">
         <div className="archive-badge">
           <span className="badge-pulse-dot"></span>
-          <span>BOTANICAL ARCHIVE</span>
+          <span>{lang === "ta" ? "பயிர் நோய்கள் களஞ்சியம்" : "BOTANICAL ARCHIVE"}</span>
         </div>
-        <h1 className="archive-title">Know The Leaf. Understand The Disease.</h1>
+        <h1 className="archive-title">{lang === "ta" ? "இலையை அறியுங்கள். நோயைப் புரிந்து கொள்ளுங்கள்." : "Know The Leaf. Understand The Disease."}</h1>
         <p className="archive-subtitle">
-          An editorial specimen library powered by 38 dataset leaf pathology classes. Inspect real leaf specimens across 14 crop species.
+          {lang === "ta" ? "38 வகையான பயிர் நோய்கள் மற்றும் 14 வகையான பயிர்களைப் பற்றிய விரிவான தகவல்களை உள்ளடக்கிய டிஜிட்டல் நூலகம்." : "An editorial specimen library powered by 38 dataset leaf pathology classes. Inspect real leaf specimens across 14 crop species."}
         </p>
       </header>
 
@@ -95,7 +95,7 @@ function PlantGuide({ onViewChange, lang }) {
 
         {/* Species Filter Pills */}
         <div className="archive-species-pills">
-          <span className="species-filter-lbl">SPECIES:</span>
+          <span className="species-filter-lbl">{lang === "ta" ? "பயிர் வகைகள்:" : "SPECIES:"}</span>
           {speciesList.map((sp) => (
             <button
               key={sp}
@@ -113,7 +113,7 @@ function PlantGuide({ onViewChange, lang }) {
         {Object.keys(groupedBySpecies).length === 0 ? (
           <div className="archive-empty-card glass-card">
             <Leaf size={44} style={{ color: "#34d399", marginBottom: "12px" }} />
-            <h3>No Specimens Match Your Criteria</h3>
+            <h3>{lang === "ta" ? "நீங்கள் தேடிய நோய் அல்லது பயிர் கிடைக்கவில்லை." : "No specimens found matching your criteria."}</h3>
             <p>Try searching for another plant species or resetting your filter tabs.</p>
           </div>
         ) : (

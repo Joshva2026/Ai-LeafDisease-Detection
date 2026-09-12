@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Camera, UploadCloud, ImageIcon, AlertCircle, X, Check, Info, Loader2, Scan as ScanIcon, Sparkles, CheckCircle2 } from "lucide-react";
+import { Camera, UploadCloud, AlertCircle, X, Loader2, Sparkles, Sprout, ArrowRight } from "lucide-react";
 import { t } from "../../data/translations";
 import api from "../../api/api";
 import "./Scan.css";
@@ -11,16 +11,18 @@ function Scan({ onPredictionSuccess, lang }) {
   const [isWakingUp, setIsWakingUp] = useState(false);
   const [analysisStageIndex, setAnalysisStageIndex] = useState(0);
 
+  const isTa = lang === "ta";
+
   const stages = [
-    lang === "ta" ? "இலையின் படத்தைப் பிடிக்கிறது..." : "CAPTURING LEAF IMAGE",
-    lang === "ta" ? "இலை அமைப்பை ஆராய்கிறது..." : "EXAMINING LEAF STRUCTURE",
-    lang === "ta" ? "காட்சி வடிவங்களை பகுப்பாய்வு செய்கிறது..." : "ANALYZING VISUAL PATTERNS",
-    lang === "ta" ? "காட்சி ஆதாரத்தை உருவாக்குகிறது..." : "GENERATING VISUAL EVIDENCE",
-    lang === "ta" ? "நோயறிதல் அறிக்கையைத் தயார் செய்கிறது..." : "PREPARING DIAGNOSIS REPORT"
+    isTa ? "இலையின் படத்தை பதிவேற்றுகிறது..." : "Uploading leaf image...",
+    isTa ? "இலை அமைப்பை ஆராய்கிறது..." : "Examining leaf structure...",
+    isTa ? "நோய்களுக்கான வடிவங்களை தேடுகிறது..." : "Analyzing disease patterns...",
+    isTa ? "கவன வரைபடத்தை உருவாக்குகிறது..." : "Generating visual evidence...",
+    isTa ? "மருத்துவ அறிக்கையைத் தயார் செய்கிறது..." : "Preparing diagnostic report..."
   ];
   
   const [useCamera, setUseCamera] = useState(false);
-  const [cameraStatus, setCameraStatus] = useState("idle"); // idle, requesting, ready, denied, unavailable
+  const [cameraStatus, setCameraStatus] = useState("idle"); 
   const [errorMsg, setErrorMsg] = useState("");
   
   const fileInputRef = useRef(null);
@@ -56,7 +58,6 @@ function Scan({ onPredictionSuccess, lang }) {
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
       } catch (e) {
-        // Fallback for laptop/desktop webcams without rear camera
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
       }
       streamRef.current = stream;
@@ -99,308 +100,252 @@ function Scan({ onPredictionSuccess, lang }) {
           const fileObj = new File([blob], "capture.jpg", { type: "image/jpeg" });
           setFile(fileObj);
         });
-      
+        
       stopCamera();
       setUseCamera(false);
     }
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-      if (!validTypes.includes(selectedFile.type)) {
-        setErrorMsg(lang === "ta" ? "செல்லாத படம். JPG, PNG அல்லது WEBP படத்தைப் பதிவேற்றவும்." : "Invalid file type. Please upload a JPG, PNG, or WEBP image.");
-        setImage(null);
-        setFile(null);
+    setErrorMsg("");
+    const selected = e.target.files[0];
+    if (selected) {
+      if (selected.size > 10 * 1024 * 1024) {
+        setErrorMsg(t("err413", lang));
         return;
       }
-
-      setFile(selectedFile);
+      setFile(selected);
       const reader = new FileReader();
-      reader.onload = (event) => {
-        setImage(event.target.result);
-      };
-      reader.readAsDataURL(selectedFile);
-      setErrorMsg("");
-      stopCamera();
-      setUseCamera(false);
+      reader.onloadend = () => setImage(reader.result);
+      reader.readAsDataURL(selected);
     }
   };
 
-  const handleDiagnose = async () => {
-    if (!file) return;
-    setLoading(true);
-    setIsWakingUp(false);
+  const clearSelection = () => {
+    setImage(null);
+    setFile(null);
     setErrorMsg("");
+    setUseCamera(false);
+    stopCamera();
+  };
+
+  const triggerFileUpload = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleAnalyze = async () => {
+    if (!file) return;
+
+    setLoading(true);
+    setErrorMsg("");
+    setIsWakingUp(false);
     setAnalysisStageIndex(0);
 
     const stageInterval = setInterval(() => {
-      setAnalysisStageIndex(prev => (prev < stages.length - 1 ? prev + 1 : prev));
-    }, 600);
+      setAnalysisStageIndex((prev) => (prev < stages.length - 1 ? prev + 1 : prev));
+    }, 1500);
 
     const formData = new FormData();
     formData.append("image", file);
 
-    const savedUser = localStorage.getItem("user");
-    const username = savedUser ? JSON.parse(savedUser).username : "testuser";
-    formData.append("username", username);
-
-    const wakeUpServer = async (retries = 3) => {
-      for (let i = 0; i <= retries; i++) {
-        try {
-          const res = await api.get("/health", { timeout: 10000 });
-          if (res.data && res.data.status === "healthy" && res.data.model_loaded) {
-            return;
-          }
-          throw new Error("Server not fully ready");
-        } catch (err) {
-          if (i === retries) return; 
-          setIsWakingUp(true);
-          await new Promise(resolve => setTimeout(resolve, 4000));
-        }
-      }
-    };
+    const timeoutId = setTimeout(() => {
+      setIsWakingUp(true);
+    }, 8000);
 
     try {
-      await wakeUpServer();
+      const response = await api.post("/predict", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
 
-      let response;
-      let attempt = 0;
-      const MAX_PREDICT_RETRIES = 1;
-      
-      while (attempt <= MAX_PREDICT_RETRIES) {
-        try {
-          response = await api.post("/predict", formData);
-          break; 
-        } catch (err) {
-          if (err.response && [400, 413, 422].includes(err.response.status)) {
-            throw err; 
-          }
-          if (attempt === MAX_PREDICT_RETRIES) throw err;
-          
-          setIsWakingUp(true);
-          attempt++;
-          await new Promise(resolve => setTimeout(resolve, 3000));
-        }
-      }
+      clearTimeout(timeoutId);
+      clearInterval(stageInterval);
 
-      if (response && response.data.success) {
-        onPredictionSuccess(response.data);
+      if (response.data && response.data.success) {
+        setAnalysisStageIndex(stages.length - 1);
+        setTimeout(() => {
+          onPredictionSuccess(response.data);
+        }, 800);
       } else {
-        setErrorMsg(response?.data?.error || (lang === "ta" ? "இலை நோயைக் கண்டறிய முடியவில்லை." : "Unable to analyze leaf. Please verify image details."));
+        throw new Error(response.data.error || "Analysis failed");
       }
-    } catch (err) {
-      console.error("Diagnosis request error:", err);
-      if (err.response) {
-        if (err.response.status === 400) {
-          setErrorMsg(t("err400", lang));
-        } else if (err.response.status === 413) {
-          setErrorMsg(t("err413", lang));
-        } else if (err.response.status === 422) {
-          setErrorMsg(t("err422", lang));
-        } else if (err.response.status === 500) {
-          setErrorMsg(t("err500", lang));
-        } else {
-          setErrorMsg(err.response.data.error || "An unexpected error occurred.");
-        }
-      } else if (err.code === 'ECONNABORTED' || (err.message && err.message.toLowerCase().includes("timeout"))) {
+    } catch (error) {
+      clearTimeout(timeoutId);
+      clearInterval(stageInterval);
+      console.error("Analysis Error:", error);
+      
+      if (error.response?.data?.error) {
+        setErrorMsg(error.response.data.error);
+      } else if (error.code === 'ECONNABORTED') {
         setErrorMsg(t("errTimeout", lang));
-      } else if (err.request) {
+      } else if (!error.response) {
         setErrorMsg(t("errNetwork", lang));
       } else {
-        setErrorMsg(err.message);
+        setErrorMsg(t("err500", lang));
       }
-    } finally {
-      clearInterval(stageInterval);
+      
       setLoading(false);
       setIsWakingUp(false);
     }
   };
 
-  const resetAll = () => {
-    setImage(null);
-    setFile(null);
-    setErrorMsg("");
-    stopCamera();
-    setUseCamera(false);
-  };
-
   return (
-    <div className="scan-chamber-container fade-in-section">
+    <div className="field-scan-container fade-in-section">
       
-      {/* DIAGNOSTIC CHAMBER HEADER */}
-      <header className="chamber-header">
-        <div className="chamber-badge">
-          <span className="badge-pulse-dot"></span>
-          <span>THE DIAGNOSTIC CHAMBER</span>
+      {/* Header */}
+      <header className="field-header">
+        <div className="field-badge">
+          <Sprout size={16} />
+          <span>{isTa ? "வயல் பரிசோதனை மையம்" : "FIELD DIAGNOSTIC STATION"}</span>
         </div>
-        <h1 className="chamber-title">{t("plantDoctor", lang)}</h1>
-        <p className="chamber-subtitle">
-          {lang === "ta" ? "இலையைப் படம் பிடித்து நோயைக் கண்டறியவும்." : "Position your leaf inside the optic scanner frame to trigger neural diagnostic evaluation."}
+        <h1 className="field-title">{isTa ? "பயிர் மருத்துவர்" : "Plant Doctor"}</h1>
+        <p className="field-subtitle">
+          {isTa 
+            ? "நோய் தாக்கிய இலையை தெளிவாக புகைப்படம் எடுக்கவும். எங்கள் AI உங்களை வழிநடத்தும்." 
+            : "Capture a clear photo of the affected leaf. Our AI will guide you."}
         </p>
       </header>
 
-      <div className="chamber-main-workstation">
-        {loading ? (
-          /* FRONTEND ANIMATION STAGES DURING REAL PREDICT CALL */
-          <div className="chamber-analyzing-panel glass-card">
-            <div className="chamber-optic-wrapper">
-              <img src={image} alt="Preview" className="chamber-optic-img dimmed" />
-              <div className="chamber-laser-sweep"></div>
-              <div className="chamber-hud-ring"></div>
+      {errorMsg && (
+        <div className="scan-alert-box">
+          <AlertCircle size={20} className="alert-icon" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
+      {/* Main Scanner Area */}
+      <div className="scanner-main-area">
+        {!image && !useCamera ? (
+          <div className="scan-init-card glass-card">
+            <div className="upload-options">
+              <button className="scan-primary-btn" onClick={startCamera}>
+                <Camera size={24} />
+                <span>{isTa ? "புகைப்படம் எடுக்க" : "TAKE PHOTO"}</span>
+              </button>
+              <div className="scan-divider">
+                <span>{isTa ? "அல்லது" : "OR"}</span>
+              </div>
+              <button className="scan-secondary-btn" onClick={triggerFileUpload}>
+                <UploadCloud size={20} />
+                <span>{isTa ? "படத்தை பதிவேற்ற" : "UPLOAD IMAGE"}</span>
+              </button>
+              <input
+                type="file"
+                accept="image/jpeg, image/png, image/webp"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
             </div>
             
-            <div className="chamber-stage-info">
-              <span className="stage-num-badge">STAGE 0{analysisStageIndex + 1} / 05</span>
-              <h3 className="stage-title-text">
-                {isWakingUp ? (lang === "ta" ? "சேவையகம் தயாராகிறது..." : "WAKING UP NEURAL SERVER...") : stages[analysisStageIndex]}
-              </h3>
-              <p className="stage-sub-text">
-                {isWakingUp ? (lang === "ta" ? "இது சிறிது நேரம் ஆகலாம்." : "This may take a moment.") : `MobileNetV2 visual feature evaluation in progress`}
-              </p>
+            <div className="scan-tips-grid">
+              <div className="tip-item">
+                <div className="tip-dot green"></div>
+                <span>{isTa ? "இலை முழுமையாக தெரிய வேண்டும்" : "Keep leaf fully visible"}</span>
+              </div>
+              <div className="tip-item">
+                <div className="tip-dot yellow"></div>
+                <span>{isTa ? "நல்ல வெளிச்சம் அவசியம்" : "Ensure good lighting"}</span>
+              </div>
+              <div className="tip-item">
+                <div className="tip-dot red"></div>
+                <span>{isTa ? "மங்கலாக இருக்கக்கூடாது" : "Avoid blurry shots"}</span>
+              </div>
             </div>
           </div>
-        ) : image ? (
-          /* IMAGE SELECTED PREVIEW STATE */
-          <div className="chamber-ready-panel glass-card">
-            <div className="chamber-optic-wrapper">
-              <img src={image} alt="Preview" className="chamber-optic-img" />
-              <div className="optic-hud-corner top-left"></div>
-              <div className="optic-hud-corner top-right"></div>
-              <div className="optic-hud-corner bottom-left"></div>
-              <div className="optic-hud-corner bottom-right"></div>
-            </div>
-
-            <div className="chamber-file-details">
-              <span className="file-tag">CAPTURED LEAF SPECIMEN</span>
-              <h4 className="file-name-text">{file?.name || "captured-leaf.jpg"}</h4>
-              <span className="file-size-text">{file ? (file.size / 1024 / 1024).toFixed(2) + " MB" : ""}</span>
-            </div>
-
-            <div className="chamber-actions-row">
-              <button className="btn-chamber-secondary" onClick={resetAll}>
-                {lang === "ta" ? "மாற்று" : "Choose Another"}
-              </button>
-              <button className="btn-chamber-secondary" onClick={startCamera}>
-                {lang === "ta" ? "மீண்டும் எடு" : "Retake Photo"}
-              </button>
-            </div>
-
-            <button className="btn btn-primary btn-chamber-diagnose" onClick={handleDiagnose}>
-              <ScanIcon size={20} />
-              <span>{t("analyzeLeaf", lang)}</span>
-            </button>
-
-            {errorMsg && (
-              <div className="chamber-error-box">
-                <AlertCircle size={18} />
-                <span>{errorMsg}</span>
+        ) : useCamera ? (
+          <div className="camera-viewfinder glass-card">
+            {cameraStatus === "requesting" && (
+              <div className="camera-loading">
+                <Loader2 size={32} className="spin-anim" />
+                <p>{isTa ? "கேமராவை இயக்குகிறது..." : "Initializing camera..."}</p>
               </div>
             )}
+            
+            {cameraStatus === "denied" && (
+              <div className="camera-error">
+                <AlertCircle size={40} color="#f87171" />
+                <p>{isTa ? "கேமரா அணுகல் மறுக்கப்பட்டது." : "Camera access denied."}</p>
+                <button className="btn btn-secondary" onClick={clearSelection}>
+                  {isTa ? "திரும்பிச் செல்" : "Go Back"}
+                </button>
+              </div>
+            )}
+
+            <div className={`video-wrapper ${cameraStatus === "ready" ? "active" : ""}`}>
+              <video ref={videoRef} playsInline autoPlay muted />
+              <div className="scanner-overlay-brackets">
+                <div className="bracket tl"></div>
+                <div className="bracket tr"></div>
+                <div className="bracket bl"></div>
+                <div className="bracket br"></div>
+              </div>
+              
+              <div className="camera-controls">
+                <button className="cam-cancel-btn" onClick={clearSelection}>
+                  <X size={24} />
+                </button>
+                <button className="cam-shutter-btn" onClick={capturePhoto}>
+                  <div className="shutter-inner"></div>
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
-          /* SCAN CHAMBER ENTRY & CAPTURE SELECTION */
-          <div className="chamber-entry-panel">
-            
-            <div className="chamber-tabs-selector">
-              <button
-                className={`chamber-tab ${!useCamera ? "active" : ""}`}
-                onClick={() => { stopCamera(); setUseCamera(false); }}
-              >
-                <ImageIcon size={16} />
-                <span>{t("uploadImage", lang)}</span>
-              </button>
-              <button
-                className={`chamber-tab ${useCamera ? "active" : ""}`}
-                onClick={startCamera}
-              >
-                <Camera size={16} />
-                <span>{t("useCamera", lang)}</span>
-              </button>
-            </div>
-
-            {!useCamera ? (
-              <div className="chamber-dropzone glass-card" onClick={() => fileInputRef.current.click()}>
-                <div className="dropzone-icon-circle">
-                  <UploadCloud size={32} color="#10b981" />
+          <div className="scan-preview-card glass-card">
+            <div className="preview-image-wrapper">
+              <img src={image} alt="Leaf preview" />
+              {loading && (
+                <div className="scanning-laser-overlay">
+                  <div className="laser-beam"></div>
+                  <div className="laser-pulse"></div>
                 </div>
-                <h4>{t("uploadPrompt", lang)}</h4>
-                <p className="dropzone-specs">Supports High-Resolution JPG, PNG, WEBP Leaf Photos</p>
-                <button className="btn btn-primary btn-gallery-select">
-                  <span>{lang === "ta" ? "கேலரியில் இருந்து தேர்ந்தெடு" : "UPLOAD FROM GALLERY"}</span>
+              )}
+              {!loading && (
+                <button className="preview-close-btn" onClick={clearSelection}>
+                  <X size={20} />
                 </button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  hidden
-                  accept="image/jpeg, image/jpg, image/png, image/webp"
-                  onChange={handleFileChange}
-                />
-              </div>
-            ) : (
-              <div className="chamber-camera-wrapper glass-card">
-                {cameraStatus === "requesting" && (
-                  <div className="camera-state-box">
-                    <Loader2 className="spinner" size={24} color="#10b981" />
-                    <p>{lang === "ta" ? "கேமரா அனுமதியை கோருகிறது..." : "Requesting optical camera access..."}</p>
-                  </div>
-                )}
-
-                {cameraStatus === "denied" && (
-                  <div className="camera-state-box error">
-                    <AlertCircle size={28} />
-                    <p>{lang === "ta" ? "புகைப்படம் எடுக்க கேமரா அனுமதி தேவை." : "Camera permission is required."}</p>
-                    <button className="btn btn-primary mt-2" onClick={startCamera}>{lang === "ta" ? "கேமராவை அனுமதி" : "Allow Camera Access"}</button>
-                  </div>
-                )}
-
-                {cameraStatus === "ready" && (
-                  <div className="live-camera-chamber">
-                    <video ref={videoRef} autoPlay playsInline muted className="camera-video-stream" />
-                    <div className="camera-hud-overlay">
-                      <button className="btn-close-cam" onClick={() => setUseCamera(false)}>
-                        <X size={20} />
-                      </button>
-                      <button className="btn-capture-trigger" onClick={capturePhoto}>
-                        <div className="trigger-ring"></div>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* HOW TO CAPTURE A GOOD LEAF — 3 VISUAL RULES */}
-            <div className="capture-rules-section glass-card">
-              <h3>HOW TO CAPTURE A GOOD LEAF</h3>
-              <div className="rules-grid">
-                <div className="rule-card">
-                  <div className="rule-num">01</div>
-                  <div className="rule-info">
-                    <h4>Use a Clear Leaf</h4>
-                    <p>Ensure single leaf is in sharp focus without heavy shadows.</p>
-                  </div>
-                </div>
-
-                <div className="rule-card">
-                  <div className="rule-num">02</div>
-                  <div className="rule-info">
-                    <h4>Keep Leaf Centered</h4>
-                    <p>Position the lesion zone inside the main optical frame.</p>
-                  </div>
-                </div>
-
-                <div className="rule-card">
-                  <div className="rule-num">03</div>
-                  <div className="rule-info">
-                    <h4>Avoid Extreme Blur</h4>
-                    <p>Hold your camera steady in natural indirect sunlight.</p>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
 
+            <div className="preview-actions">
+              {loading ? (
+                <div className="analysis-progress-panel">
+                  <div className="analysis-header">
+                    <Sparkles size={20} color="#34d399" />
+                    <h3>{isTa ? "AI பரிசோதனை நடக்கிறது" : "AI DIAGNOSIS IN PROGRESS"}</h3>
+                  </div>
+                  
+                  <div className="analysis-stages">
+                    {stages.map((stage, idx) => (
+                      <div key={idx} className={`stage-row ${idx === analysisStageIndex ? "active" : idx < analysisStageIndex ? "complete" : "pending"}`}>
+                        <div className="stage-icon">
+                          {idx < analysisStageIndex ? <Check size={14} /> : idx === analysisStageIndex ? <Loader2 size={14} className="spin-anim" /> : <div className="dot"></div>}
+                        </div>
+                        <span className="stage-text">{stage}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {isWakingUp && (
+                    <div className="waking-up-msg">
+                      <Loader2 size={14} className="spin-anim" />
+                      <span>{t("wakingUpMsg", lang)}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="ready-to-analyze">
+                  <button className="btn btn-primary analyze-btn-hero" onClick={handleAnalyze}>
+                    <Sparkles size={20} />
+                    <span>{isTa ? "நோயை பகுப்பாய்வு செய்" : "ANALYZE FOR DISEASE"}</span>
+                    <ArrowRight size={20} />
+                  </button>
+                  <p className="rescan-hint" onClick={clearSelection}>
+                    {isTa ? "வேறு படத்தை தேர்வு செய்" : "Choose different image"}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

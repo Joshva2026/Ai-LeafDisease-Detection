@@ -24,9 +24,10 @@ app.register_blueprint(ai_bp)
 
 # Initialize Rate Limiter
 limiter = Limiter(
-    key_func=get_remote_address,
+    get_remote_address,
     app=app,
-    default_limits=["60 per minute"]
+    default_limits=["100 per minute"],
+    storage_uri="memory://"
 )
 
 @app.errorhandler(429)
@@ -150,31 +151,51 @@ def health_check():
     })
 
 def is_likely_leaf(img):
-    # Convert PIL image to HSV
-    img_hsv = img.convert("HSV")
-    h, s, v = img_hsv.split()
-    h_array = np.array(h)
-    s_array = np.array(s)
-    v_array = np.array(v)
+    # Resize for faster processing
+    img_small = img.resize((224, 224))
+    img_cv = cv2.cvtColor(np.array(img_small), cv2.COLOR_RGB2BGR)
+    hsv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2HSV)
     
-    total_pixels = h_array.size
+    # Green leaves
+    lower_green = np.array([25, 40, 40])
+    upper_green = np.array([95, 255, 255])
     
-    # Relaxed check for green plant color index
-    green_mask = (h_array >= 20) & (h_array <= 95) & (s_array > 25) & (v_array > 25)
-    green_ratio = np.sum(green_mask) / total_pixels
+    # Yellow/Brown leaves usually have higher saturation or different hue
+    # Skin tone is typically H=0-20, S=40-120. 
+    # To exclude skin tones but keep brown leaves: 
+    # Brown leaves: H=10-35, S>120
+    # Yellow leaves: H=20-35, S>100
+    lower_yellow_brown = np.array([12, 110, 40])
+    upper_yellow_brown = np.array([35, 255, 255])
     
-    # Also check variance/edges to prevent plain green screens
-    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+    # We will also add a specific brown that is darker (Value < 150)
+    lower_dark_brown = np.array([5, 50, 20])
+    upper_dark_brown = np.array([25, 255, 140]) # darker means V <= 140)
+    
+    mask_green = cv2.inRange(hsv, lower_green, upper_green)
+    mask_yellow_brown = cv2.inRange(hsv, lower_yellow_brown, upper_yellow_brown)
+    mask_dark_brown = cv2.inRange(hsv, lower_dark_brown, upper_dark_brown)
+    
+    mask_plant = cv2.bitwise_or(mask_green, cv2.bitwise_or(mask_yellow_brown, mask_dark_brown))
+    
+    total_pixels = 224 * 224
+    plant_pixels = cv2.countNonZero(mask_plant)
+    plant_ratio = plant_pixels / total_pixels
+    
     gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
     variance = cv2.Laplacian(gray, cv2.CV_64F).var()
-    
-    # Need some texture (variance) + some green color, or high texture if damaged
-    if variance < 50.0:
-        return False, "Image is too blurry or lacks structure."
-    
-    if green_ratio < 0.02 and variance < 200.0:
-        return False, "The image does not appear to contain a plant leaf."
+    if variance < 30.0:
+        return False, "படம் மிகவும் மங்கலாக உள்ளது. தெளிவாகப் படமெடுக்கவும்."
         
+    if plant_ratio < 0.05:
+        return False, "🌿 இது இலை படம் போல தெரியவில்லை. தயவுசெய்து நோய் பாதிக்கப்பட்ட இலை அல்லது ஆரோக்கியமான இலை ஒன்றை மட்டும் தெளிவாக படம் எடுத்து மீண்டும் முயற்சி செய்யுங்கள்."
+        
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask_plant, connectivity=8)
+    if num_labels > 1:
+        max_area = max(stats[1:, cv2.CC_STAT_AREA]) # Skip background label 0
+        if max_area / total_pixels < 0.02:
+            return False, "🌿 இது இலை படம் போல தெரியவில்லை. தயவுசெய்து நோய் பாதிக்கப்பட்ட இலை அல்லது ஆரோக்கியமான இலை ஒன்றை மட்டும் தெளிவாக படம் எடுத்து மீண்டும் முயற்சி செய்யுங்கள்."
+
     return True, "Valid leaf"
 
 
@@ -549,203 +570,10 @@ def history():
 # ==========================================
 # NVIDIA & GEMINI AI INTEGRATION
 # ==========================================
-def call_nvidia_ai(user_prompt, system_prompt):
-    nvidia_key = os.getenv("NVIDIA_API_KEY", "").strip()
-    if not nvidia_key or nvidia_key in ("YOUR_NVIDIA_KEY_HERE", "YOUR_API_KEY_HERE"):
-        return None
+# The API endpoints (/api/ai/farmer-report and /api/chat) 
+# and their implementations are correctly handled in routes/ai.py
+# which is registered as a blueprint at the top of this file.
 
-    try:
-        url = "https://integrate.api.nvidia.com/v1/chat/completions"
-        headers = {
-            "Authorization": f"Bearer {nvidia_key}",
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "model": "meta/llama-3.1-70b-instruct",
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            "temperature": 0.2,
-            "max_tokens": 1024
-        }
-        res = requests.post(url, json=payload, headers=headers, timeout=12)
-        if res.status_code == 200:
-            data = res.json()
-            if "choices" in data and len(data["choices"]) > 0:
-                return data["choices"][0]["message"]["content"]
-    except Exception as e:
-        print("NVIDIA AI API request failed:", e)
-    return None
-
-def call_gemini_ai(user_prompt, system_prompt):
-    gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if not gemini_key or gemini_key in ("YOUR_API_KEY_HERE", ""):
-        return None
-
-    models = ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-2.5-flash-lite", "gemini-1.5-flash"]
-    for model_name in models:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1/models/{model_name}:generateContent?key={gemini_key}"
-            headers = {"Content-Type": "application/json"}
-            payload = {
-                "contents": [
-                    {
-                        "role": "user",
-                        "parts": [{"text": f"{system_prompt}\n\nUser Question: {user_prompt}"}]
-                    }
-                ]
-            }
-            res = requests.post(url, json=payload, headers=headers, timeout=10)
-            if res.status_code == 200:
-                return res.json()["candidates"][0]["content"]["parts"][0]["text"]
-        except Exception as e:
-            print(f"Gemini model {model_name} failed:", e)
-    return None
-
-
-@app.route("/api/ai/farmer-report", methods=["POST"])
-@limiter.limit("20 per minute")
-def farmer_report():
-    data = request.json or {}
-    disease = data.get("disease", "")
-    plant = data.get("plant", "")
-    confidence = data.get("confidence", 0)
-    lang = data.get("lang", "en")
-
-    if not disease:
-        return jsonify({"success": False, "error": "Disease identification is required"}), 400
-
-    is_ta = (lang == "ta")
-
-    if is_ta:
-        system_prompt = (
-            "You are LeafGuard AI Farmer Specialist. The user's crop was diagnosed by MobileNetV2. "
-            "You MUST generate the entire report strictly in Tamil (தமிழ்). "
-            "Never contradict the predicted disease or change confidence. "
-            "Output clear, actionable agronomic advice including summary, symptoms, causes, immediate treatment, and prevention."
-        )
-        user_prompt = (
-            f"பயிர்: {plant}, நோய்: {disease}, நம்பிக்கை: {confidence}%. "
-            "இந்த நோய்க்கான விரிவான விவசாயி அறிக்கையை தமிழில் வழங்கவும்."
-        )
-    else:
-        system_prompt = (
-            "You are LeafGuard AI Farmer Specialist. The crop was diagnosed by MobileNetV2. "
-            "Never contradict the predicted disease or change confidence. "
-            "Output clear, structured agronomic advice including summary, symptoms, causes, immediate treatment, and prevention."
-        )
-        user_prompt = (
-            f"Crop: {plant}, Condition: {disease}, Confidence: {confidence}%. "
-            "Provide a detailed farmer advice report."
-        )
-
-    # Try NVIDIA AI first, then Gemini AI
-    ai_reply = call_nvidia_ai(user_prompt, system_prompt)
-    provider = "nvidia_ai"
-    if not ai_reply:
-        ai_reply = call_gemini_ai(user_prompt, system_prompt)
-        provider = "gemini_ai"
-
-    if ai_reply:
-        return jsonify({
-            "success": True,
-            "provider": provider,
-            "report": ai_reply
-        })
-    else:
-        # Fallback offline structured report
-        if is_ta:
-            fallback_report = (
-                f"🌾 **LeafGuard விவசாயி அறிக்கை (ஆஃப்லைன் பயன்முறை)**\n\n"
-                f"**பயிற்சி கண்டறிதல்:** {plant} — {disease}\n"
-                f"**நம்பிக்கை:** {confidence}%\n\n"
-                "**உடனடி நடவடிக்கைகள்:**\n"
-                "1. பாதிக்கப்பட்ட இலையை அகற்றி தனியாக வைக்கவும்.\n"
-                "2. இலையின் மேல் தண்ணீர் தெளிப்பதைத் தவிர்க்கவும்.\n"
-                "3. தேவைப்பட்டால் தாமிர அடிப்படையிலான பூசணக்கொல்லியைப் பயன்படுத்தவும்.\n"
-                "4. கருவிகளைப் பயன்படுத்திய பின் கிருமி நீக்கம் செய்யவும்."
-            )
-        else:
-            fallback_report = (
-                f"🌾 **LeafGuard Agronomic Advisory (Offline Mode)**\n\n"
-                f"**Diagnosed Condition:** {plant} — {disease}\n"
-                f"**AI Confidence:** {confidence}%\n\n"
-                "**Action Plan:**\n"
-                "1. **Isolate infected leaves** immediately to block spore dispersion.\n"
-                "2. **Water at the soil base** rather than sprinkling over leaves.\n"
-                "3. **Apply recommended organic or copper-based fungicides** early in the morning.\n"
-                "4. **Disinfect pruning shears** between plant cuts."
-            )
-        return jsonify({
-            "success": True,
-            "provider": "offline_rules",
-            "report": fallback_report
-        })
-
-
-@app.route("/api/chat", methods=["POST"])
-@limiter.limit("20 per minute")
-def chat():
-    data = request.json or {}
-    message = data.get("message")
-    context = data.get("context", "")
-    lang = data.get("lang", "en")
-
-    if not message:
-        return jsonify({"success": False, "error": "Message content is required"}), 400
-
-    is_ta = (lang == "ta")
-
-    if is_ta:
-        system_prompt = (
-            "You are LeafGuard AI, an expert agricultural bot and plant pathologist. "
-            "You MUST reply in Tamil (தமிழ்). "
-            "Provide accurate, actionable, and helpful suggestions regarding leaf diseases, soil care, pesticides, and organic farming methods."
-        )
-    else:
-        system_prompt = (
-            "You are LeafGuard AI, an expert agricultural bot and plant pathologist. "
-            "Provide accurate, actionable, and helpful suggestions regarding leaf diseases, soil care, pesticides, and organic farming methods."
-        )
-
-    if context:
-        system_prompt += f" Context: Current diagnosed condition is '{context}'."
-
-    # Try NVIDIA AI first
-    reply = call_nvidia_ai(message, system_prompt)
-    if not reply:
-        # Fallback to Gemini AI
-        reply = call_gemini_ai(message, system_prompt)
-
-    if reply:
-        return jsonify({"success": True, "reply": reply})
-
-    # Offline expert fallback
-    msg_lower = message.lower()
-    if is_ta:
-        reply = (
-            "🌿 **LeafGuard AI உதவி (ஆஃப்லைன்):**\n\n"
-            "உங்கள் பயிர் பாதுகாப்பு தொடர்பான கேள்விகளுக்கு பதில் அளிக்கத் தயார்.\n"
-            "1. பாதிக்கப்பட்ட இலைகளை உடனடியாக அகற்றவும்.\n"
-            "2. வேர்களுக்கு மட்டும் நீர் பாய்ச்சவும்.\n"
-            "3. இயற்கை உரம் மற்றும் பூச்சிக்கொல்லிகளைப் பயன்படுத்தவும்."
-        )
-    else:
-        if "rust" in msg_lower or "spot" in msg_lower or "blight" in msg_lower or "rot" in msg_lower:
-            reply = (
-                "🌿 **LeafGuard AI Assistant (Offline Mode):**\n\n"
-                "1. **Isolate Affected Plants**: Remove diseased leaves immediately to prevent spore dispersion.\n"
-                "2. **Water at the Soil Base**: Avoid overhead foliage sprinkler watering.\n"
-                "3. **Targeted Treatment**: Apply copper or sulfur-based organic fungicides early in the morning."
-            )
-        else:
-            reply = (
-                "👋 **Welcome to LeafGuard AI Assistant!**\n\n"
-                "I am ready to help you with plant pathology, soil care, and crop protection advice."
-            )
-
-    return jsonify({"success": True, "reply": reply})
 
 
 if __name__ == "__main__":

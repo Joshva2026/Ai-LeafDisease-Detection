@@ -80,11 +80,13 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
       <header className="memory-header">
         <div className="memory-badge">
           <span className="badge-pulse-dot"></span>
-          <span>LEAF MEMORY ARCHIVE</span>
+          <span>{lang === "ta" ? "இலை நினைவகம்" : "LEAF MEMORY ARCHIVE"}</span>
         </div>
-        <h1 className="memory-title">Preserved Leaf Specimens</h1>
+        <h1 className="memory-title">{lang === "ta" ? "பரிசோதிக்கப்பட்ட இலைகள்" : "Preserved Leaf Specimens"}</h1>
         <p className="memory-subtitle">
-          "Every leaf you analyze leaves a memory." Review your historical field pathology scans, Grad-CAM heatmaps, and past diagnoses.
+          {lang === "ta" 
+            ? "நீங்கள் பரிசோதித்த அனைத்து இலைகளின் வரலாறும் இங்கு பாதுகாக்கப்படும். AI அறிக்கைகளையும் வரைபடங்களையும் மீண்டும் பார்க்கலாம்."
+            : '"Every leaf you analyze leaves a memory." Review your historical field pathology scans, Grad-CAM heatmaps, and past diagnoses.'}
         </p>
       </header>
 
@@ -133,12 +135,16 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
         {safeHistory.length === 0 ? (
           <div className="memory-empty-card glass-card" style={{ textAlignment: "center", padding: "48px 24px" }}>
             <HistoryIcon size={48} className="empty-icon" style={{ color: "#34d399", marginBottom: "16px" }} />
-            <h3 style={{ fontSize: "20px", color: "#ffffff", marginBottom: "8px" }}>LEAF MEMORY ARCHIVE IS EMPTY</h3>
+            <h3 style={{ fontSize: "20px", color: "#ffffff", marginBottom: "8px" }}>
+              {lang === "ta" ? "இலை நினைவகம் காலியாக உள்ளது" : "LEAF MEMORY ARCHIVE IS EMPTY"}
+            </h3>
             <p style={{ color: "#9ca3af", maxWidth: "460px", margin: "0 auto 20px auto", lineHeight: "1.6" }}>
-              No specimens analyzed yet. Your analyzed leaves, Grad-CAM heatmaps, and AI Farmer Reports will be preserved here.
+              {lang === "ta"
+                ? "நீங்கள் இன்னும் எந்த இலையையும் பரிசோதிக்கவில்லை. நீங்கள் பரிசோதிக்கும் இலைகள் மற்றும் AI மருத்துவ அறிக்கைகள் இங்கு சேமிக்கப்படும்."
+                : "No specimens analyzed yet. Your analyzed leaves, Grad-CAM heatmaps, and AI Farmer Reports will be preserved here."}
             </p>
             <button className="btn btn-primary" onClick={() => onViewChange("scan")} style={{ maxWidth: "240px", margin: "0 auto" }}>
-              START FIRST SCAN
+              {lang === "ta" ? "முதல் பரிசோதனையைத் தொடங்கு" : "START FIRST SCAN"}
             </button>
           </div>
         ) : filteredAndSortedList.length === 0 ? (

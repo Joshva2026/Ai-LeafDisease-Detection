@@ -167,7 +167,7 @@ def farmer_report():
     return jsonify({
         "success": False,
         "provider": "none",
-        "error": "NVIDIA AI Farmer Advisory is currently unavailable. Please try again."
+        "error": "NVIDIA AI தற்போது கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்." if is_ta else "NVIDIA AI Farmer Advisory is currently unavailable. Please try again."
     }), 503
 
 
@@ -213,6 +213,6 @@ def chat():
     return jsonify({
         "success": False,
         "provider": "none",
-        "error": "NVIDIA AI Doctor is currently unavailable. Please try again."
+        "error": "NVIDIA AI தற்போது கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்." if is_ta else "NVIDIA AI Doctor is currently unavailable. Please try again."
     }), 503
 

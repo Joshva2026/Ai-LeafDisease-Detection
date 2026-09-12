@@ -1,354 +1,191 @@
-/* =====================================================
-   THE FARM INTELLIGENCE HUB — HOME PAGE STYLING
-   ===================================================== */
-
-.home-page-wrapper {
-  padding: 40px 6% 60px 6%;
-  max-width: 1200px;
-  margin: 0 auto;
+.home-cinematic-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  width: 100%;
+  min-height: 100vh;
+  color: #fff;
 }
 
-/* Command Header */
-.hub-command-header {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  text-align: left;
-}
-
-.hub-user-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: #10b981;
-  width: fit-content;
-}
-
-.hub-live-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #10b981;
-  box-shadow: 0 0 10px #10b981;
-  animation: pulseDot 2s infinite;
-}
-
-.hub-welcome-title {
-  font-size: clamp(28px, 5vw, 42px);
-  font-weight: 900;
-  letter-spacing: -0.5px;
-  color: #ffffff;
-}
-
-.user-name-highlight {
-  color: #34d399;
-}
-
-.hub-welcome-sub {
-  font-size: 15px;
-  color: #9ca3af;
-  max-width: 680px;
-  line-height: 1.6;
-}
-
-/* Central Connected Network Section */
-.hub-network-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.hub-central-node {
-  border-radius: 24px;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(6, 78, 59, 0.3) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  padding: 32px;
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-  flex-wrap: wrap;
-}
-
-.central-leaf-aura {
-  position: relative;
-  width: 140px;
-  height: 140px;
+.cinematic-scene {
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  position: relative;
+  padding: 40px 20px;
 }
 
-.central-leaf-svg {
-  width: 130px;
-  height: 130px;
-  filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.5));
+.scene-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(4, 39, 30, 0.8) 100%);
+  z-index: 1;
 }
 
-.hub-rotate-ring {
-  transform-origin: center;
-  animation: reticleRotate 16s linear infinite;
+.scene-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1000px;
+  width: 100%;
+  text-align: center;
 }
 
-.hub-central-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  text-align: left;
+/* SCENE 1: Village Morning */
+.scene-village {
+  background: url('https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
+  background-attachment: fixed;
 }
 
-.hub-status-tag {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: #34d399;
-  text-transform: uppercase;
-}
-
-.hub-central-info h3 {
-  font-size: 24px;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.hub-central-info p {
-  font-size: 14px;
-  color: #9ca3af;
-}
-
-.hub-scan-cta {
-  margin-top: 8px;
-  padding: 12px 24px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  font-weight: 800;
-  letter-spacing: 1px;
-  display: flex;
+.farmer-badge {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 8px 16px;
+  border-radius: 30px;
+  color: #34d399;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(10px);
 }
 
-/* Modules Grid */
-.hub-modules-grid {
+.cinematic-title {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  line-height: 1.2;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.farmer-name {
+  color: #34d399;
+}
+
+.cinematic-subtitle {
+  font-size: 20px;
+  color: #e5e7eb;
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  line-height: 1.6;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.cinematic-cta {
+  padding: 16px 32px;
+  font-size: 18px;
+  border-radius: 30px;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  margin: 0 auto;
+}
+
+/* SCENE 2: The Flow */
+.scene-flow {
+  background: var(--bg-primary);
+  min-height: auto;
+  padding: 80px 20px;
+}
+
+.section-heading {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 48px;
+  color: #fff;
+}
+
+.flow-steps-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px;
+  gap: 24px;
 }
 
-.hub-module-card {
-  border-radius: 18px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 22px;
+.flow-step-card {
+  padding: 32px 24px;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.hub-module-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
-}
-
-.module-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.module-icon-box {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
+.flow-step-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.step-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
   background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 20px;
 }
 
-.module-num {
-  font-size: 13px;
-  font-weight: 900;
-  color: #6b7280;
+.flow-step-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #fff;
 }
 
-.hub-module-card h4 {
+.flow-step-card p {
   font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-}
-
-.hub-module-card p {
-  font-size: 12px;
   color: #9ca3af;
-  line-height: 1.4;
-
+  line-height: 1.6;
 }
 
-.module-footer {
-  margin-top: auto;
+/* SCENE 3: Action */
+.scene-action {
+  background: linear-gradient(180deg, var(--bg-primary) 0%, #031510 100%);
+  min-height: 60vh;
+}
+
+.action-banner {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #10b981;
+  justify-content: space-between;
+  padding: 48px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-/* Metrics Section */
-.hub-metrics-section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.action-text {
   text-align: left;
 }
 
-.hub-metrics-header h3 {
-  font-size: 20px;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.hub-subtitle {
-  font-size: 13px;
-  color: #9ca3af;
-}
-
-.hub-stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-}
-
-.stat-card {
-  padding: 20px;
-  border-radius: 16px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stat-num {
+.action-text h2 {
   font-size: 28px;
-  font-weight: 900;
-  color: #ffffff;
+  font-weight: 700;
+  margin-bottom: 12px;
 }
 
-.stat-lbl {
-  font-size: 12px;
+.action-text p {
   color: #9ca3af;
-  text-transform: uppercase;
-  font-weight: 600;
+  font-size: 16px;
 }
 
-.healthy-stat .stat-num { color: #10b981; }
-.care-stat .stat-num { color: #f59e0b; }
-
-/* Recent Specimens Grid */
-.hub-recent-showcase h4 {
-  font-size: 15px;
-  font-weight: 800;
-  color: #e5e7eb;
-  margin-bottom: 14px;
-}
-
-.recent-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-}
-
-.recent-specimen-card {
-  border-radius: 14px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.recent-specimen-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(16, 185, 129, 0.3);
-}
-
-.specimen-img-box img {
-  width: 52px;
-  height: 52px;
-  border-radius: 10px;
-  object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.specimen-info h5 {
-  font-size: 13px;
-  font-weight: 800;
-  color: #ffffff;
-  margin-bottom: 2px;
-}
-
-.specimen-status {
-  font-size: 11px;
-  font-weight: 600;
-  display: inline-block;
-}
-
-.specimen-status.healthy { color: #10b981; }
-.specimen-status.danger { color: #f87171; }
-
-.specimen-conf {
-  font-size: 11px;
-  color: #9ca3af;
-  margin-top: 2px;
-}
-
-/* Animations & Responsive */
-@keyframes reticleRotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@media (max-width: 640px) {
-  .home-page-wrapper {
-    padding: 20px 4% 40px 4%;
-    gap: 28px;
+@media (max-width: 768px) {
+  .cinematic-title {
+    font-size: 32px;
   }
-
-  .hub-central-node {
-    padding: 20px;
-    gap: 20px;
+  .cinematic-subtitle {
+    font-size: 16px;
   }
-
-  .central-leaf-aura {
-    width: 100px;
-    height: 100px;
+  .action-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 24px;
+    padding: 32px 20px;
   }
-
-  .central-leaf-svg {
-    width: 90px;
-    height: 90px;
+  .action-text {
+    text-align: center;
   }
 }
