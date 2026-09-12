@@ -145,7 +145,7 @@ def farmer_report():
         )
 
     # 1. Isolated NVIDIA AI Call
-    ai_reply = call_nvidia_ai_service(user_prompt, system_prompt)
+    ai_reply, nvidia_error = call_nvidia_ai_service(user_prompt, system_prompt)
     provider = "nvidia_ai"
 
     # 2. Fallback to Gemini
@@ -167,6 +167,7 @@ def farmer_report():
     return jsonify({
         "success": False,
         "provider": "none",
+        "nvidia_debug_error": nvidia_error,
         "error": "NVIDIA AI தற்போது கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்." if is_ta else "NVIDIA AI Farmer Advisory is currently unavailable. Please try again."
     }), 503
 
@@ -195,7 +196,7 @@ def chat():
         )
 
     # Call isolated NVIDIA AI service
-    ai_reply = call_nvidia_ai_service(user_msg, system_prompt)
+    ai_reply, nvidia_error = call_nvidia_ai_service(user_msg, system_prompt)
     provider = "nvidia_ai"
 
     if not ai_reply:
@@ -213,6 +214,7 @@ def chat():
     return jsonify({
         "success": False,
         "provider": "none",
+        "nvidia_debug_error": nvidia_error,
         "error": "NVIDIA AI தற்போது கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்." if is_ta else "NVIDIA AI Doctor is currently unavailable. Please try again."
     }), 503
 

@@ -6,11 +6,11 @@ def call_nvidia_ai_service(user_prompt, system_prompt):
     """
     Isolated NVIDIA AI Service helper using OpenAI Python SDK.
     Reads NVIDIA_API_KEY and NVIDIA_MODEL exclusively from backend environment.
-    Returns generated content string or None on failure/missing key.
+    Returns (generated content string, error_message).
     """
     nvidia_key = os.getenv("NVIDIA_API_KEY", "").strip()
     if not nvidia_key or nvidia_key in ("YOUR_NVIDIA_KEY_HERE", "YOUR_API_KEY_HERE"):
-        return None
+        return None, "Missing or invalid NVIDIA_API_KEY"
 
     model_name = os.getenv("NVIDIA_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b").strip()
 
@@ -39,11 +39,13 @@ def call_nvidia_ai_service(user_prompt, system_prompt):
 
         if completion and completion.choices and len(completion.choices) > 0:
             content = completion.choices[0].message.content
-            return content.strip() if content else None
+            return content.strip() if content else None, None
 
     except Exception as e:
-        print("[NVIDIA AI Service Error]:", type(e).__name__, str(e))
-    return None
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        print("[NVIDIA AI Service Error]:", error_msg)
+        return None, error_msg
+    return None, "No completion choices returned"
 
 
 def call_gemini_fallback(user_prompt, system_prompt):
