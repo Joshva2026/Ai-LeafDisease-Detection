@@ -9,10 +9,10 @@ def call_nvidia_ai_service(user_prompt, system_prompt):
     Returns (generated content string, error_message).
     """
     nvidia_key = os.getenv("NVIDIA_API_KEY", "").strip()
-    if not nvidia_key or nvidia_key in ("YOUR_NVIDIA_KEY_HERE", "YOUR_API_KEY_HERE"):
-        return None, "Missing or invalid NVIDIA_API_KEY"
-
     model_name = os.getenv("NVIDIA_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b").strip()
+
+    if not nvidia_key or nvidia_key in ("YOUR_NVIDIA_KEY_HERE", "YOUR_API_KEY_HERE"):
+        return None, f"Key exists=NO, Model={model_name}"
 
     try:
         client = OpenAI(
