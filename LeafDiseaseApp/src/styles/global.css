@@ -361,3 +361,50 @@ p {
   .mobile-only-block { display: block !important; }
   .desktop-only { display: none !important; }
 }
+
+/* =====================================================
+   SEGMENTED CONTROL (LANGUAGE TOGGLE)
+ ===================================================== */
+.segmented-control {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.segmented-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 10px 16px;
+  color: var(--text-color-secondary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  min-height: 44px; /* Touch target */
+  position: relative;
+  z-index: 1;
+}
+
+.segmented-btn:hover {
+  color: var(--text-color);
+}
+
+.segmented-btn.active {
+  color: var(--bg-color);
+  background: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.segmented-btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}

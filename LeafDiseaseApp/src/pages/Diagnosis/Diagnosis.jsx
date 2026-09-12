@@ -66,11 +66,17 @@ function Diagnosis({ prediction, onViewChange, lang }) {
         setReportStatus("success");
       } else {
         console.warn("[AI Report] Request returned non-success data:", res.data);
+        if (res.data && res.data.nvidia_debug_error) {
+          console.error("[Backend NVIDIA Error]:", res.data.nvidia_debug_error);
+        }
         setReportStatus("error");
       }
     } catch (e) {
       if (!isMounted.current) return;
       console.error("[AI Report] Request error:", e.message || e);
+      if (e.response && e.response.data && e.response.data.nvidia_debug_error) {
+        console.error("[Backend NVIDIA Error]:", e.response.data.nvidia_debug_error);
+      }
       setReportStatus("error");
     }
   };
@@ -222,17 +228,25 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                 <Bot size={24} color="#34d399" />
                 <h2>{t("nvidiaFarmerAdvisory", lang)}</h2>
               </div>
-              <div className="report-lang-toggle">
-                <button 
-                  className={reportLang === "ta" ? "active" : ""} 
-                  onClick={() => handleLangToggle("ta")}
-                  disabled={reportStatus === "loading"}
-                >தமிழ்</button>
-                <button 
-                  className={reportLang === "en" ? "active" : ""} 
-                  onClick={() => handleLangToggle("en")}
-                  disabled={reportStatus === "loading"}
-                >English</button>
+              <div className="report-lang-toggle" style={{ width: '100%', padding: '10px 0' }}>
+                <div className="segmented-control" role="radiogroup" aria-label="Language Selector">
+                  <button 
+                    className={`segmented-btn ${reportLang === "ta" ? "active" : ""}`}
+                    onClick={() => handleLangToggle("ta")}
+                    disabled={reportStatus === "loading"}
+                    role="radio"
+                    aria-checked={reportLang === "ta"}
+                    aria-label="தமிழ் அறிக்கை"
+                  >தமிழ்</button>
+                  <button 
+                    className={`segmented-btn ${reportLang === "en" ? "active" : ""}`}
+                    onClick={() => handleLangToggle("en")}
+                    disabled={reportStatus === "loading"}
+                    role="radio"
+                    aria-checked={reportLang === "en"}
+                    aria-label="English report"
+                  >English</button>
+                </div>
               </div>
             </div>
 
