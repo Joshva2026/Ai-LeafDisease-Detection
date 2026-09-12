@@ -134,49 +134,104 @@
   justify-content: center;
 }
 
-.visualizer-side {
+.reveal-image-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 20px;
 }
 
-.vis-tag {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1px;
+.reveal-image-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
   color: #9ca3af;
+  letter-spacing: 0.5px;
 }
 
-.ai-tag {
-  color: #34d399;
-}
-
-.vis-img-frame {
+.reveal-img-wrapper {
   position: relative;
-  width: 220px;
-  height: 220px;
-  border-radius: 16px;
+  width: 240px;
+  height: 240px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: #000000;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.highlight-side .vis-img-frame {
-  border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.2);
-}
-
-.vis-img {
+.reveal-img-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-.visualizer-divider {
-  color: #10b981;
-  font-size: 24px;
-  font-weight: bold;
+.heatmap-box {
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.1);
+}
+
+.heatmap-box .reveal-img-wrapper {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.expand-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: #fff;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.reveal-img-wrapper:hover .expand-btn {
+  opacity: 1;
+}
+
+.no-heatmap {
+  color: #9ca3af;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  width: 100%;
+}
+
+.error-state {
+  color: #fca5a5;
+}
+
+.min-h-report {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-report-loading, .ai-report-error {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px;
+  text-align: center;
 }
 
 /* Progressive Scientific Report */

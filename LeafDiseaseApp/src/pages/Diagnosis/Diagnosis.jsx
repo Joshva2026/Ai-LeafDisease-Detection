@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
@@ -11,23 +11,37 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [aiReport, setAiReport] = useState(null);
   const [aiStructured, setAiStructured] = useState(null);
-  const [loadingAiReport, setLoadingAiReport] = useState(false);
-  const [aiError, setAiError] = useState(false);
+  
+  // Explicit report state: "idle" | "loading" | "success" | "error"
+  const [reportStatus, setReportStatus] = useState("idle");
   const [reportLang, setReportLang] = useState(lang || "ta");
 
   const [origImgError, setOrigImgError] = useState(false);
   const [camImgError, setCamImgError] = useState(false);
 
+  // Guard to prevent state updates after unmount
+  const isMounted = useRef(true);
+
   useEffect(() => {
-    if (prediction && !aiReport && !loadingAiReport) {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (prediction && reportStatus === "idle") {
       fetchAiReport(lang);
     }
   }, [prediction, lang]);
 
   const fetchAiReport = async (targetLang) => {
-    setLoadingAiReport(true);
-    setAiError(false);
+    if (!prediction) return;
+    
+    setReportStatus("loading");
     const details = mapClassName(prediction.disease || "Unknown");
+    
+    console.log("[AI Report] Request started for:", prediction.disease, "Language:", targetLang);
     
     try {
       const res = await api.post("/api/ai/farmer-report", {
@@ -37,17 +51,25 @@ function Diagnosis({ prediction, onViewChange, lang }) {
         language: targetLang,
         lang: targetLang
       });
+      
+      if (!isMounted.current) {
+        console.log("[AI Report] Component unmounted before response, ignoring.");
+        return;
+      }
+
       if (res.data && res.data.success) {
-        setAiReport(res.data.report_text || res.data.report);
+        console.log("[AI Report] Request success.");
+        setAiReport(res.data.report_text || res.data.report || null);
         setAiStructured(res.data.structured_report || null);
+        setReportStatus("success");
       } else {
-        setAiError(true);
+        console.warn("[AI Report] Request returned non-success data:", res.data);
+        setReportStatus("error");
       }
     } catch (e) {
-      console.error("AI Report fetch error:", e);
-      setAiError(true);
-    } finally {
-      setLoadingAiReport(false);
+      if (!isMounted.current) return;
+      console.error("[AI Report] Request error:", e.message || e);
+      setReportStatus("error");
     }
   };
 
@@ -130,6 +152,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     src={getMediaUrl(prediction.original_url)} 
                     alt="Original Leaf" 
                     onError={() => setOrigImgError(true)}
+                    onLoad={() => console.log("[Image Load] Original OK")}
                   />
                   <button className="expand-btn"><Maximize2 size={16} /></button>
                 </>
@@ -159,6 +182,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     src={getMediaUrl(prediction.gradcam_url)} 
                     alt="AI Heatmap" 
                     onError={() => setCamImgError(true)}
+                    onLoad={() => console.log("[Image Load] Grad-CAM OK")}
                   />
                   <button className="expand-btn"><Maximize2 size={16} /></button>
                 </>
@@ -179,23 +203,23 @@ function Diagnosis({ prediction, onViewChange, lang }) {
             <button 
               className={reportLang === "ta" ? "active" : ""} 
               onClick={() => handleLangToggle("ta")}
-              disabled={loadingAiReport}
+              disabled={reportStatus === "loading"}
             >தமிழ்</button>
             <button 
               className={reportLang === "en" ? "active" : ""} 
               onClick={() => handleLangToggle("en")}
-              disabled={loadingAiReport}
+              disabled={reportStatus === "loading"}
             >English</button>
           </div>
         </div>
 
-        <div className="report-content-body glass-card">
-          {loadingAiReport ? (
+        <div className="report-content-body glass-card min-h-report">
+          {reportStatus === "loading" ? (
             <div className="ai-report-loading">
               <Loader2 size={32} className="spin-anim" color="#34d399" />
               <p>{t("generatingAiReport", lang)}</p>
             </div>
-          ) : aiError ? (
+          ) : reportStatus === "error" ? (
             <div className="ai-report-error">
               <AlertTriangle size={32} color="#fca5a5" />
               <p>{t("aiUnavailable", lang)}</p>
@@ -204,7 +228,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                 <span>{t("retry", lang)}</span>
               </button>
             </div>
-          ) : aiStructured ? (
+          ) : reportStatus === "success" && aiStructured ? (
             <div className="structured-report">
               {aiStructured.diagnosis && (
                 <div className="report-block highlight-block">
@@ -262,11 +286,15 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                 </div>
               )}
             </div>
-          ) : aiReport ? (
+          ) : reportStatus === "success" && aiReport ? (
             <div className="unstructured-report">
               <div dangerouslySetInnerHTML={{ __html: aiReport.replace(/\n/g, '<br/>') }} />
             </div>
-          ) : null}
+          ) : (
+            <div className="ai-report-loading">
+              <p>Unknown State</p>
+            </div>
+          )}
         </div>
       </section>
 
