@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff } from "lucide-react";
+import ErrorBoundary from "../../components/ErrorBoundary/ErrorBoundary";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
 import { getMediaUrl } from "../../utils/mediaUrl";
@@ -15,6 +16,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   // Explicit report state: "idle" | "loading" | "success" | "error"
   const [reportStatus, setReportStatus] = useState("idle");
   const [reportLang, setReportLang] = useState(lang || "ta");
+  const [showReport, setShowReport] = useState(false);
 
   const [origImgError, setOrigImgError] = useState(false);
   const [camImgError, setCamImgError] = useState(false);
@@ -130,6 +132,18 @@ function Diagnosis({ prediction, onViewChange, lang }) {
             <span className="reveal-crop-pill">
               {details.plantName}
             </span>
+            {!isHealthy && details.severity && details.severity !== "None" && (
+              <span className={`reveal-status-pill ${details.severity.toLowerCase() === 'high' ? 'danger' : 'warning'}`}>
+                <Activity size={16} />
+                <span>{t("severity", lang)}: {t(details.severity.toLowerCase(), lang) || details.severity}</span>
+              </span>
+            )}
+            {!isHealthy && details.status && details.status !== "Healthy" && (
+              <span className="reveal-crop-pill" style={{ background: "rgba(255,255,255,0.1)", color: "var(--text-color)" }}>
+                <Bot size={16} />
+                <span>{t("status", lang)}: {t(details.status.toLowerCase(), lang) || details.status}</span>
+              </span>
+            )}
           </div>
         </div>
 
@@ -194,108 +208,126 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
       {/* FARMER AI REPORT SECTION */}
       <section className="farmer-report-section fade-in-up" style={{ animationDelay: "0.3s" }}>
-        <div className="report-header-banner">
-          <div className="report-title">
-            <Bot size={24} color="#34d399" />
-            <h2>{t("nvidiaFarmerAdvisory", lang)}</h2>
+        {!showReport ? (
+          <div className="report-toggle-card glass-card" style={{ padding: '1.5rem', textAlign: 'center', marginTop: '1rem' }}>
+            <button className="btn btn-primary ai-reveal-btn" style={{ width: '100%', justifyContent: 'center' }} onClick={() => setShowReport(true)}>
+              <Bot size={20} />
+              <span>{t("needFullAiReport", lang)}</span>
+            </button>
           </div>
-          <div className="report-lang-toggle">
-            <button 
-              className={reportLang === "ta" ? "active" : ""} 
-              onClick={() => handleLangToggle("ta")}
-              disabled={reportStatus === "loading"}
-            >தமிழ்</button>
-            <button 
-              className={reportLang === "en" ? "active" : ""} 
-              onClick={() => handleLangToggle("en")}
-              disabled={reportStatus === "loading"}
-            >English</button>
-          </div>
-        </div>
-
-        <div className="report-content-body glass-card min-h-report">
-          {reportStatus === "loading" ? (
-            <div className="ai-report-loading">
-              <Loader2 size={32} className="spin-anim" color="#34d399" />
-              <p>{t("generatingAiReport", lang)}</p>
-            </div>
-          ) : reportStatus === "error" ? (
-            <div className="ai-report-error">
-              <AlertTriangle size={32} color="#fca5a5" />
-              <p>{t("aiUnavailable", lang)}</p>
-              <button className="btn btn-secondary" onClick={() => fetchAiReport(reportLang)}>
-                <RefreshCw size={16} />
-                <span>{t("retry", lang)}</span>
-              </button>
-            </div>
-          ) : reportStatus === "success" && aiStructured ? (
-            <div className="structured-report">
-              {aiStructured.diagnosis && (
-                <div className="report-block highlight-block">
-                  <h3>{t("diagnosis", lang)}</h3>
-                  <p>{aiStructured.diagnosis}</p>
-                </div>
-              )}
-              
-              {aiStructured.summary && (
-                <div className="report-block">
-                  <h3>{t("summary", lang)}</h3>
-                  <p>{aiStructured.summary}</p>
-                </div>
-              )}
-
-              {aiStructured.immediate_actions && aiStructured.immediate_actions.length > 0 && (
-                <div className="report-block action-block">
-                  <h3><AlertTriangle size={18} color="#f87171" /> {t("immediateActions", lang)}</h3>
-                  <ul>
-                    {aiStructured.immediate_actions.map((act, i) => <li key={i}>{act}</li>)}
-                  </ul>
-                </div>
-              )}
-
-              <div className="report-grid-2">
-                {aiStructured.symptoms && aiStructured.symptoms.length > 0 && (
-                  <div className="report-block">
-                    <h3>{t("symptoms", lang)}</h3>
-                    <ul>{aiStructured.symptoms.map((s, i) => <li key={i}>{s}</li>)}</ul>
-                  </div>
-                )}
-                {aiStructured.causes && aiStructured.causes.length > 0 && (
-                  <div className="report-block">
-                    <h3>{t("causes", lang)}</h3>
-                    <ul>{aiStructured.causes.map((c, i) => <li key={i}>{c}</li>)}</ul>
-                  </div>
-                )}
+        ) : (
+          <>
+            <div className="report-header-banner">
+              <div className="report-title">
+                <Bot size={24} color="#34d399" />
+                <h2>{t("nvidiaFarmerAdvisory", lang)}</h2>
               </div>
+              <div className="report-lang-toggle">
+                <button 
+                  className={reportLang === "ta" ? "active" : ""} 
+                  onClick={() => handleLangToggle("ta")}
+                  disabled={reportStatus === "loading"}
+                >தமிழ்</button>
+                <button 
+                  className={reportLang === "en" ? "active" : ""} 
+                  onClick={() => handleLangToggle("en")}
+                  disabled={reportStatus === "loading"}
+                >English</button>
+              </div>
+            </div>
 
-              {aiStructured.treatment && aiStructured.treatment.length > 0 && (
-                <div className="report-block treatment-block">
-                  <h3>{t("treatmentManagement", lang)}</h3>
-                  <ul>
-                    {aiStructured.treatment.map((t_item, i) => <li key={i}>{t_item}</li>)}
-                  </ul>
-                </div>
-              )}
-              
-              {aiStructured.prevention && aiStructured.prevention.length > 0 && (
-                <div className="report-block prevention-block">
-                  <h3><ShieldCheck size={18} color="#34d399" /> {t("prevention", lang)}</h3>
-                  <ul>
-                    {aiStructured.prevention.map((p_item, i) => <li key={i}>{p_item}</li>)}
-                  </ul>
-                </div>
-              )}
+            <div className="report-content-body glass-card min-h-report">
+              <ErrorBoundary 
+                inline={true} 
+                lang={lang} 
+                customMessage={t("aiUnavailable", lang)} 
+                onRetry={() => fetchAiReport(reportLang)}
+              >
+                {reportStatus === "loading" ? (
+                  <div className="ai-report-loading">
+                    <Loader2 size={32} className="spin-anim" color="#34d399" />
+                    <p>{t("generatingAiReport", lang)}</p>
+                  </div>
+                ) : reportStatus === "error" ? (
+                  <div className="ai-report-error">
+                    <AlertTriangle size={32} color="#fca5a5" />
+                    <p>{t("aiUnavailable", lang)}</p>
+                    <button className="btn btn-secondary" onClick={() => fetchAiReport(reportLang)}>
+                      <RefreshCw size={16} />
+                      <span>{t("retry", lang)}</span>
+                    </button>
+                  </div>
+                ) : reportStatus === "success" && aiStructured ? (
+                  <div className="structured-report">
+                    {aiStructured.diagnosis && (
+                      <div className="report-block highlight-block">
+                        <h3>{t("diagnosis", lang)}</h3>
+                        <p>{aiStructured.diagnosis}</p>
+                      </div>
+                    )}
+                    
+                    {aiStructured.summary && (
+                      <div className="report-block">
+                        <h3>{t("summary", lang)}</h3>
+                        <p>{aiStructured.summary}</p>
+                      </div>
+                    )}
+
+                    {Array.isArray(aiStructured.immediate_actions) && aiStructured.immediate_actions.length > 0 && (
+                      <div className="report-block action-block">
+                        <h3><AlertTriangle size={18} color="#f87171" /> {t("immediateActions", lang)}</h3>
+                        <ul>
+                          {aiStructured.immediate_actions.map((act, i) => <li key={i}>{act}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="report-grid-2">
+                      {Array.isArray(aiStructured.symptoms) && aiStructured.symptoms.length > 0 && (
+                        <div className="report-block">
+                          <h3>{t("symptoms", lang)}</h3>
+                          <ul>{aiStructured.symptoms.map((s, i) => <li key={i}>{s}</li>)}</ul>
+                        </div>
+                      )}
+                      {Array.isArray(aiStructured.causes) && aiStructured.causes.length > 0 && (
+                        <div className="report-block">
+                          <h3>{t("causes", lang)}</h3>
+                          <ul>{aiStructured.causes.map((c, i) => <li key={i}>{c}</li>)}</ul>
+                        </div>
+                      )}
+                    </div>
+
+                    {Array.isArray(aiStructured.treatment) && aiStructured.treatment.length > 0 && (
+                      <div className="report-block treatment-block">
+                        <h3>{t("treatmentManagement", lang)}</h3>
+                        <ul>
+                          {aiStructured.treatment.map((t_item, i) => <li key={i}>{t_item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {Array.isArray(aiStructured.prevention) && aiStructured.prevention.length > 0 && (
+                      <div className="report-block prevention-block">
+                        <h3><ShieldCheck size={18} color="#34d399" /> {t("prevention", lang)}</h3>
+                        <ul>
+                          {aiStructured.prevention.map((p_item, i) => <li key={i}>{p_item}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ) : reportStatus === "success" && aiReport ? (
+                  <div className="unstructured-report">
+                    <div dangerouslySetInnerHTML={{ __html: String(aiReport).replace(/\n/g, '<br/>') }} />
+                  </div>
+                ) : (
+                  <div className="ai-report-loading">
+                    <p>Unknown State</p>
+                  </div>
+                )}
+              </ErrorBoundary>
             </div>
-          ) : reportStatus === "success" && aiReport ? (
-            <div className="unstructured-report">
-              <div dangerouslySetInnerHTML={{ __html: aiReport.replace(/\n/g, '<br/>') }} />
-            </div>
-          ) : (
-            <div className="ai-report-loading">
-              <p>Unknown State</p>
-            </div>
-          )}
-        </div>
+          </>
+        )}
       </section>
 
       {/* FIXED BOTTOM ACTION BAR */}

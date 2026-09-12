@@ -45,19 +45,9 @@ async function runTests() {
   console.log("Reloading to bypass auth and onboarding...");
   await page.reload({ waitUntil: 'networkidle0' });
   
-  console.log("Finding Scan button...");
-  await delay(3000); // Wait for React to hydrate (Vite dev server)
-  
-  await page.evaluate(() => {
-    // Click anything that navigates to scan
-    const links = Array.from(document.querySelectorAll('a, button, div'));
-    const scanLink = links.find(el => el.textContent && (el.textContent.includes('Scan') || el.textContent.includes('ஸ்கேன்')));
-    if (scanLink) scanLink.click();
-  });
-  
-  await delay(1000);
-  console.log("Could not find explicit scan button, looking for file input directly in DOM.");
-  
+  console.log("Waiting for React to hydrate...");
+  await delay(3000); 
+
   // Upload leaf
   console.log("Uploading leaf...");
   await page.waitForSelector('input[type="file"]', { timeout: 10000 });
@@ -81,12 +71,14 @@ async function runTests() {
   if (analyzeBtn) {
     console.log("Clicking Analyze button...");
     await analyzeBtn.click();
+  } else {
+    console.log("ERROR: Could not find analyze button.");
   }
 
   // Wait for Diagnosis Page
   console.log("Waiting for /predict completion and Diagnosis rendering...");
   try {
-    await page.waitForSelector('.disease-reveal-container', { timeout: 15000 });
+    await page.waitForSelector('.disease-reveal-container', { timeout: 20000 });
     console.log("Diagnosis page rendered immediately.");
   } catch (e) {
     console.log("ERROR: Diagnosis page did not render.");
@@ -143,7 +135,7 @@ async function runTests() {
   if (langToggle) {
     await langToggle.click();
     console.log("Switched to English.");
-    await delay(2000);
+    await delay(3000);
   }
 
   await page.screenshot({ path: 'D:\\MINI PROJECT\\LeafDiseaseApp\\diagnosis_runtime_test.png', fullPage: true });
