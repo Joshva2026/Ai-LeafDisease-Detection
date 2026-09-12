@@ -13,13 +13,10 @@ def farmer_report():
     plant = data.get("plant", "Crop")
     disease = data.get("disease", "")
     confidence = data.get("confidence", 0)
-    lang_raw = str(data.get("language") or data.get("lang") or "en").lower()
-    if lang_raw in ["ta", "tamil", "தமிழ்"]:
-        lang = "ta"
-        is_ta = True
-    else:
-        lang = "en"
-        is_ta = False
+    
+    # We ignore the requested language and always generate English first as the source of truth.
+    lang = "en"
+    
     if not disease:
         return jsonify({"success": False, "error": "Disease identification required"}), 400
 
@@ -28,59 +25,26 @@ def farmer_report():
     if disease_meta:
         trusted_context = f"\nTRUSTED DISEASE KNOWLEDGE:\nDescription: {disease_meta.get('description', '')}\nSymptoms: {', '.join(disease_meta.get('symptoms', []))}\nTreatment: {disease_meta.get('treatment', '')}\nPrevention: {disease_meta.get('prevention', '')}\n\nUse this trusted information as your factual basis. Do not contradict it."
 
-    if is_ta:
-        system_prompt = (
-            "You are an agricultural AI assistant for Tamil Nadu farmers.\n"
-            "The selected language is Tamil.\n"
-            "Write natural, grammatically correct Tamil.\n"
-            "Use simple farmer-friendly Tamil.\n"
-            "Do not mix unrelated languages.\n"
-            "Use standard agricultural terminology.\n"
-            "Scientific disease names may appear in parentheses after the Tamil name when useful.\n"
-            "IMPORTANT: Your entire response MUST be strictly in Tamil and English ONLY.\n"
-            "For Tamil output:\n"
-            "Write natural Tamil using Tamil script.\n"
-            "CRITICAL: If you do not know the exact Tamil word for a color (like Olive) or term, write it in English. NEVER use Japanese (Katakana/Hiragana), Chinese, or Hindi.\n"
-            "Do not generate Devanagari. Do not generate Chinese characters. Do not generate Japanese characters. Do not generate Korean characters.\n"
-            "Do not generate unrelated foreign-language words.\n"
-            "English is allowed ONLY for: scientific names, disease names in parentheses, technical identifiers, model names, standard units, percentages, pH, colors, unavoidable technical terminology.\n"
-            "Never mix unrelated languages inside Tamil words.\n"
-            "Do not invent pesticide names, fungicide names, insecticides, antibiotics, or fertilizers.\n"
-            "Do not invent chemical dosages, concentrations, or spray intervals.\n"
-            "If specific verified treatment information is unavailable, recommend consulting the local Agriculture Department or an agriculture officer.\n"
-            "Prefer: 'Use only locally registered products and follow the product label and agricultural extension guidance.'\n"
-            "Do not claim laboratory confirmation.\n"
-            "The supplied CNN disease prediction is authoritative.\n"
-            "Do not change the supplied disease or crop.\n"
-            "Provide the report STRICTLY in JSON format with exactly these 9 keys (in English), and all values in Tamil:\n"
-            "- diagnosis\n- summary\n- symptoms\n- causes\n- immediate_actions\n- treatment\n- prevention\n- monitoring\n- farmer_advice\n"
-            "Do not output markdown or conversational filler outside the JSON.\n"
-        )
-        user_prompt = (
-            f"Crop: {plant}\nDisease: {disease}\nConfidence: {confidence}%\n{trusted_context}\n"
-            "Generate the detailed agricultural farmer report in JSON format."
-        )
-    else:
-        system_prompt = (
-            "You are an expert Agricultural AI Assistant.\n"
-            "The existing MobileNetV2 disease detection model classified this specimen.\n"
-            "STRICT RULES:\n"
-            "1. NEVER alter or contradict the diagnosed condition, plant, or confidence.\n"
-            "2. DO NOT diagnose a different disease.\n"
-            "3. DO NOT claim laboratory confirmation.\n"
-            "4. DO NOT invent pesticide, fungicide, insecticide names, chemical dosages, or spray schedules.\n"
-            "5. If specific verified treatment information is unavailable, recommend consulting the local Agriculture Department or an agriculture officer.\n"
-            "   Prefer: 'Use only locally registered products and follow the product label and agricultural extension guidance.'\n"
-            "6. Provide safe, actionable agronomic advice.\n"
-            "7. Output must be entirely in simple, clear English.\n"
-            "8. Output must be STRICTLY valid JSON with these 9 keys:\n"
-            "- diagnosis\n- summary\n- symptoms\n- causes\n- immediate_actions\n- treatment\n- prevention\n- monitoring\n- farmer_advice\n"
-            "Do not output markdown or conversational filler outside the JSON.\n"
-        )
-        user_prompt = (
-            f"Crop: {plant}\nCondition: {disease}\nConfidence: {confidence}%\n{trusted_context}\n"
-            "Generate a complete 8-section farmer advisory report in JSON format."
-        )
+    system_prompt = (
+        "You are an expert Agricultural AI Assistant.\n"
+        "The existing MobileNetV2 disease detection model classified this specimen.\n"
+        "STRICT RULES:\n"
+        "1. NEVER alter or contradict the diagnosed condition, plant, or confidence.\n"
+        "2. DO NOT diagnose a different disease.\n"
+        "3. DO NOT claim laboratory confirmation.\n"
+        "4. DO NOT invent pesticide, fungicide, insecticide names, chemical dosages, or spray schedules.\n"
+        "5. If specific verified treatment information is unavailable, recommend consulting the local Agriculture Department or an agriculture officer.\n"
+        "6. Output must be entirely in simple, clear English.\n"
+        "7. Output must be STRICTLY valid JSON with EXACTLY these 9 keys:\n"
+        '   "diagnosis", "summary", "symptoms", "causes", "immediate_actions", "treatment", "prevention", "monitoring", "farmer_advice"\n'
+        "8. ALL list fields (symptoms, causes, immediate_actions, treatment, prevention, monitoring, farmer_advice) MUST be JSON arrays of strings.\n"
+        "9. Each item in the array MUST be one complete, clean sentence. DO NOT add Markdown numbering, bullets, or svg text.\n"
+        "10. Return ONLY the report JSON, with no introduction, explanation, or markdown code fences.\n"
+    )
+    user_prompt = (
+        f"Crop: {plant}\nCondition: {disease}\nConfidence: {confidence}%\n{trusted_context}\n"
+        "Generate a complete 8-section farmer advisory report in JSON format."
+    )
 
     structured_report = None
     nvidia_error = "Unknown error"
@@ -103,14 +67,6 @@ def farmer_report():
         if not is_fact_valid:
             nvidia_error = f"Fact Validation failed: {fact_err}"
             continue
-            
-        if is_ta:
-            # Validate Tamil Quality of the combined text values
-            all_text = " ".join([str(v) for v in parsed.values()])
-            is_valid, ta_err = validate_tamil_quality(all_text)
-            if not is_valid:
-                nvidia_error = f"Tamil Validation failed: {ta_err}"
-                continue
                 
         # If we reach here, it passed all validations!
         structured_report = parsed
@@ -119,9 +75,9 @@ def farmer_report():
     if structured_report:
         return jsonify({
             "success": True,
-            "language": lang,
+            "language": "en",
             "provider": "nvidia_ai",
-            "report_text": "",  # Deprecated but kept for backward compatibility if needed
+            "report_text": "",
             "structured_report": structured_report
         })
 
@@ -129,7 +85,137 @@ def farmer_report():
         "success": False,
         "provider": "none",
         "nvidia_debug_error": nvidia_error,
-        "error": "AI அறிக்கை தற்போது கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்." if is_ta else "AI report is currently unavailable. Please try again."
+        "error": "AI report is currently unavailable. Please try again."
+    }), 503
+
+@ai_bp.route("/api/ai/translate-report", methods=["POST"])
+def translate_report():
+    data = request.json or {}
+    english_report = data.get("english_report")
+    target_language = str(data.get("target_language") or data.get("lang") or "ta").lower()
+    
+    if not english_report or not isinstance(english_report, dict):
+        return jsonify({"success": False, "error": "Valid English report JSON required"}), 400
+
+    if target_language not in ["ta", "tamil", "தமிழ்"]:
+        return jsonify({"success": False, "error": "Only Tamil (ta) is supported for translation currently"}), 400
+
+    from utils.validators import clean_tamil_text
+    
+    system_prompt = (
+        "You are a Tamil translator for agriculture.\n"
+        "Translate the English text to Tamil.\n"
+        "Output ONLY the Tamil translation using Tamil script (தமிழ்).\n"
+        "Keep scientific names (e.g. Alternaria solani) in English.\n"
+        "Do not explain. Do not use Hindi, Korean, Japanese, Arabic, or Chinese.\n"
+    )
+
+    translated_report = {}
+    failed_keys = []
+    
+    for key, value in english_report.items():
+        if isinstance(value, list):
+            # Translate list items together as a numbered block
+            if not value:
+                translated_report[key] = []
+                continue
+                
+            numbered = "\n".join([f"{i+1}. {item}" for i, item in enumerate(value)])
+            user_prompt = f"Translate these {len(value)} agricultural points to Tamil:\n{numbered}"
+            
+            translated_items = []
+            success = False
+            
+            for attempt in range(2):
+                ai_reply, err = call_nvidia_ai_service(
+                    user_prompt, system_prompt, 
+                    temperature=0.1 + (attempt * 0.1), 
+                    max_tokens=400, 
+                    timeout=20
+                )
+                if not ai_reply:
+                    continue
+                
+                # Clean the output
+                ai_reply = clean_tamil_text(ai_reply)
+                
+                # Parse numbered items
+                lines = ai_reply.strip().split('\n')
+                items = []
+                for line in lines:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    # Strip leading numbers like "1. " or "1) "
+                    cleaned = re.sub(r'^\d+[\.\)]\s*', '', line)
+                    if cleaned:
+                        items.append(cleaned)
+                
+                if items:
+                    translated_items = items
+                    success = True
+                    break
+            
+            if success:
+                translated_report[key] = translated_items
+            else:
+                failed_keys.append(key)
+                translated_report[key] = value  # Fallback to English
+                
+        else:
+            # Translate single string value
+            if not value or not str(value).strip():
+                translated_report[key] = str(value)
+                continue
+                
+            user_prompt = f"Translate to Tamil: {value}"
+            success = False
+            
+            for attempt in range(2):
+                ai_reply, err = call_nvidia_ai_service(
+                    user_prompt, system_prompt,
+                    temperature=0.1 + (attempt * 0.1),
+                    max_tokens=150,
+                    timeout=15
+                )
+                if not ai_reply:
+                    continue
+                
+                # Clean the output
+                ai_reply = clean_tamil_text(ai_reply)
+                
+                if ai_reply:
+                    translated_report[key] = ai_reply
+                    success = True
+                    break
+            
+            if not success:
+                failed_keys.append(key)
+                translated_report[key] = str(value)  # Fallback to English
+    
+    # Validate the final translated report
+    all_text = " ".join([str(v) for v in translated_report.values()])
+    is_valid, ta_err = validate_tamil_quality(all_text)
+    
+    # Even if validation fails, if we translated most keys, return with a warning
+    if len(failed_keys) <= 2:
+        # Validate structure
+        parsed, json_err = validate_farmer_report_json(json.dumps(translated_report, ensure_ascii=False))
+        if parsed:
+            return jsonify({
+                "success": True,
+                "language": "ta",
+                "provider": "nvidia_ai_translate",
+                "structured_report": parsed,
+                "partial": bool(failed_keys),
+                "failed_keys": failed_keys
+            })
+
+    return jsonify({
+        "success": False,
+        "provider": "none",
+        "nvidia_debug_error": f"Failed keys: {failed_keys}" if failed_keys else "Translation failed",
+        "error": "AI அறிக்கை தற்போது கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்."
     }), 503
 
 

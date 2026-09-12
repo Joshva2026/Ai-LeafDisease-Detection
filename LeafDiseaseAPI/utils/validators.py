@@ -10,9 +10,9 @@ def validate_tamil_quality(text):
         return False, "Empty or invalid text"
 
     # 1. Reject obvious script contamination
-    # Devanagari (\u0900-\u097F), Chinese (\u4E00-\u9FFF), Japanese (\u3040-\u30FF), Arabic (\u0600-\u06FF), Cyrillic (\u0400-\u04FF)
-    contaminated = re.findall(r'[\u0900-\u097F\u4E00-\u9FFF\u3040-\u30FF\u0600-\u06FF\u0400-\u04FF]', text)
-    if len(contaminated) > 50:
+    # Devanagari (\u0900-\u097F), Chinese (\u4E00-\u9FFF), Japanese (\u3040-\u30FF), Korean (\uAC00-\uD7AF, \u1100-\u11FF), Arabic (\u0600-\u06FF), Cyrillic (\u0400-\u04FF)
+    contaminated = re.findall(r'[\u0900-\u097F\u4E00-\u9FFF\u3040-\u30FF\uAC00-\uD7AF\u1100-\u11FF\u0600-\u06FF\u0400-\u04FF]', text)
+    if contaminated:
         return False, f"Foreign script contamination detected: {''.join(contaminated)}"
 
     # 2. Detect suspicious mixed-language tokens (e.g., அபெக்டிமிசillin, பூச்சிய病害)
@@ -58,18 +58,52 @@ def validate_farmer_report_json(text):
         "diagnosis", "summary", "symptoms", "causes", 
         "immediate_actions", "treatment", "prevention", "monitoring", "farmer_advice"
     ]
+    
+    normalized_report = {}
 
     for key in required_keys:
         if key not in parsed:
             return None, f"Missing required key: {key}"
         
         val = parsed[key]
-        if isinstance(val, str) and not val.strip():
-            return None, f"Empty value for key: {key}"
-        if isinstance(val, list) and not val:
-            return None, f"Empty array for key: {key}"
+        if isinstance(val, str):
+            val = val.strip()
+            # If the key is one of the list fields, but arrived as a string, make it a list
+            if key in ["symptoms", "causes", "immediate_actions", "treatment", "prevention", "monitoring", "farmer_advice"]:
+                items = [item.strip() for item in val.split('\n') if item.strip()]
+                normalized_report[key] = []
+                for item in items:
+                    # Strip markdown list formatting (e.g., "1. ", "- ", "* ")
+                    cleaned = re.sub(r'^[\d\.\-\*•]+\s*', '', item)
+                    if cleaned and cleaned not in normalized_report[key]:
+                        normalized_report[key].append(cleaned)
+            else:
+                normalized_report[key] = val
+        elif isinstance(val, list):
+            # Clean elements if it's already a list
+            normalized_report[key] = []
+            for item in val:
+                if isinstance(item, str) and item.strip():
+                    cleaned = re.sub(r'^[\d\.\-\*•]+\s*', '', item.strip())
+                    if cleaned and cleaned not in normalized_report[key]:
+                        normalized_report[key].append(cleaned)
+        else:
+             normalized_report[key] = str(val) if val else ""
+             
+    return normalized_report, None
 
-    return parsed, None
+def clean_tamil_text(text):
+    """
+    Post-processing cleanup: strips non-Tamil/non-English/non-punctuation characters from translated text.
+    Keeps: Tamil (U+0B80-U+0BFF), ASCII (Latin, digits, punctuation), common punctuation.
+    """
+    if not text:
+        return text
+    # Remove characters that are NOT: Tamil, ASCII printable, basic whitespace
+    cleaned = re.sub(r'[^\u0B80-\u0BFF\u0020-\u007Ea-zA-Z0-9.,;:!?()\[\]\-\'\"/%&@#$\n\r\t]', '', text)
+    # Collapse multiple spaces
+    cleaned = re.sub(r'  +', ' ', cleaned)
+    return cleaned.strip()
 
 def validate_agricultural_facts(parsed_json, disease_key, disease_meta):
     """

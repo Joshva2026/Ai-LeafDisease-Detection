@@ -9,7 +9,7 @@ def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, tem
     Returns (generated content string, error_message).
     """
     nvidia_key = os.getenv("NVIDIA_API_KEY", "").strip()
-    model_name = os.getenv("NVIDIA_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b").strip()
+    model_name = os.getenv("NVIDIA_MODEL", "nvidia/llama-3.1-nemotron-70b-instruct").strip()
 
     if not nvidia_key or nvidia_key in ("YOUR_NVIDIA_KEY_HERE", "YOUR_API_KEY_HERE"):
         return None, f"Key exists=NO, Model={model_name}"
@@ -45,6 +45,11 @@ def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, tem
 
         if completion and completion.choices and len(completion.choices) > 0:
             content = completion.choices[0].message.content
+            try:
+                with open("llm_debug.txt", "w", encoding="utf-8") as f:
+                    f.write(content)
+            except Exception:
+                pass
             return content.strip() if content else None, None
 
     except Exception as e:

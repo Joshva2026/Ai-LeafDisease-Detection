@@ -11,7 +11,9 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const [saved, setSaved] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [aiReport, setAiReport] = useState(null);
-  const [aiStructured, setAiStructured] = useState(null);
+  
+  // Cache the normalized JSON reports to allow instant switching
+  const [cachedReports, setCachedReports] = useState({ en: null, ta: null });
   
   // Explicit report state: "idle" | "loading" | "success" | "error"
   const [reportStatus, setReportStatus] = useState("idle");
@@ -39,61 +41,92 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
   const fetchAiReport = async (targetLang) => {
     if (!prediction) return;
-    
+
+    // If we already have the report cached for the target language, don't fetch it again
+    if (cachedReports[targetLang]) {
+      console.log(`[AI Report] Using cached ${targetLang} report.`);
+      setReportStatus("success");
+      return;
+    }
+
     setReportStatus("loading");
     const details = mapClassName(prediction.disease || "Unknown");
-    
-    console.log("[AI Report] Request started for:", prediction.disease, "Language:", targetLang);
-    
+
     try {
-      const res = await api.post("/api/ai/farmer-report", {
-        disease: prediction.disease,
-        plant: prediction.plant || details.plantName,
-        confidence: prediction.confidence,
-        language: targetLang,
-        lang: targetLang
-      });
+      let englishReport = cachedReports.en;
       
-      if (!isMounted.current) {
-        console.log("[AI Report] Component unmounted before response, ignoring.");
+      // Step 1: Always ensure we have the English report first
+      if (!englishReport) {
+        console.log("[AI Report] Generating English source report...");
+        const res = await api.post("/api/ai/farmer-report", {
+          disease: prediction.disease,
+          plant: prediction.plant || details.plantName,
+          confidence: prediction.confidence
+        });
+
+        if (!isMounted.current) return;
+
+        if (res.data && res.data.success && res.data.structured_report) {
+          englishReport = normalizeStructuredReport(res.data.structured_report);
+          setCachedReports(prev => ({ ...prev, en: englishReport }));
+        } else {
+          console.warn("[AI Report] English generation failed:", res.data);
+          setReportStatus("error");
+          return;
+        }
+      }
+
+      // If the target is English, we're done.
+      if (targetLang === "en") {
+        setReportStatus("success");
         return;
       }
 
-      if (res.data && res.data.success) {
-        console.log("[AI Report] Request success.");
-        setAiReport(res.data.report_text || res.data.report || null);
-        
-        let structured = res.data.structured_report || null;
-        if (structured) {
-          const arrayFields = ['symptoms', 'causes', 'immediate_actions', 'treatment', 'prevention', 'monitoring', 'farmer_advice'];
-          arrayFields.forEach(f => {
-            if (typeof structured[f] === 'string') {
-              structured[f] = structured[f].split('\n').filter(s => s.trim().length > 0).map(s => s.replace(/^[-*•\d.]+\s*/, '').trim());
-            } else if (!Array.isArray(structured[f]) && structured[f]) {
-              structured[f] = [String(structured[f])];
-            } else if (!structured[f]) {
-              structured[f] = [];
-            }
-          });
+      // Step 2: Translate the English report to Tamil
+      if (targetLang === "ta" && englishReport) {
+        console.log("[AI Report] Translating English report to Tamil...");
+        const res = await api.post("/api/ai/translate-report", {
+          english_report: englishReport,
+          target_language: "ta"
+        });
+
+        if (!isMounted.current) return;
+
+        if (res.data && res.data.success && res.data.structured_report) {
+          const tamilReport = normalizeStructuredReport(res.data.structured_report);
+          setCachedReports(prev => ({ ...prev, ta: tamilReport }));
+          setReportStatus("success");
+        } else {
+          console.warn("[AI Report] Tamil translation failed:", res.data);
+          setReportStatus("error");
         }
-        setAiStructured(structured);
-        setReportStatus("success");
-      } else {
-        console.warn("[AI Report] Request returned non-success data:", res.data);
-        if (res.data && res.data.nvidia_debug_error) {
-          console.error("[Backend NVIDIA Error]:", res.data.nvidia_debug_error);
-        }
-        setReportStatus("error");
       }
     } catch (e) {
       if (!isMounted.current) return;
       console.error("[AI Report] Request error:", e.message || e);
-      if (e.response && e.response.data && e.response.data.nvidia_debug_error) {
-        console.error("[Backend NVIDIA Error]:", e.response.data.nvidia_debug_error);
-      }
       setReportStatus("error");
     }
   };
+
+  // Helper function to robustly normalize lists inside the report
+  const normalizeStructuredReport = (structured) => {
+    if (!structured) return null;
+    const result = { ...structured };
+    const arrayFields = ['symptoms', 'causes', 'immediate_actions', 'treatment', 'prevention', 'monitoring', 'farmer_advice'];
+    arrayFields.forEach(f => {
+      if (typeof result[f] === 'string') {
+        result[f] = result[f].split('\n').filter(s => s.trim().length > 0).map(s => s.replace(/^[-*•\d.]+\s*/, '').trim());
+      } else if (!Array.isArray(result[f]) && result[f]) {
+        result[f] = [String(result[f])];
+      } else if (!result[f]) {
+        result[f] = [];
+      }
+    });
+    return result;
+  };
+
+  // The active structured report depends on the currently selected language
+  const aiStructured = cachedReports[reportLang];
 
   const handleLangToggle = (newLang) => {
     setReportLang(newLang);
@@ -287,6 +320,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                   </div>
                 ) : reportStatus === "success" && aiStructured ? (
                   <div className="structured-report">
+                    {/* 1. Diagnosis */}
                     {aiStructured.diagnosis && (
                       <div className="report-block highlight-block">
                         <h3>{t("diagnosis", lang)}</h3>
@@ -294,6 +328,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                       </div>
                     )}
                     
+                    {/* 2. Summary */}
                     {aiStructured.summary && (
                       <div className="report-block">
                         <h3>{t("summary", lang)}</h3>
@@ -301,6 +336,23 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                       </div>
                     )}
 
+                    {/* 3. Symptoms */}
+                    {Array.isArray(aiStructured.symptoms) && aiStructured.symptoms.length > 0 && (
+                      <div className="report-block">
+                        <h3>{t("symptoms", lang)}</h3>
+                        <ul>{aiStructured.symptoms.map((s, i) => <li key={i}>{s}</li>)}</ul>
+                      </div>
+                    )}
+                    
+                    {/* 4. Causes */}
+                    {Array.isArray(aiStructured.causes) && aiStructured.causes.length > 0 && (
+                      <div className="report-block">
+                        <h3>{t("causes", lang)}</h3>
+                        <ul>{aiStructured.causes.map((c, i) => <li key={i}>{c}</li>)}</ul>
+                      </div>
+                    )}
+
+                    {/* 5. Immediate Actions */}
                     {Array.isArray(aiStructured.immediate_actions) && aiStructured.immediate_actions.length > 0 && (
                       <div className="report-block action-block">
                         <h3><AlertTriangle size={18} color="#f87171" /> {t("immediateActions", lang)}</h3>
@@ -310,43 +362,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                       </div>
                     )}
 
-                    <div className="report-grid-2">
-                      {Array.isArray(aiStructured.symptoms) && aiStructured.symptoms.length > 0 && (
-                        <div className="report-block">
-                          <h3>{t("symptoms", lang)}</h3>
-                          <ul>{aiStructured.symptoms.map((s, i) => <li key={i}>{s}</li>)}</ul>
-                        </div>
-                      )}
-                      
-                      {Array.isArray(aiStructured.causes) && aiStructured.causes.length > 0 && (
-                        <div className="report-block">
-                          <h3>{t("causes", lang)}</h3>
-                          <ul>{aiStructured.causes.map((c, i) => <li key={i}>{c}</li>)}</ul>
-                        </div>
-                      )}
-                      
-                      {Array.isArray(aiStructured.prevention) && aiStructured.prevention.length > 0 && (
-                        <div className="report-block">
-                          <h3>{t("prevention", lang)}</h3>
-                          <ul>{aiStructured.prevention.map((p, i) => <li key={i}>{p}</li>)}</ul>
-                        </div>
-                      )}
-                      
-                      {Array.isArray(aiStructured.monitoring) && aiStructured.monitoring.length > 0 && (
-                        <div className="report-block">
-                          <h3>{t("monitoring", lang)}</h3>
-                          <ul>{aiStructured.monitoring.map((m, i) => <li key={i}>{m}</li>)}</ul>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {Array.isArray(aiStructured.farmer_advice) && aiStructured.farmer_advice.length > 0 && (
-                      <div className="report-block highlight-block" style={{ marginTop: '1rem', background: 'rgba(52, 211, 153, 0.1)' }}>
-                        <h3>{t("farmerAdvice", lang) || "Farmer Advice"}</h3>
-                        <ul>{aiStructured.farmer_advice.map((advice, i) => <li key={i}>{advice}</li>)}</ul>
-                      </div>
-                    )}
-
+                    {/* 6. Treatment & Management */}
                     {Array.isArray(aiStructured.treatment) && aiStructured.treatment.length > 0 && (
                       <div className="report-block treatment-block">
                         <h3>{t("treatmentManagement", lang)}</h3>
@@ -356,12 +372,29 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                       </div>
                     )}
                     
+                    {/* 7. Prevention */}
                     {Array.isArray(aiStructured.prevention) && aiStructured.prevention.length > 0 && (
                       <div className="report-block prevention-block">
                         <h3><ShieldCheck size={18} color="#34d399" /> {t("prevention", lang)}</h3>
                         <ul>
                           {aiStructured.prevention.map((p_item, i) => <li key={i}>{p_item}</li>)}
                         </ul>
+                      </div>
+                    )}
+                    
+                    {/* 8. Monitoring */}
+                    {Array.isArray(aiStructured.monitoring) && aiStructured.monitoring.length > 0 && (
+                      <div className="report-block">
+                        <h3>{t("monitoring", lang)}</h3>
+                        <ul>{aiStructured.monitoring.map((m, i) => <li key={i}>{m}</li>)}</ul>
+                      </div>
+                    )}
+                    
+                    {/* 9. Farmer Advice */}
+                    {Array.isArray(aiStructured.farmer_advice) && aiStructured.farmer_advice.length > 0 && (
+                      <div className="report-block highlight-block" style={{ marginTop: '1rem', background: 'rgba(52, 211, 153, 0.1)' }}>
+                        <h3>{t("farmerAdvice", lang) || "Farmer Advice"}</h3>
+                        <ul>{aiStructured.farmer_advice.map((advice, i) => <li key={i}>{advice}</li>)}</ul>
                       </div>
                     )}
                   </div>
