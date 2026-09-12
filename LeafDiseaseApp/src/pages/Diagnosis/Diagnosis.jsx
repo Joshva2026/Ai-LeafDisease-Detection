@@ -27,8 +27,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const fetchAiReport = async (targetLang) => {
     setLoadingAiReport(true);
     setAiError(false);
-    
-    const details = mapClassName(prediction.disease);
+    const details = mapClassName(prediction.disease || "Unknown");
     
     try {
       const res = await api.post("/api/ai/farmer-report", {
@@ -70,7 +69,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     );
   }
 
-  const details = mapClassName(prediction.disease);
+  const details = mapClassName(prediction.disease || "Unknown");
   const isHealthy = details.isHealthy;
   
   const handleSave = () => setSaved(true);

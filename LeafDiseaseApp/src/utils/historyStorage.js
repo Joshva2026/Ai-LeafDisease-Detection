@@ -13,7 +13,22 @@ export function loadHistory(username) {
     const data = localStorage.getItem(`history_${username}`);
     if (!data) return [];
     const parsed = JSON.parse(data);
-    if (Array.isArray(parsed)) return parsed;
+    if (Array.isArray(parsed)) {
+      return parsed.map(scan => {
+        // Strip data URLs that cause localStorage overload
+        const oUrl = typeof scan.original_url === "string" && !scan.original_url.startsWith("data:image") ? scan.original_url : "";
+        const gUrl = typeof scan.gradcam_url === "string" && !scan.gradcam_url.startsWith("data:image") ? scan.gradcam_url : "";
+        
+        return {
+          ...scan,
+          disease: scan.disease || "Unknown",
+          confidence: scan.confidence || 0,
+          timestamp: scan.timestamp || new Date().toISOString(),
+          original_url: oUrl,
+          gradcam_url: gUrl,
+        };
+      });
+    }
     return [];
   } catch (e) {
     console.warn("Failed to load history for", username, e);

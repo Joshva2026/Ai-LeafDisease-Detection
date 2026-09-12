@@ -212,15 +212,15 @@ function App() {
               // Always set prediction state first — prediction succeeded
               const predictionForState = {
                 success: true,
-                disease: result.disease,
-                plant: result.plant,
-                health_status: result.health_status,
-                disease_formatted: result.disease_formatted,
-                severity: result.severity,
-                confidence: result.confidence,
-                top_predictions: result.top_predictions,
-                gradcam_url: result.gradcam_url,
-                original_url: result.original_url
+                disease: result.disease || "Unknown",
+                plant: result.plant || "Unknown Plant",
+                health_status: result.health_status || "Unknown",
+                disease_formatted: result.disease_formatted || result.disease || "Unknown Disease",
+                severity: result.severity || "Unknown",
+                confidence: result.confidence || 0,
+                top_predictions: result.top_predictions || [],
+                gradcam_url: result.gradcam_url || "",
+                original_url: result.original_url || ""
               };
               setPrediction(predictionForState);
 
@@ -229,10 +229,10 @@ function App() {
                 try {
                   const localHist = loadHistory(user.username);
                   const historyEntry = {
-                    disease: result.disease,
-                    confidence: result.confidence,
-                    original_url: result.original_url,
-                    gradcam_url: result.gradcam_url,
+                    disease: result.disease || "Unknown",
+                    confidence: result.confidence || 0,
+                    original_url: result.original_url || "",
+                    gradcam_url: result.gradcam_url || "",
                     timestamp: new Date().toISOString()
                   };
                   localHist.unshift(historyEntry);

@@ -1,7 +1,8 @@
 import axios from "axios";
 
-export const API_BASE_URL =
-  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_URL) ||
+// Make sure we have a robust fallback
+export const API_BASE_URL = 
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_URL) || 
   "https://ai-leafdisease-detection.onrender.com";
 
 const api = axios.create({
