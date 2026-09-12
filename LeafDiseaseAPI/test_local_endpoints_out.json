@@ -1,0 +1,25 @@
+{
+  "chat_tamil": {
+    "error": "AI அறிக்கை தற்போது கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.",
+    "nvidia_debug_error": "Tamil Validation failed: Foreign script contamination detected: 喷",
+    "provider": "none",
+    "success": false
+  },
+  "report_english": {
+    "language": "en",
+    "provider": "nvidia_ai",
+    "report_text": "",
+    "structured_report": {
+      "causes": "The disease is caused by the fungus Alternaria solani. It spreads via wind-blown spores, especially in warm, humid conditions. The pathogen can survive in soil on crop residue and infect plants through wounds or natural openings.",
+      "diagnosis": "Early Blight",
+      "immediate_actions": "Remove and destroy infected lower leaves to improve air circulation and slow the spread. Avoid overhead watering to keep foliage dry. Ensure proper spacing between plants.",
+      "monitoring": "Regularly inspect lower leaves for early signs of spots. Monitor weather conditions; warm and humid weather favors disease development. Check fruit for lesions as the season progresses. Keep records of disease incidence to inform future management decisions.",
+      "prevention": "Practice crop rotation, avoiding planting tomatoes or related crops (like peppers) in the same location for at least 2-3 years. Use disease-free seeds or transplants. Manage soil moisture and avoid overhead irrigation. Remove plant debris at the end of the season to reduce overwintering inoculum.",
+      "summary": "Early Blight is a common fungal disease affecting tomato plants, characterized by dark spots on leaves and stems. It is caused by the fungus Alternaria solani and can significantly reduce yield if not managed promptly.",
+      "symptoms": "Small, dark brown spots appear on older leaves, often with concentric rings resembling a target. Spots may enlarge and cause yellowing of the surrounding leaf tissue. In severe cases, leaves may prematurely drop. Dark, sunken lesions can also develop on stems and fruit.",
+      "treatment": "Apply a fungicide containing chlorothalonil or mancozeb according to label instructions for control of Early Blight. Begin treatment at the first sign of disease and repeat at intervals specified on the product label. Always follow safety precautions when applying chemicals."
+    },
+    "success": true
+  },
+  "error": "('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))"
+}

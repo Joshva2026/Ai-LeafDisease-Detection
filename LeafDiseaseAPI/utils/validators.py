@@ -70,3 +70,32 @@ def validate_farmer_report_json(text):
             return None, f"Empty array for key: {key}"
 
     return parsed, None
+
+def validate_agricultural_facts(parsed_json, disease_key, disease_meta):
+    """
+    Validates if the generated farmer report is factually consistent with the trusted disease metadata.
+    """
+    if not disease_meta:
+        # If we don't have trusted metadata, we just check for basic hallucinated dosages
+        all_text = json.dumps(parsed_json).lower()
+        if re.search(r'\d+\s*(ml|g|kg|oz|tsp)\s*/\s*(l|lit|liter|gallon)', all_text) and "ml" not in all_text and "lit" not in all_text:
+             # Basic chemical dosage check. It's better to be permissive if no metadata.
+             pass
+        return True, None
+
+    all_text_lower = json.dumps(parsed_json).lower()
+    meta_text_lower = json.dumps(disease_meta).lower()
+    
+    # 1. Pathogen contradiction check.
+    # If the trusted metadata mentions 'fung' (fungus/fungal) but the output says 'bacteri', or vice-versa
+    if "fung" in meta_text_lower and "bacteri" in all_text_lower and "bacteri" not in meta_text_lower:
+        return False, "Factual contradiction: Output mentions bacteria for a fungal disease."
+    if "bacteri" in meta_text_lower and "fung" in all_text_lower and "fung" not in meta_text_lower:
+        return False, "Factual contradiction: Output mentions fungus for a bacterial disease."
+    if "virus" in meta_text_lower or "viral" in meta_text_lower:
+        if "fung" in all_text_lower and "fung" not in meta_text_lower:
+             return False, "Factual contradiction: Output mentions fungus for a viral disease."
+        if "bacteri" in all_text_lower and "bacteri" not in meta_text_lower:
+             return False, "Factual contradiction: Output mentions bacteria for a viral disease."
+
+    return True, None

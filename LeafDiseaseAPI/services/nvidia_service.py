@@ -2,7 +2,7 @@ import os
 import json
 from openai import OpenAI
 
-def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, temperature=0.2):
+def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, temperature=0.2, max_tokens=1800, timeout=45):
     """
     Isolated NVIDIA AI Service helper using OpenAI Python SDK.
     Reads NVIDIA_API_KEY and NVIDIA_MODEL exclusively from backend environment.
@@ -17,7 +17,8 @@ def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, tem
     try:
         client = OpenAI(
             base_url="https://integrate.api.nvidia.com/v1",
-            api_key=nvidia_key
+            api_key=nvidia_key,
+            timeout=timeout
         )
 
         extra_body = {}
@@ -32,7 +33,7 @@ def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, tem
             ],
             "temperature": temperature,
             "top_p": 0.9,
-            "max_tokens": 1800,
+            "max_tokens": max_tokens,
             "stream": False,
             "extra_body": extra_body if extra_body else None
         }
