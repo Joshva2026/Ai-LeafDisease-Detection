@@ -21,6 +21,7 @@ import BotanicalBackground from "./components/BotanicalBackground/BotanicalBackg
 import OnboardingModal from "./components/Onboarding/OnboardingModal";
 
 import HowTo from "./pages/HowTo/HowTo";
+import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -188,8 +189,9 @@ function App() {
 
 
       {/* Main Pages scroll viewport container */}
-      <div className="scroll-container">
-        {view === "howto" && (
+      <ErrorBoundary lang={lang}>
+        <div className="scroll-container">
+          {view === "howto" && (
           <HowTo onViewChange={setView} lang={lang} />
         )}
 
@@ -303,7 +305,8 @@ function App() {
             onToggleTheme={toggleTheme}
           />
         )}
-      </div>
+        </div>
+      </ErrorBoundary>
 
       {/* Dynamic chat helper widget */}
       <Chatbot currentDisease={prediction?.disease || null} />

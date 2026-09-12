@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Camera, UploadCloud, AlertCircle, X, Loader2, Sparkles, Sprout, ArrowRight } from "lucide-react";
+import { Camera, UploadCloud, AlertCircle, X, Loader2, Sparkles, Sprout, ArrowRight, Check } from "lucide-react";
 import { t } from "../../data/translations";
 import api from "../../api/api";
 import "./Scan.css";
@@ -11,14 +11,12 @@ function Scan({ onPredictionSuccess, lang }) {
   const [isWakingUp, setIsWakingUp] = useState(false);
   const [analysisStageIndex, setAnalysisStageIndex] = useState(0);
 
-  const isTa = lang === "ta";
-
   const stages = [
-    isTa ? "இலையின் படத்தை பதிவேற்றுகிறது..." : "Uploading leaf image...",
-    isTa ? "இலை அமைப்பை ஆராய்கிறது..." : "Examining leaf structure...",
-    isTa ? "நோய்களுக்கான வடிவங்களை தேடுகிறது..." : "Analyzing disease patterns...",
-    isTa ? "கவன வரைபடத்தை உருவாக்குகிறது..." : "Generating visual evidence...",
-    isTa ? "மருத்துவ அறிக்கையைத் தயார் செய்கிறது..." : "Preparing diagnostic report..."
+    t("stage1", lang),
+    t("stage2", lang),
+    t("stage3", lang),
+    t("stage4", lang),
+    t("stage5", lang)
   ];
   
   const [useCamera, setUseCamera] = useState(false);
@@ -36,11 +34,18 @@ function Scan({ onPredictionSuccess, lang }) {
     }
   }, [cameraStatus]);
 
-  useEffect(() => {
-    return () => {
-      stopCamera();
-    };
-  }, []);
+
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setCameraStatus("idle");
+  };
 
   const startCamera = async () => {
     setErrorMsg("");
@@ -72,16 +77,11 @@ function Scan({ onPredictionSuccess, lang }) {
     }
   };
 
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-    setCameraStatus("idle");
-  };
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
 
   const capturePhoto = () => {
     if (videoRef.current) {
@@ -160,18 +160,28 @@ function Scan({ onPredictionSuccess, lang }) {
       clearTimeout(timeoutId);
       clearInterval(stageInterval);
 
+      console.log("----- PRODUCTION /PREDICT API RESPONSE -----");
+      console.log("HTTP Status:", response.status);
+      console.log("Response Data:", JSON.stringify(response.data, null, 2));
+      console.log("--------------------------------------------");
+
       if (response.data && response.data.success) {
         setAnalysisStageIndex(stages.length - 1);
         setTimeout(() => {
           onPredictionSuccess(response.data);
         }, 800);
       } else {
-        throw new Error(response.data.error || "Analysis failed");
+        throw new Error(response.data?.error || "Analysis failed - Success flag missing or false.");
       }
     } catch (error) {
       clearTimeout(timeoutId);
       clearInterval(stageInterval);
-      console.error("Analysis Error:", error);
+      
+      console.error("----- PRODUCTION /PREDICT API ERROR -----");
+      console.error("HTTP Status:", error.response?.status);
+      console.error("Error Response Data:", error.response?.data);
+      console.error("Error Message:", error.message);
+      console.error("-----------------------------------------");
       
       if (error.response?.data?.error) {
         setErrorMsg(error.response.data.error);
@@ -180,7 +190,11 @@ function Scan({ onPredictionSuccess, lang }) {
       } else if (!error.response) {
         setErrorMsg(t("errNetwork", lang));
       } else {
-        setErrorMsg(t("err500", lang));
+        // Safe backend error message display
+        const safeMessage = typeof error.response?.data === 'string' 
+          ? error.response.data.substring(0, 100) 
+          : JSON.stringify(error.response?.data).substring(0, 100);
+        setErrorMsg(safeMessage || t("err500", lang));
       }
       
       setLoading(false);
@@ -195,13 +209,11 @@ function Scan({ onPredictionSuccess, lang }) {
       <header className="field-header">
         <div className="field-badge">
           <Sprout size={16} />
-          <span>{isTa ? "வயல் பரிசோதனை மையம்" : "FIELD DIAGNOSTIC STATION"}</span>
+          <span>{t("fieldDiagnosticStation", lang)}</span>
         </div>
-        <h1 className="field-title">{isTa ? "பயிர் மருத்துவர்" : "Plant Doctor"}</h1>
+        <h1 className="field-title">{t("plantDoctor", lang)}</h1>
         <p className="field-subtitle">
-          {isTa 
-            ? "நோய் தாக்கிய இலையை தெளிவாக புகைப்படம் எடுக்கவும். எங்கள் AI உங்களை வழிநடத்தும்." 
-            : "Capture a clear photo of the affected leaf. Our AI will guide you."}
+          {t("scanGuidance", lang)}
         </p>
       </header>
 
@@ -219,14 +231,14 @@ function Scan({ onPredictionSuccess, lang }) {
             <div className="upload-options">
               <button className="scan-primary-btn" onClick={startCamera}>
                 <Camera size={24} />
-                <span>{isTa ? "புகைப்படம் எடுக்க" : "TAKE PHOTO"}</span>
+                <span>{t("takePhotoAction", lang)}</span>
               </button>
               <div className="scan-divider">
-                <span>{isTa ? "அல்லது" : "OR"}</span>
+                <span>{t("or", lang)}</span>
               </div>
               <button className="scan-secondary-btn" onClick={triggerFileUpload}>
                 <UploadCloud size={20} />
-                <span>{isTa ? "படத்தை பதிவேற்ற" : "UPLOAD IMAGE"}</span>
+                <span>{t("uploadImageAction", lang)}</span>
               </button>
               <input
                 type="file"
@@ -240,15 +252,15 @@ function Scan({ onPredictionSuccess, lang }) {
             <div className="scan-tips-grid">
               <div className="tip-item">
                 <div className="tip-dot green"></div>
-                <span>{isTa ? "இலை முழுமையாக தெரிய வேண்டும்" : "Keep leaf fully visible"}</span>
+                <span>{t("tipVisible", lang)}</span>
               </div>
               <div className="tip-item">
                 <div className="tip-dot yellow"></div>
-                <span>{isTa ? "நல்ல வெளிச்சம் அவசியம்" : "Ensure good lighting"}</span>
+                <span>{t("tipLighting", lang)}</span>
               </div>
               <div className="tip-item">
                 <div className="tip-dot red"></div>
-                <span>{isTa ? "மங்கலாக இருக்கக்கூடாது" : "Avoid blurry shots"}</span>
+                <span>{t("tipBlur", lang)}</span>
               </div>
             </div>
           </div>
@@ -257,16 +269,16 @@ function Scan({ onPredictionSuccess, lang }) {
             {cameraStatus === "requesting" && (
               <div className="camera-loading">
                 <Loader2 size={32} className="spin-anim" />
-                <p>{isTa ? "கேமராவை இயக்குகிறது..." : "Initializing camera..."}</p>
+                <p>{t("initCamera", lang)}</p>
               </div>
             )}
             
             {cameraStatus === "denied" && (
               <div className="camera-error">
                 <AlertCircle size={40} color="#f87171" />
-                <p>{isTa ? "கேமரா அணுகல் மறுக்கப்பட்டது." : "Camera access denied."}</p>
+                <p>{t("cameraDenied", lang)}</p>
                 <button className="btn btn-secondary" onClick={clearSelection}>
-                  {isTa ? "திரும்பிச் செல்" : "Go Back"}
+                  {t("goBack", lang)}
                 </button>
               </div>
             )}
@@ -312,7 +324,7 @@ function Scan({ onPredictionSuccess, lang }) {
                 <div className="analysis-progress-panel">
                   <div className="analysis-header">
                     <Sparkles size={20} color="#34d399" />
-                    <h3>{isTa ? "AI பரிசோதனை நடக்கிறது" : "AI DIAGNOSIS IN PROGRESS"}</h3>
+                    <h3>{t("aiDiagnosisInProgress", lang)}</h3>
                   </div>
                   
                   <div className="analysis-stages">
@@ -337,11 +349,11 @@ function Scan({ onPredictionSuccess, lang }) {
                 <div className="ready-to-analyze">
                   <button className="btn btn-primary analyze-btn-hero" onClick={handleAnalyze}>
                     <Sparkles size={20} />
-                    <span>{isTa ? "நோயை பகுப்பாய்வு செய்" : "ANALYZE FOR DISEASE"}</span>
+                    <span>{t("analyzeForDisease", lang)}</span>
                     <ArrowRight size={20} />
                   </button>
                   <p className="rescan-hint" onClick={clearSelection}>
-                    {isTa ? "வேறு படத்தை தேர்வு செய்" : "Choose different image"}
+                    {t("chooseDifferent", lang)}
                   </p>
                 </div>
               )}
