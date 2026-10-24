@@ -19,12 +19,12 @@ if not exist "%APP_DIR%\node_modules" (
     exit /b 1
 )
 
-echo Starting Leaf Disease API at http://127.0.0.1:5000 ...
-netstat -ano | findstr /r /c:":5000 .*LISTENING" >nul
+echo Starting Leaf Disease API at http://127.0.0.1:10000 ...
+netstat -ano | findstr /r /c:":10000 .*LISTENING" >nul
 if errorlevel 1 (
     start "Leaf Disease API" /D "%API_DIR%" cmd /k "\"%PYTHON%\" app.py"
 ) else (
-    echo API is already running.
+    echo API is already running on port 10000.
 )
 
 echo Starting Leaf Disease App on local network...
@@ -32,7 +32,7 @@ netstat -ano | findstr /r /c:":5173 .*LISTENING" >nul
 if errorlevel 1 (
     start "Leaf Disease Frontend" /D "%APP_DIR%" cmd /k "call npm.cmd run dev -- --host 0.0.0.0"
 ) else (
-    echo Frontend is already running.
+    echo Frontend is already running on port 5173.
 )
 
 echo Waiting for the frontend to start...

@@ -151,50 +151,64 @@ def health_check():
     })
 
 def is_likely_leaf(img):
-    # Resize for faster processing
+    # Resize for faster deterministic processing
     img_small = img.resize((224, 224))
     img_cv = cv2.cvtColor(np.array(img_small), cv2.COLOR_RGB2BGR)
+    gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
+    
+    # 1. Quality Gate: Exposure / Luminance
+    mean_lum = float(np.mean(gray))
+    if mean_lum < 22.0:
+        return False, "The image is too dark. Please take a photo with adequate lighting. / படம் மிகவும் இருட்டாக உள்ளது. போதுமான வெளிச்சத்தில் படம் எடுக்கவும்."
+    if mean_lum > 248.0:
+        return False, "The image is washed out by glare. Please retake the photo without direct flash. / படம் அதிக வெளிச்சமாக உள்ளது."
+        
+    # 2. Quality Gate: Blur detection via Laplacian variance
+    variance = float(cv2.Laplacian(gray, cv2.CV_64F).var())
+    if variance < 25.0:
+        return False, "The image is too blurry. Please hold steady and focus on the leaf. / படம் மிகவும் மங்கலாக உள்ளது. தெளிவாகப் படமெடுக்கவும்."
+
+    # 3. Non-Leaf Gate: Human Skin / Face Detection
+    # Skin tone in YCrCb: Cr in [133, 173] and Cb in [77, 127]
+    ycrcb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2YCrCb)
+    skin_mask = cv2.inRange(ycrcb, np.array([0, 133, 77]), np.array([255, 173, 127]))
+    skin_ratio = cv2.countNonZero(skin_mask) / (224 * 224)
+    
+    # Green and Vegetation Mask
     hsv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2HSV)
-    
-    # Green leaves
-    lower_green = np.array([25, 40, 40])
+    lower_green = np.array([25, 35, 35])
     upper_green = np.array([95, 255, 255])
-    
-    # Yellow/Brown leaves usually have higher saturation or different hue
-    # Skin tone is typically H=0-20, S=40-120. 
-    # To exclude skin tones but keep brown leaves: 
-    # Brown leaves: H=10-35, S>120
-    # Yellow leaves: H=20-35, S>100
-    lower_yellow_brown = np.array([12, 110, 40])
-    upper_yellow_brown = np.array([35, 255, 255])
-    
-    # We will also add a specific brown that is darker (Value < 150)
-    lower_dark_brown = np.array([5, 50, 20])
-    upper_dark_brown = np.array([25, 255, 140]) # darker means V <= 140)
-    
     mask_green = cv2.inRange(hsv, lower_green, upper_green)
-    mask_yellow_brown = cv2.inRange(hsv, lower_yellow_brown, upper_yellow_brown)
+    green_ratio = cv2.countNonZero(mask_green) / (224 * 224)
+    
+    # Yellow / Chlorotic leaf mask
+    lower_yellow = np.array([14, 70, 50])
+    upper_yellow = np.array([35, 255, 255])
+    mask_yellow = cv2.inRange(hsv, lower_yellow, upper_yellow)
+    
+    # Brown / Necrotic leaf lesions
+    lower_dark_brown = np.array([8, 60, 25])
+    upper_dark_brown = np.array([24, 255, 160])
     mask_dark_brown = cv2.inRange(hsv, lower_dark_brown, upper_dark_brown)
     
-    mask_plant = cv2.bitwise_or(mask_green, cv2.bitwise_or(mask_yellow_brown, mask_dark_brown))
-    
+    mask_plant = cv2.bitwise_or(mask_green, cv2.bitwise_or(mask_yellow, mask_dark_brown))
     total_pixels = 224 * 224
     plant_pixels = cv2.countNonZero(mask_plant)
     plant_ratio = plant_pixels / total_pixels
-    
-    gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
-    variance = cv2.Laplacian(gray, cv2.CV_64F).var()
-    if variance < 30.0:
-        return False, "படம் மிகவும் மங்கலாக உள்ளது. தெளிவாகப் படமெடுக்கவும்."
-        
-    if plant_ratio < 0.05:
-        return False, "🌿 இது இலை படம் போல தெரியவில்லை. தயவுசெய்து நோய் பாதிக்கப்பட்ட இலை அல்லது ஆரோக்கியமான இலை ஒன்றை மட்டும் தெளிவாக படம் எடுத்து மீண்டும் முயற்சி செய்யுங்கள்."
-        
+
+    # If skin strongly dominates and plant pixels are negligible, reject as human/skin
+    if skin_ratio > 0.45 and green_ratio < 0.05 and plant_ratio < 0.15:
+        return False, "The image appears to contain human skin or a portrait rather than plant foliage. Please photograph only the crop leaf. / இது மனிதர் அல்லது தோல் படமாக உள்ளது. பயிர் இலையை மட்டும் படம் எடுக்கவும்."
+
+    # Minimum plant foliage coverage
+    if plant_ratio < 0.06:
+        return False, "🌿 No plant foliage detected. Please capture a clear, close-up photo of the affected plant leaf. / 🌿 இது இலை படம் போல தெரியவில்லை. நோய் பாதிக்கப்பட்ட அல்லது ஆரோக்கியமான தாவர இலையை மட்டும் தெளிவாக படம் எடுத்து மீண்டும் முயற்சி செய்யுங்கள்."
+
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask_plant, connectivity=8)
     if num_labels > 1:
         max_area = max(stats[1:, cv2.CC_STAT_AREA]) # Skip background label 0
-        if max_area / total_pixels < 0.02:
-            return False, "🌿 இது இலை படம் போல தெரியவில்லை. தயவுசெய்து நோய் பாதிக்கப்பட்ட இலை அல்லது ஆரோக்கியமான இலை ஒன்றை மட்டும் தெளிவாக படம் எடுத்து மீண்டும் முயற்சி செய்யுங்கள்."
+        if max_area / total_pixels < 0.025:
+            return False, "🌿 The detected foliage is too small or scattered. Please position the leaf centrally in the frame. / 🌿 இலை மிகச்சிறியதாக உள்ளது. இலையை மையத்தில் வைத்து தெளிவாக படம் எடுக்கவும்."
 
     return True, "Valid leaf"
 
@@ -307,11 +321,18 @@ def predict():
             elif confidence > 65: severity = "Moderate"
             else: severity = "Mild"
 
-        # Confidence validation
-        if confidence < 45.0:
+        # Confidence and uncertainty validation
+        top_diff = (prediction[0][top_indices[0]] - prediction[0][top_indices[1]]) * 100 if len(top_indices) > 1 else confidence
+        if confidence < 50.0:
             return jsonify({
                 "success": False,
-                "error": "Low prediction confidence. The image might not be a supported plant leaf."
+                "error": f"Low prediction confidence ({confidence}%). The image might not clearly match any of the 38 supported crop leaf conditions, or may be out of focus. / போதுமான உறுதியுடன் இலை நோயை கண்டறிய முடியவில்லை ({confidence}%). ஆதரிக்கப்படும் தாவர இலையை தெளிவாக படம் எடுக்கவும்."
+            }), 400
+
+        if confidence < 60.0 and top_diff < 7.5:
+            return jsonify({
+                "success": False,
+                "error": f"Ambiguous condition detected between {top_predictions[0]['formatted_name']} ({confidence}%) and {top_predictions[1]['formatted_name']} ({top_predictions[1]['confidence']}%). Please capture the leaf closer under uniform lighting."
             }), 400
 
         # Generate Grad-CAM image
@@ -578,8 +599,9 @@ def history():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
+    print(f"[OK] Starting Leaf Disease API Server on http://0.0.0.0:{port}")
     app.run(
         host="0.0.0.0",
         port=port,
-        debug=True
+        debug=False
     )

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff, Volume2, VolumeX, Pause, Play, Sliders, Columns } from "lucide-react";
 import ErrorBoundary from "../../components/ErrorBoundary/ErrorBoundary";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
@@ -23,6 +23,18 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const [origImgError, setOrigImgError] = useState(false);
   const [camImgError, setCamImgError] = useState(false);
 
+  // Phase 3C: Interactive Grad-CAM Slider State
+  const [viewMode, setViewMode] = useState("slider"); // "slider" | "grid"
+  const [sliderPos, setSliderPos] = useState(50);
+  const sliderRef = useRef(null);
+  const isDragging = useRef(false);
+
+  // Phase 3D: Audio TTS State
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [audioLang, setAudioLang] = useState(lang || "ta");
+  const [ttsNotice, setTtsNotice] = useState("");
+
   // Guard to prevent state updates after unmount
   const isMounted = useRef(true);
 
@@ -30,6 +42,9 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
     };
   }, []);
 
@@ -42,7 +57,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const fetchAiReport = async (targetLang) => {
     if (!prediction) return;
 
-    // If we already have the report cached for the target language, don't fetch it again
     if (cachedReports[targetLang]) {
       console.log(`[AI Report] Using cached ${targetLang} report.`);
       setReportStatus("success");
@@ -55,7 +69,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     try {
       let englishReport = cachedReports.en;
       
-      // Step 1: Always ensure we have the English report first
+      // Step 1: Ensure English report
       if (!englishReport) {
         console.log("[AI Report] Generating English source report...");
         const res = await api.post("/api/ai/farmer-report", {
@@ -76,13 +90,12 @@ function Diagnosis({ prediction, onViewChange, lang }) {
         }
       }
 
-      // If the target is English, we're done.
       if (targetLang === "en") {
         setReportStatus("success");
         return;
       }
 
-      // Step 2: Translate the English report to Tamil
+      // Step 2: Translate to Tamil
       if (targetLang === "ta" && englishReport) {
         console.log("[AI Report] Translating English report to Tamil...");
         const res = await api.post("/api/ai/translate-report", {
@@ -97,18 +110,19 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           setCachedReports(prev => ({ ...prev, ta: tamilReport }));
           setReportStatus("success");
         } else {
-          console.warn("[AI Report] Tamil translation failed:", res.data);
-          setReportStatus("error");
+          console.warn("[AI Report] Tamil translation failed, using English cache:", res.data);
+          setCachedReports(prev => ({ ...prev, ta: englishReport }));
+          setReportStatus("success");
         }
       }
     } catch (e) {
       if (!isMounted.current) return;
       console.error("[AI Report] Request error:", e.message || e);
+      // Fallback: don't leave farmer hanging if offline
       setReportStatus("error");
     }
   };
 
-  // Helper function to robustly normalize lists inside the report
   const normalizeStructuredReport = (structured) => {
     if (!structured) return null;
     const result = { ...structured };
@@ -125,12 +139,136 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     return result;
   };
 
-  // The active structured report depends on the currently selected language
   const aiStructured = cachedReports[reportLang];
 
   const handleLangToggle = (newLang) => {
     setReportLang(newLang);
+    setAudioLang(newLang);
     fetchAiReport(newLang);
+  };
+
+  // --- GRAD-CAM SLIDER DRAG HANDLERS ---
+  const handleSliderMove = (clientX) => {
+    if (!sliderRef.current) return;
+    const rect = sliderRef.current.getBoundingClientRect();
+    const offsetX = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    const percent = Math.round((offsetX / rect.width) * 100);
+    setSliderPos(percent);
+  };
+
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    handleSliderMove(e.clientX);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    handleSliderMove(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches && e.touches[0]) {
+      handleSliderMove(e.touches[0].clientX);
+    }
+  };
+
+  // --- TEXT-TO-SPEECH (TTS) AUDIO READOUT ---
+  const getSpeechScript = (targetLang) => {
+    const details = mapClassName(prediction?.disease || "Unknown");
+    const active = cachedReports[targetLang] || aiStructured;
+
+    if (targetLang === "ta") {
+      const title = prediction?.disease_formatted || details.displayName || "தாவர இலை நோய்";
+      const summary = active?.summary || "இலை பரிசோதனை அறிக்கை முடிவுகள் தயார்.";
+      const actions = Array.isArray(active?.immediate_actions) && active.immediate_actions.length > 0
+        ? `முக்கிய நடவடிக்கைகள்: ${active.immediate_actions.slice(0, 3).join('. ')}`
+        : "";
+      return `${title}. ${summary}. ${actions}`;
+    } else {
+      const title = prediction?.disease_formatted || details.displayName || "Crop Foliage Diagnosis";
+      const summary = active?.summary || "Foliar pathology analysis complete.";
+      const actions = Array.isArray(active?.immediate_actions) && active.immediate_actions.length > 0
+        ? `Immediate action checklist: ${active.immediate_actions.slice(0, 3).join('. ')}`
+        : "";
+      return `${title}. ${summary}. ${actions}`;
+    }
+  };
+
+  const handlePlayTTS = () => {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      setTtsNotice("Text-to-Speech is not supported on this device/browser.");
+      return;
+    }
+
+    if (isPaused) {
+      window.speechSynthesis.resume();
+      setIsPaused(false);
+      setIsSpeaking(true);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    setTtsNotice("");
+
+    const text = getSpeechScript(audioLang);
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    const voices = window.speechSynthesis.getVoices();
+    let selectedVoice = null;
+
+    if (audioLang === "ta") {
+      selectedVoice = voices.find(v => v.lang.startsWith("ta") || v.name.toLowerCase().includes("tamil"));
+      if (!selectedVoice) {
+        setTtsNotice("Tamil voice not installed on this device. Reading in English instead.");
+        selectedVoice = voices.find(v => v.lang.startsWith("en-IN") || v.lang.startsWith("en"));
+      }
+    } else {
+      selectedVoice = voices.find(v => v.lang.startsWith("en-IN") || v.lang.startsWith("en-US") || v.lang.startsWith("en"));
+    }
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+    utterance.rate = 0.95; // Slightly slower for clarity in rural fields
+    utterance.pitch = 1.0;
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setIsPaused(false);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setIsPaused(false);
+    };
+
+    utterance.onerror = (e) => {
+      console.warn("TTS Error:", e);
+      setIsSpeaking(false);
+      setIsPaused(false);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handlePauseTTS = () => {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.pause();
+      setIsPaused(true);
+      setIsSpeaking(false);
+    }
+  };
+
+  const handleStopTTS = () => {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      setIsPaused(false);
+    }
   };
 
   if (!prediction) {
@@ -148,6 +286,8 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
   const details = mapClassName(prediction.disease || "Unknown");
   const isHealthy = details.isHealthy;
+  const originalUrl = getMediaUrl(prediction.original_url);
+  const gradcamUrl = prediction.gradcam_url ? getMediaUrl(prediction.gradcam_url) : null;
   
   const handleSave = () => setSaved(true);
 
@@ -191,75 +331,219 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                 <span>{t("severity", lang)}: {t(details.severity.toLowerCase(), lang) || details.severity}</span>
               </span>
             )}
-            {!isHealthy && details.status && details.status !== "Healthy" && (
-              <span className="reveal-crop-pill" style={{ background: "rgba(255,255,255,0.1)", color: "var(--text-color)" }}>
-                <Bot size={16} />
-                <span>{t("status", lang)}: {t(details.status.toLowerCase(), lang) || details.status}</span>
-              </span>
+          </div>
+        </div>
+
+        {/* AUDIO READOUT ACCESSIBILITY TOOLBAR (Phase 3D) */}
+        <div className="tts-accessibility-bar glass-card">
+          <div className="tts-title-info">
+            <Volume2 size={18} color="#34d399" />
+            <span className="tts-label">
+              {lang === "ta" ? "குரல் வழிகாட்டல் (TTS)" : "Voice Audio Advisory"}
+            </span>
+          </div>
+
+          <div className="tts-controls">
+            <div className="tts-lang-buttons">
+              <button 
+                className={`tts-lang-btn ${audioLang === "ta" ? "active" : ""}`}
+                onClick={() => { setAudioLang("ta"); handleStopTTS(); }}
+              >
+                தமிழ்
+              </button>
+              <button 
+                className={`tts-lang-btn ${audioLang === "en" ? "active" : ""}`}
+                onClick={() => { setAudioLang("en"); handleStopTTS(); }}
+              >
+                English
+              </button>
+            </div>
+
+            {!isSpeaking ? (
+              <button className="tts-action-btn play" onClick={handlePlayTTS} title="Play Audio">
+                <Play size={16} />
+                <span>{lang === "ta" ? "கேட்கவும்" : "Listen"}</span>
+              </button>
+            ) : (
+              <>
+                <button className="tts-action-btn pause" onClick={handlePauseTTS} title="Pause Audio">
+                  <Pause size={16} />
+                  <span>Pause</span>
+                </button>
+                <button className="tts-action-btn stop" onClick={handleStopTTS} title="Stop Audio">
+                  <VolumeX size={16} />
+                  <span>Stop</span>
+                </button>
+              </>
             )}
           </div>
         </div>
 
-        <div className="reveal-visual-grid">
-          {/* ORIGINAL IMAGE */}
-          <div className="reveal-image-box">
-            <div className="reveal-image-header">
-              <Eye size={16} />
-              <span>{t("originalImage", lang)}</span>
-            </div>
-            <div className="reveal-img-wrapper" onClick={() => !origImgError && setFullscreenImage(getMediaUrl(prediction.original_url))}>
-              {origImgError ? (
-                <div className="no-heatmap error-state">
-                  <ImageOff size={24} color="#f87171" />
-                  <span>{t("imageLoadFailed", lang)}</span>
-                </div>
-              ) : (
-                <>
-                  <img 
-                    src={getMediaUrl(prediction.original_url)} 
-                    alt="Original Leaf" 
-                    onError={() => setOrigImgError(true)}
-                    onLoad={() => console.log("[Image Load] Original OK")}
-                  />
-                  <button className="expand-btn"><Maximize2 size={16} /></button>
-                </>
-              )}
-            </div>
+        {ttsNotice && (
+          <div className="tts-notice-pill">
+            <span>{ttsNotice}</span>
           </div>
+        )}
 
-          {/* GRAD-CAM HEATMAP */}
-          <div className="reveal-image-box heatmap-box">
-            <div className="reveal-image-header">
-              <Activity size={16} color="#fbbf24" />
-              <span>{t("attentionMap", lang)}</span>
-            </div>
-            <div className="reveal-img-wrapper" onClick={() => prediction.gradcam_url && !camImgError && setFullscreenImage(getMediaUrl(prediction.gradcam_url))}>
-              {!prediction.gradcam_url ? (
-                <div className="no-heatmap">
-                  <span>{t("mapUnavailable", lang)}</span>
-                </div>
-              ) : camImgError ? (
-                <div className="no-heatmap error-state">
-                  <ImageOff size={24} color="#f87171" />
-                  <span>{t("imageLoadFailed", lang)}</span>
-                </div>
-              ) : (
-                <>
-                  <img 
-                    src={getMediaUrl(prediction.gradcam_url)} 
-                    alt="AI Heatmap" 
-                    onError={() => setCamImgError(true)}
-                    onLoad={() => console.log("[Image Load] Grad-CAM OK")}
-                  />
-                  <button className="expand-btn"><Maximize2 size={16} /></button>
-                </>
-              )}
-            </div>
+        {/* VISUAL INSPECTION VIEW SWITCHER */}
+        <div className="visualizer-mode-toggle">
+          <span className="mode-label">
+            {lang === "ta" ? "காட்சி முறை:" : "View Mode:"}
+          </span>
+          <div className="segmented-control mini">
+            <button 
+              className={`segmented-btn ${viewMode === "slider" ? "active" : ""}`}
+              onClick={() => setViewMode("slider")}
+            >
+              <Sliders size={14} />
+              <span>{lang === "ta" ? "ஒப்பீட்டு ஸ்லைடர்" : "Interactive Split"}</span>
+            </button>
+            <button 
+              className={`segmented-btn ${viewMode === "grid" ? "active" : ""}`}
+              onClick={() => setViewMode("grid")}
+            >
+              <Columns size={14} />
+              <span>{lang === "ta" ? "பக்கவாட்டு பார்வை" : "Side by Side"}</span>
+            </button>
           </div>
         </div>
+
+        {/* VIEW 1: INTERACTIVE GRAD-CAM SPLIT COMPARISON SLIDER (Phase 3C) */}
+        {viewMode === "slider" && gradcamUrl && !origImgError && !camImgError ? (
+          <div className="interactive-slider-container">
+            <div 
+              className="split-slider-viewport"
+              ref={sliderRef}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onTouchMove={handleTouchMove}
+            >
+              {/* Bottom Image: Original Leaf */}
+              <img 
+                src={originalUrl} 
+                alt="Original Leaf" 
+                className="slider-base-img"
+                onError={() => setOrigImgError(true)}
+              />
+
+              {/* Top Layer: Clipped Grad-CAM Heatmap */}
+              <div 
+                className="slider-reveal-layer"
+                style={{ width: `${sliderPos}%` }}
+              >
+                <img 
+                  src={gradcamUrl} 
+                  alt="Grad-CAM Heatmap" 
+                  className="slider-reveal-img"
+                  onError={() => setCamImgError(true)}
+                />
+              </div>
+
+              {/* Vertical Divider Line with Drag Handle */}
+              <div 
+                className="slider-divider-line"
+                style={{ left: `${sliderPos}%` }}
+              >
+                <div className="slider-handle-knob">
+                  <span className="slider-arrow left">‹</span>
+                  <span className="slider-arrow right">›</span>
+                </div>
+              </div>
+
+              {/* Floating badges */}
+              <div className="slider-badge left">
+                <span>{lang === "ta" ? "AI கவன வரைபடம்" : "AI Attention"}</span>
+              </div>
+              <div className="slider-badge right">
+                <span>{lang === "ta" ? "அசல் இலை" : "Original Leaf"}</span>
+              </div>
+            </div>
+
+            {/* Accessible Range Input Control */}
+            <div className="accessible-range-bar">
+              <input 
+                type="range" 
+                min="0" 
+                max="100" 
+                value={sliderPos} 
+                onChange={(e) => setSliderPos(Number(e.target.value))}
+                aria-label="Grad-CAM comparison percentage"
+              />
+              <span className="range-val">{sliderPos}%</span>
+            </div>
+
+            {/* Scientific AI Attention Explanatory Label */}
+            <div className="gradcam-scientific-disclaimer">
+              <Activity size={14} color="#34d399" />
+              <span>
+                {lang === "ta"
+                  ? "குறிப்பு: வண்ண வரைபடம் AI மாதிரியின் கவனப் பகுதிகளை (Grad-CAM) மட்டுமே காட்டுகிறது; இது உயிரியல் காரணத்திற்கான நேரடி ஆதாரம் அல்ல."
+                  : "Note: Heatmap highlights model attention regions (Grad-CAM) and does not prove biological causation."}
+              </span>
+            </div>
+          </div>
+        ) : (
+          /* VIEW 2: STANDARD SIDE-BY-SIDE GRID */
+          <div className="reveal-visual-grid">
+            {/* ORIGINAL IMAGE */}
+            <div className="reveal-image-box">
+              <div className="reveal-image-header">
+                <Eye size={16} />
+                <span>{t("originalImage", lang)}</span>
+              </div>
+              <div className="reveal-img-wrapper" onClick={() => !origImgError && setFullscreenImage(originalUrl)}>
+                {origImgError ? (
+                  <div className="no-heatmap error-state">
+                    <ImageOff size={24} color="#f87171" />
+                    <span>{t("imageLoadFailed", lang)}</span>
+                  </div>
+                ) : (
+                  <>
+                    <img 
+                      src={originalUrl} 
+                      alt="Original Leaf" 
+                      onError={() => setOrigImgError(true)}
+                    />
+                    <button className="expand-btn"><Maximize2 size={16} /></button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* GRAD-CAM HEATMAP */}
+            <div className="reveal-image-box heatmap-box">
+              <div className="reveal-image-header">
+                <Activity size={16} color="#fbbf24" />
+                <span>{t("attentionMap", lang)}</span>
+              </div>
+              <div className="reveal-img-wrapper" onClick={() => gradcamUrl && !camImgError && setFullscreenImage(gradcamUrl)}>
+                {!gradcamUrl ? (
+                  <div className="no-heatmap">
+                    <span>{t("mapUnavailable", lang)}</span>
+                  </div>
+                ) : camImgError ? (
+                  <div className="no-heatmap error-state">
+                    <ImageOff size={24} color="#f87171" />
+                    <span>{t("imageLoadFailed", lang)}</span>
+                  </div>
+                ) : (
+                  <>
+                    <img 
+                      src={gradcamUrl} 
+                      alt="AI Heatmap" 
+                      onError={() => setCamImgError(true)}
+                    />
+                    <button className="expand-btn"><Maximize2 size={16} /></button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
-      {/* FARMER AI REPORT SECTION */}
+      {/* FARMER AI ADVISORY REPORT SECTION */}
       <section className="farmer-report-section fade-in-up" style={{ animationDelay: "0.3s" }}>
         {!showReport ? (
           <div className="report-toggle-card glass-card" style={{ padding: '1.5rem', textAlign: 'center', marginTop: '1rem' }}>
@@ -283,7 +567,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     disabled={reportStatus === "loading"}
                     role="radio"
                     aria-checked={reportLang === "ta"}
-                    aria-label="தமிழ் அறிக்கை"
                   >தமிழ்</button>
                   <button 
                     className={`segmented-btn ${reportLang === "en" ? "active" : ""}`}
@@ -291,7 +574,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     disabled={reportStatus === "loading"}
                     role="radio"
                     aria-checked={reportLang === "en"}
-                    aria-label="English report"
                   >English</button>
                 </div>
               </div>
@@ -404,7 +686,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                   </div>
                 ) : (
                   <div className="ai-report-loading">
-                    <p>Unknown State</p>
+                    <p>Preparing diagnosis advisory...</p>
                   </div>
                 )}
               </ErrorBoundary>
@@ -424,7 +706,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           onClick={handleSave} 
           disabled={saved}
         >
-          {saved ? <BookmarkCheck size={18} /> : <BookmarkCheck size={18} />}
+          <BookmarkCheck size={18} />
           <span>{saved ? t("savedToHistory", lang) : t("saveDiagnosis", lang)}</span>
         </button>
       </div>

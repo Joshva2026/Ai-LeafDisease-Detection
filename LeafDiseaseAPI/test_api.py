@@ -1,6 +1,7 @@
 import requests
+import os
 
-url = "http://127.0.0.1:5000/predict"
+url = os.environ.get("TEST_API_URL", "http://127.0.0.1:10000/predict")
 
 image_path = r"E:\MINI PROJECT\LeafDiseaseAPI\dataset\test\Apple___Apple_scab\002c6f35db42612d.jpg"
 

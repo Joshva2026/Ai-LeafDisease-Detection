@@ -414,3 +414,268 @@
     flex-direction: column;
   }
 }
+
+/* =====================================================
+   AUDIO READOUT (TTS) TOOLBAR
+===================================================== */
+.tts-accessibility-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 18px;
+  margin: 16px auto;
+  max-width: 540px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 16px;
+  flex-wrap: wrap;
+}
+
+.tts-title-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #a7f3d0;
+}
+
+.tts-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tts-lang-buttons {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px;
+  border-radius: 20px;
+}
+
+.tts-lang-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tts-lang-btn.active {
+  background: #10b981;
+  color: #040806;
+}
+
+.tts-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tts-action-btn.play {
+  background: #10b981;
+  color: #040806;
+}
+.tts-action-btn.play:hover {
+  background: #34d399;
+}
+.tts-action-btn.pause {
+  background: #f59e0b;
+  color: #040806;
+}
+.tts-action-btn.stop {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.tts-notice-pill {
+  max-width: 540px;
+  margin: 0 auto 12px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fde68a;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* =====================================================
+   INTERACTIVE GRAD-CAM SPLIT SLIDER
+===================================================== */
+.visualizer-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 18px 0 14px;
+}
+
+.mode-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.interactive-slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto 20px;
+  max-width: 480px;
+  width: 100%;
+}
+
+.split-slider-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 440px;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(52, 211, 153, 0.3);
+  cursor: ew-resize;
+  user-select: none;
+  background: #000;
+}
+
+.slider-base-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.slider-reveal-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  border-right: 2px solid #34d399;
+}
+
+.slider-reveal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Ensure image width matches container width */
+  min-width: 440px;
+}
+
+@media (max-width: 480px) {
+  .slider-reveal-img {
+    min-width: 90vw;
+  }
+}
+
+.slider-divider-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #34d399;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.slider-handle-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 3px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.slider-badge {
+  position: absolute;
+  bottom: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.slider-badge.left {
+  left: 12px;
+  background: rgba(16, 185, 129, 0.85);
+  color: #040806;
+}
+
+.slider-badge.right {
+  right: 12px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.accessible-range-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 12px;
+}
+
+.accessible-range-bar input[type="range"] {
+  flex: 1;
+  accent-color: #10b981;
+  height: 6px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.range-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: #34d399;
+  min-width: 36px;
+}
+
+.gradcam-scientific-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.18);
+  color: #a7f3d0;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+  max-width: 480px;
+}
+

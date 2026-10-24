@@ -39,17 +39,55 @@ def validate_tamil_quality(text):
 def validate_farmer_report_json(text):
     """
     Safely extracts and parses the JSON farmer report.
+    Handles markdown fences, control characters, and regex extraction fallback.
     Returns (dict, None) if valid, or (None, error_reason) if invalid.
     """
-    # Try parsing JSON by extracting from markdown or raw text
-    json_match = re.search(r'\{.*\}', text, re.DOTALL)
-    if not json_match:
+    if not text or not isinstance(text, str):
+        return None, "Empty text received"
+
+    # Strip markdown code blocks (```json ... ```)
+    cleaned = text.strip()
+    cleaned = re.sub(r'^```(?:json)?\s*', '', cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(r'```\s*$', '', cleaned, flags=re.MULTILINE)
+
+    # Locate outer curly braces
+    start_idx = cleaned.find('{')
+    end_idx = cleaned.rfind('}')
+    if start_idx == -1 or end_idx == -1 or end_idx <= start_idx:
         return None, "No JSON structure found"
 
+    json_str = cleaned[start_idx:end_idx+1]
+    parsed = None
+
+    # First attempt: direct json.loads with strict=False
     try:
-        parsed = json.loads(json_match.group(0))
-    except Exception as e:
-        return None, f"Invalid JSON format: {str(e)}"
+        parsed = json.loads(json_str, strict=False)
+    except Exception:
+        # Second attempt: sanitize unescaped newlines inside strings
+        try:
+            sanitized = re.sub(r'[\r\n\t]', ' ', json_str)
+            parsed = json.loads(sanitized, strict=False)
+        except Exception as e:
+            # Third attempt: regex key-value extraction for essential fields
+            required_keys = [
+                "diagnosis", "summary", "symptoms", "causes", 
+                "immediate_actions", "treatment", "prevention", "monitoring", "farmer_advice"
+            ]
+            extracted = {}
+            for k in required_keys:
+                pat = rf'"{k}"\s*:\s*(?:\[([^\]]*)\]|"([^"]*)")'
+                m = re.search(pat, json_str)
+                if m:
+                    if m.group(1) is not None:
+                        # array of strings
+                        items = re.findall(r'"([^"]*)"', m.group(1))
+                        extracted[k] = items
+                    else:
+                        extracted[k] = m.group(2)
+            if len(extracted) >= 6:
+                parsed = extracted
+            else:
+                return None, f"Invalid JSON format: {str(e)}"
 
     if not isinstance(parsed, dict):
         return None, "JSON is not an object"
@@ -62,10 +100,7 @@ def validate_farmer_report_json(text):
     normalized_report = {}
 
     for key in required_keys:
-        if key not in parsed:
-            return None, f"Missing required key: {key}"
-        
-        val = parsed[key]
+        val = parsed.get(key, "")
         if isinstance(val, str):
             val = val.strip()
             # If the key is one of the list fields, but arrived as a string, make it a list
@@ -73,22 +108,22 @@ def validate_farmer_report_json(text):
                 items = [item.strip() for item in val.split('\n') if item.strip()]
                 normalized_report[key] = []
                 for item in items:
-                    # Strip markdown list formatting (e.g., "1. ", "- ", "* ")
-                    cleaned = re.sub(r'^[\d\.\-\*•]+\s*', '', item)
-                    if cleaned and cleaned not in normalized_report[key]:
-                        normalized_report[key].append(cleaned)
+                    cleaned_item = re.sub(r'^[\d\.\-\*•]+\s*', '', item)
+                    if cleaned_item and cleaned_item not in normalized_report[key]:
+                        normalized_report[key].append(cleaned_item)
+                if not normalized_report[key] and val:
+                    normalized_report[key] = [re.sub(r'^[\d\.\-\*•]+\s*', '', val)]
             else:
                 normalized_report[key] = val
         elif isinstance(val, list):
-            # Clean elements if it's already a list
             normalized_report[key] = []
             for item in val:
                 if isinstance(item, str) and item.strip():
-                    cleaned = re.sub(r'^[\d\.\-\*•]+\s*', '', item.strip())
-                    if cleaned and cleaned not in normalized_report[key]:
-                        normalized_report[key].append(cleaned)
+                    cleaned_item = re.sub(r'^[\d\.\-\*•]+\s*', '', item.strip())
+                    if cleaned_item and cleaned_item not in normalized_report[key]:
+                        normalized_report[key].append(cleaned_item)
         else:
-             normalized_report[key] = str(val) if val else ""
+             normalized_report[key] = [str(val)] if key in ["symptoms", "causes", "immediate_actions", "treatment", "prevention", "monitoring", "farmer_advice"] else (str(val) if val else "")
              
     return normalized_report, None
 

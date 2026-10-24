@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { Camera, UploadCloud, AlertCircle, X, Loader2, Sparkles, Sprout, ArrowRight, Check } from "lucide-react";
+import { Camera, UploadCloud, AlertCircle, X, Loader2, Sparkles, Sprout, ArrowRight, Check, RefreshCw, Zap, ZapOff, ShieldCheck } from "lucide-react";
 import { t } from "../../data/translations";
 import api from "../../api/api";
+import { compressImage } from "../../utils/imageCompressor";
 import "./Scan.css";
 
 function Scan({ onPredictionSuccess, lang }) {
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [compressing, setCompressing] = useState(false);
+  const [compressStats, setCompressStats] = useState(null);
   const [isWakingUp, setIsWakingUp] = useState(false);
   const [analysisStageIndex, setAnalysisStageIndex] = useState(0);
 
@@ -21,6 +24,9 @@ function Scan({ onPredictionSuccess, lang }) {
   
   const [useCamera, setUseCamera] = useState(false);
   const [cameraStatus, setCameraStatus] = useState("idle"); 
+  const [facingMode, setFacingMode] = useState("environment");
+  const [torchAvailable, setTorchAvailable] = useState(false);
+  const [torchOn, setTorchOn] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   
   const fileInputRef = useRef(null);
@@ -31,10 +37,40 @@ function Scan({ onPredictionSuccess, lang }) {
     if (cameraStatus === "ready" && videoRef.current && streamRef.current) {
       videoRef.current.srcObject = streamRef.current;
       videoRef.current.play().catch((err) => console.error("Video play error:", err));
+
+      // Check for torch capability
+      try {
+        const track = streamRef.current.getVideoTracks()[0];
+        const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+        if (capabilities.torch) {
+          setTorchAvailable(true);
+        }
+      } catch (e) {
+        setTorchAvailable(false);
+      }
     }
   }, [cameraStatus]);
 
+  const toggleTorch = async () => {
+    if (!streamRef.current || !torchAvailable) return;
+    try {
+      const track = streamRef.current.getVideoTracks()[0];
+      const nextTorch = !torchOn;
+      await track.applyConstraints({
+        advanced: [{ torch: nextTorch }]
+      });
+      setTorchOn(nextTorch);
+    } catch (err) {
+      console.warn("Torch toggle failed:", err);
+    }
+  };
 
+  const flipCamera = async () => {
+    const nextFacing = facingMode === "environment" ? "user" : "environment";
+    setFacingMode(nextFacing);
+    stopCamera();
+    startCamera(nextFacing);
+  };
 
   const stopCamera = () => {
     if (streamRef.current) {
@@ -44,16 +80,20 @@ function Scan({ onPredictionSuccess, lang }) {
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
+    setTorchOn(false);
     setCameraStatus("idle");
   };
 
-  const startCamera = async () => {
+  const startCamera = async (overrideFacing) => {
     setErrorMsg("");
     setUseCamera(true);
     setCameraStatus("requesting");
     setImage(null);
     setFile(null);
+    setCompressStats(null);
     
+    const targetFacing = overrideFacing || facingMode;
+
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         setCameraStatus("unavailable");
@@ -61,7 +101,13 @@ function Scan({ onPredictionSuccess, lang }) {
       }
       let stream;
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            facingMode: targetFacing,
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          } 
+        });
       } catch (e) {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
       }
@@ -83,47 +129,74 @@ function Scan({ onPredictionSuccess, lang }) {
     };
   }, []);
 
-  const capturePhoto = () => {
+  const capturePhoto = async () => {
     if (videoRef.current) {
+      // Haptic pulse on capture
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate([35, 25, 35]);
+      }
+
       const canvas = document.createElement("canvas");
       canvas.width = videoRef.current.videoWidth || 640;
       canvas.height = videoRef.current.videoHeight || 480;
       const ctx = canvas.getContext("2d");
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
       
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
-      setImage(dataUrl);
-      
-      fetch(dataUrl)
-        .then((res) => res.blob())
-        .then((blob) => {
-          const fileObj = new File([blob], "capture.jpg", { type: "image/jpeg" });
-          setFile(fileObj);
-        });
-        
+      const rawDataUrl = canvas.toDataURL("image/jpeg", 0.95);
       stopCamera();
       setUseCamera(false);
+
+      // Client-side compression
+      setCompressing(true);
+      try {
+        const compressed = await compressImage(rawDataUrl, 1024, 0.85);
+        setImage(compressed.dataUrl);
+        setFile(compressed.file);
+        setCompressStats(compressed);
+      } catch (err) {
+        console.warn("Compression fallback:", err);
+        setImage(rawDataUrl);
+        const res = await fetch(rawDataUrl);
+        const blob = await res.blob();
+        setFile(new File([blob], "capture.jpg", { type: "image/jpeg" }));
+      } finally {
+        setCompressing(false);
+      }
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     setErrorMsg("");
+    setCompressStats(null);
     const selected = e.target.files[0];
     if (selected) {
-      if (selected.size > 10 * 1024 * 1024) {
-        setErrorMsg(t("err413", lang));
+      if (selected.size > 20 * 1024 * 1024) {
+        setErrorMsg(t("err413", lang) || "File is too large (max 20MB)");
         return;
       }
-      setFile(selected);
-      const reader = new FileReader();
-      reader.onloadend = () => setImage(reader.result);
-      reader.readAsDataURL(selected);
+      
+      setCompressing(true);
+      try {
+        const compressed = await compressImage(selected, 1024, 0.85);
+        setImage(compressed.dataUrl);
+        setFile(compressed.file);
+        setCompressStats(compressed);
+      } catch (err) {
+        console.warn("Compression fallback:", err);
+        setFile(selected);
+        const reader = new FileReader();
+        reader.onloadend = () => setImage(reader.result);
+        reader.readAsDataURL(selected);
+      } finally {
+        setCompressing(false);
+      }
     }
   };
 
   const clearSelection = () => {
     setImage(null);
     setFile(null);
+    setCompressStats(null);
     setErrorMsg("");
     setUseCamera(false);
     stopCamera();
@@ -160,28 +233,23 @@ function Scan({ onPredictionSuccess, lang }) {
       clearTimeout(timeoutId);
       clearInterval(stageInterval);
 
-      console.log("----- PRODUCTION /PREDICT API RESPONSE -----");
-      console.log("HTTP Status:", response.status);
-      console.log("Response Data:", JSON.stringify(response.data, null, 2));
-      console.log("--------------------------------------------");
-
       if (response.data && response.data.success) {
+        // Haptic success vibration
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+          navigator.vibrate([50, 40, 60]);
+        }
         setAnalysisStageIndex(stages.length - 1);
         setTimeout(() => {
           onPredictionSuccess(response.data);
-        }, 800);
+        }, 600);
       } else {
-        throw new Error(response.data?.error || "Analysis failed - Success flag missing or false.");
+        throw new Error(response.data?.error || "Analysis failed - Invalid prediction format.");
       }
     } catch (error) {
       clearTimeout(timeoutId);
       clearInterval(stageInterval);
       
-      console.error("----- PRODUCTION /PREDICT API ERROR -----");
-      console.error("HTTP Status:", error.response?.status);
-      console.error("Error Response Data:", error.response?.data);
-      console.error("Error Message:", error.message);
-      console.error("-----------------------------------------");
+      console.error("----- PREDICT API ERROR -----", error);
       
       if (error.response?.data?.error) {
         setErrorMsg(error.response.data.error);
@@ -190,10 +258,9 @@ function Scan({ onPredictionSuccess, lang }) {
       } else if (!error.response) {
         setErrorMsg(t("errNetwork", lang));
       } else {
-        // Safe backend error message display
         const safeMessage = typeof error.response?.data === 'string' 
-          ? error.response.data.substring(0, 100) 
-          : JSON.stringify(error.response?.data).substring(0, 100);
+          ? error.response.data.substring(0, 120) 
+          : JSON.stringify(error.response?.data).substring(0, 120);
         setErrorMsg(safeMessage || t("err500", lang));
       }
       
@@ -218,18 +285,21 @@ function Scan({ onPredictionSuccess, lang }) {
       </header>
 
       {errorMsg && (
-        <div className="scan-alert-box">
-          <AlertCircle size={20} className="alert-icon" />
+        <div className="field-error-banner glass-card">
+          <AlertCircle size={20} color="#f87171" />
           <span>{errorMsg}</span>
+          <button className="error-close" onClick={() => setErrorMsg("")}>
+            <X size={16} />
+          </button>
         </div>
       )}
 
-      {/* Main Scanner Area */}
-      <div className="scanner-main-area">
+      {/* Main Action Area */}
+      <div className="scan-main-viewport">
         {!image && !useCamera ? (
           <div className="scan-init-card glass-card">
             <div className="upload-options">
-              <button className="scan-primary-btn" onClick={startCamera}>
+              <button className="scan-primary-btn" onClick={() => startCamera()}>
                 <Camera size={24} />
                 <span>{t("takePhotoAction", lang)}</span>
               </button>
@@ -276,29 +346,75 @@ function Scan({ onPredictionSuccess, lang }) {
             {cameraStatus === "denied" && (
               <div className="camera-error">
                 <AlertCircle size={40} color="#f87171" />
-                <p>{t("cameraDenied", lang)}</p>
+                <p>{t("cameraDenied", lang) || "Camera access permission was denied. Please allow camera permissions in browser/app settings."}</p>
                 <button className="btn btn-secondary" onClick={clearSelection}>
                   {t("goBack", lang)}
                 </button>
               </div>
             )}
 
+            {cameraStatus === "unavailable" && (
+              <div className="camera-error">
+                <AlertCircle size={40} color="#f87171" />
+                <p>Camera not available or device not supported. You can upload an image instead.</p>
+                <button className="btn btn-secondary" onClick={triggerFileUpload}>
+                  <UploadCloud size={18} />
+                  <span>Upload Image</span>
+                </button>
+              </div>
+            )}
+
             <div className={`video-wrapper ${cameraStatus === "ready" ? "active" : ""}`}>
               <video ref={videoRef} playsInline autoPlay muted />
-              <div className="scanner-overlay-brackets">
+              
+              {/* LEAF ALIGNMENT GUIDE HUD */}
+              <div className="leaf-hud-overlay">
+                <div className="leaf-hud-instructions">
+                  <span>{lang === "ta" ? "இலையை வழிகாட்டியில் பொருத்தவும்" : "Align leaf within guide target"}</span>
+                </div>
+                
+                {/* SVG Leaf Outline Reticle */}
+                <svg className="leaf-silhouette-guide" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path 
+                    d="M100 20 C140 60 170 110 160 160 C150 200 120 220 100 225 C80 220 50 200 40 160 C30 110 60 60 100 20 Z" 
+                    stroke="rgba(52, 211, 153, 0.75)" 
+                    strokeWidth="2.5" 
+                    strokeDasharray="6 4"
+                  />
+                  <line x1="100" y1="25" x2="100" y2="220" stroke="rgba(52, 211, 153, 0.4)" strokeWidth="1.5" />
+                  <line x1="100" y1="80" x2="140" y2="100" stroke="rgba(52, 211, 153, 0.3)" strokeWidth="1.5" />
+                  <line x1="100" y1="120" x2="60" y2="140" stroke="rgba(52, 211, 153, 0.3)" strokeWidth="1.5" />
+                  <line x1="100" y1="160" x2="135" y2="180" stroke="rgba(52, 211, 153, 0.3)" strokeWidth="1.5" />
+                </svg>
+
+                {/* Corner reticle brackets */}
                 <div className="bracket tl"></div>
                 <div className="bracket tr"></div>
                 <div className="bracket bl"></div>
                 <div className="bracket br"></div>
               </div>
               
+              {/* Camera Quick Tools */}
+              <div className="camera-hud-top-tools">
+                {torchAvailable && (
+                  <button className={`hud-tool-btn ${torchOn ? "active" : ""}`} onClick={toggleTorch} title="Toggle Torch">
+                    {torchOn ? <Zap size={18} color="#fbbf24" /> : <ZapOff size={18} />}
+                  </button>
+                )}
+                <button className="hud-tool-btn" onClick={flipCamera} title="Flip Camera">
+                  <RefreshCw size={18} />
+                </button>
+              </div>
+
+              {/* Shutter and Cancel controls */}
               <div className="camera-controls">
-                <button className="cam-cancel-btn" onClick={clearSelection}>
+                <button className="cam-cancel-btn" onClick={clearSelection} title="Cancel">
                   <X size={24} />
                 </button>
-                <button className="cam-shutter-btn" onClick={capturePhoto}>
+                <button className="cam-shutter-btn" onClick={capturePhoto} title="Capture Leaf Photo">
                   <div className="shutter-inner"></div>
                 </button>
+                <div style={{ width: 44 }}></div> {/* Balance layout */}
               </div>
             </div>
           </div>
@@ -319,45 +435,49 @@ function Scan({ onPredictionSuccess, lang }) {
               )}
             </div>
 
-            <div className="preview-actions">
-              {loading ? (
-                <div className="analysis-progress-panel">
-                  <div className="analysis-header">
-                    <Sparkles size={20} color="#34d399" />
-                    <h3>{t("aiDiagnosisInProgress", lang)}</h3>
-                  </div>
-                  
-                  <div className="analysis-stages">
-                    {stages.map((stage, idx) => (
-                      <div key={idx} className={`stage-row ${idx === analysisStageIndex ? "active" : idx < analysisStageIndex ? "complete" : "pending"}`}>
-                        <div className="stage-icon">
-                          {idx < analysisStageIndex ? <Check size={14} /> : idx === analysisStageIndex ? <Loader2 size={14} className="spin-anim" /> : <div className="dot"></div>}
-                        </div>
-                        <span className="stage-text">{stage}</span>
-                      </div>
-                    ))}
-                  </div>
+            {/* Client-Side Optimization Badge */}
+            {compressStats && compressStats.compressionRatio > 0 && (
+              <div className="compression-pill-badge">
+                <ShieldCheck size={14} color="#10b981" />
+                <span>
+                  {lang === "ta" 
+                    ? `வேகமான பரிமாற்றம்: ${Math.round(compressStats.compressedSize / 1024)} KB (-${compressStats.compressionRatio}%)`
+                    : `Optimized for fast upload: ${Math.round(compressStats.compressedSize / 1024)} KB (-${compressStats.compressionRatio}%)`}
+                </span>
+              </div>
+            )}
 
-                  {isWakingUp && (
-                    <div className="waking-up-msg">
-                      <Loader2 size={14} className="spin-anim" />
-                      <span>{t("wakingUpMsg", lang)}</span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="ready-to-analyze">
-                  <button className="btn btn-primary analyze-btn-hero" onClick={handleAnalyze}>
-                    <Sparkles size={20} />
-                    <span>{t("analyzeForDisease", lang)}</span>
-                    <ArrowRight size={20} />
-                  </button>
-                  <p className="rescan-hint" onClick={clearSelection}>
-                    {t("chooseDifferent", lang)}
-                  </p>
-                </div>
-              )}
+            <div className="preview-actions">
+              <button 
+                className="btn btn-primary analyze-cta-btn" 
+                onClick={handleAnalyze} 
+                disabled={loading || compressing}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={18} className="spin-anim" />
+                    <span>{stages[analysisStageIndex]}</span>
+                  </>
+                ) : compressing ? (
+                  <>
+                    <Loader2 size={18} className="spin-anim" />
+                    <span>Optimizing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={18} />
+                    <span>{t("diagnoseNow", lang)}</span>
+                    <ArrowRight size={18} />
+                  </>
+                )}
+              </button>
             </div>
+
+            {isWakingUp && loading && (
+              <p className="wake-up-hint">
+                {t("coldStartHint", lang)}
+              </p>
+            )}
           </div>
         )}
       </div>

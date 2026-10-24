@@ -195,7 +195,8 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: calc(60px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
   background-color: var(--card-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -203,7 +204,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 16px;
+  padding-left: 16px;
+  padding-right: 16px;
   z-index: 1000;
   box-sizing: border-box;
 }
@@ -251,7 +253,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 72px;
+  height: calc(70px + env(safe-area-inset-bottom, 0px));
   background-color: var(--card-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -260,7 +262,7 @@
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
-  padding-bottom: env(safe-area-inset-bottom, 0); /* PWA safe area */
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* PWA & Android safe area */
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
 }
 

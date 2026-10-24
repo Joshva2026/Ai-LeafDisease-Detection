@@ -414,3 +414,88 @@
   color: #fbbf24;
   font-size: 13px;
 }
+
+/* =====================================================
+   LEAF ALIGNMENT GUIDE HUD
+===================================================== */
+.leaf-hud-overlay {
+  position: absolute;
+  inset: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.leaf-hud-instructions {
+  position: absolute;
+  top: 14px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #a7f3d0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.leaf-silhouette-guide {
+  width: 180px;
+  height: 220px;
+  filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.4));
+  animation: hudPulse 3s ease-in-out infinite;
+}
+
+@keyframes hudPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.03); }
+}
+
+.camera-hud-top-tools {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.hud-tool-btn {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hud-tool-btn:hover, .hud-tool-btn.active {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+  color: #34d399;
+}
+
+.compression-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #a7f3d0;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin: 10px auto 0;
+}
+
