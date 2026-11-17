@@ -1,6 +1,7 @@
 # Node
 node_modules/
 dist/
+build/
 
 # Python
 venv/
@@ -12,6 +13,7 @@ __pycache__/
 # Environment variables
 .env
 .env.local
+.env.*.local
 
 # Databases
 *.db
@@ -25,3 +27,33 @@ Thumbs.db
 uploads/
 results/
 dataset/
+
+# Model files (large - use Git LFS or external storage)
+*.keras
+*.h5
+*.tflite
+*.onnx
+
+# Capacitor
+android/
+ios/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Misc
+*.pem
+.vercel

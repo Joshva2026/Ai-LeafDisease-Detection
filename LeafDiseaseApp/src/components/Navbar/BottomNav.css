@@ -1,0 +1,140 @@
+/* =====================================================
+   BOTTOM NAVIGATION — Village-Friendly Design
+   Large touch targets, clear icons, always visible
+   ===================================================== */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  background: rgba(11, 18, 9, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  z-index: 100;
+  box-shadow: var(--shadow-medium);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  max-width: 120px;
+  min-height: var(--touch-min);
+  min-width: 0;
+}
+
+.bottom-nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.bottom-nav-item.active {
+  color: var(--text-on-primary);
+}
+
+.bottom-nav-item svg {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+/* Scan floating button */
+.scan-btn-wrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scan-floating-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  box-shadow: var(--shadow-pill), 0 0 0 4px var(--bg-primary);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 2px;
+}
+
+.scan-floating-btn:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-active), 0 0 0 4px var(--bg-primary);
+}
+
+.scan-floating-btn:active {
+  transform: scale(0.95);
+}
+
+.scan-floating-btn.active {
+  box-shadow: 0 0 0 4px var(--bg-primary), 0 0 0 6px var(--primary), var(--shadow-active);
+}
+
+.scan-floating-btn svg {
+  color: var(--bg-primary);
+  width: 26px;
+  height: 26px;
+}
+
+.scan-btn-wrapper .bottom-nav-item span {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.scan-btn-wrapper .bottom-nav-item.active span {
+  color: var(--primary);
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .bottom-nav {
+    height: 72px;
+    padding: 0 4px;
+  }
+
+  .bottom-nav-item {
+    font-size: 10px;
+    padding: 6px 8px;
+    gap: 3px;
+  }
+
+  .scan-floating-btn {
+    width: 52px;
+    height: 52px;
+  }
+
+  .scan-floating-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* RTL support */
+[dir="rtl"] .bottom-nav {
+  flex-direction: row-reverse;
+}

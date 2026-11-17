@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { User, MapPin, Bell, Globe, HelpCircle, Shield, LogOut, ChevronRight, Sun, Moon, Award, Activity, Leaf, CheckCircle2 } from "lucide-react";
+import { User, MapPin, Bell, Globe, HelpCircle, Shield, LogOut, ChevronRight, Sun, Moon, Award, Activity, Leaf, CheckCircle2, Camera, Edit2 } from "lucide-react";
 import api from "../../api/api";
+import { t } from "../../data/translations";
 import "./Profile.css";
 
 function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate, theme, onToggleTheme }) {
@@ -72,7 +73,7 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
       }
     } catch (err) {
       console.error("Failed to update profile:", err);
-      alert("Failed to update profile. Please try again.");
+      alert(lang === "ta" ? "சுயவிவரத்தைப் புதுப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்." : "Failed to update profile. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -85,11 +86,13 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
       <header className="profile-hero-header">
         <div className="identity-badge">
           <span className="badge-pulse-dot"></span>
-          <span>YOUR PLANT HEALTH JOURNEY</span>
+          <span>{t("profile", lang)}</span>
         </div>
-        <h1 className="profile-hero-title">Farmer Intelligence Dashboard</h1>
+        <h1 className="profile-hero-title">{t("editProfile", lang)}</h1>
         <p className="profile-hero-sub">
-          Field diagnostic identity, crop growth statistics, and personal account controls.
+          {lang === "ta"
+            ? "உங்கள் விவரங்கள், பயிர் புள்ளிவிவரங்கள், மற்றும் அமைப்புகளை நிர்வகிக்கவும்."
+            : "Manage your profile, crop statistics, and preferences."}
         </p>
       </header>
 
@@ -105,22 +108,29 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
               ) : (
                 <div className="user-avatar-initial">{user.username.charAt(0).toUpperCase()}</div>
               )}
+              {isEditing && (
+                <label className="avatar-edit-label" title={lang === "ta" ? "படத்தைப் புதுப்பிக்க" : "Change photo"}>
+                  <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: "none" }} />
+                  <Camera size={18} />
+                </label>
+              )}
             </div>
 
             <div className="identity-info-box">
-              <span className="rank-tag">✦ AGRONOMIC EXPLORER</span>
+              <span className="rank-tag">{lang === "ta" ? "பயிர் ஆரோக்கிய ஆராய்ச்சியாளர்" : "PLANT HEALTH EXPLORER"}</span>
               <h2 className="user-name-title">{user.username}</h2>
               <span className="user-handle">{user.username.toLowerCase()}@leafguard.ai</span>
               
               {user.location && (
                 <span className="user-location-tag">
-                  <MapPin size={14} color="#10b981" />
+                  <MapPin size={14} color="#22c55e" />
                   {user.location}
                 </span>
               )}
 
               <button className="btn-edit-toggle" onClick={() => setIsEditing(!isEditing)}>
-                {isEditing ? "Close Form" : "Edit Profile Info"}
+                <Edit2 size={16} />
+                <span>{isEditing ? t("cancel", lang) : t("editProfile", lang)}</span>
               </button>
             </div>
           </div>
@@ -129,22 +139,22 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
           <div className="identity-stats-row">
             <div className="id-stat-card glass-card">
               <span className="stat-value">{totalScans}</span>
-              <span className="stat-name">Leaf Scans</span>
+              <span className="stat-name">{t("totalScans", lang)}</span>
             </div>
 
             <div className="id-stat-card glass-card">
               <span className="stat-value">{plantsCount}</span>
-              <span className="stat-name">Crop Species</span>
+              <span className="stat-name">{t("plantsCount", lang)}</span>
             </div>
 
             <div className="id-stat-card glass-card healthy-val">
               <span className="stat-value">{healthyCount}</span>
-              <span className="stat-name">Healthy Leaves</span>
+              <span className="stat-name">{t("healthyCount", lang)}</span>
             </div>
 
             <div className="id-stat-card glass-card danger-val">
               <span className="stat-value">{diseaseCount}</span>
-              <span className="stat-name">Pathologies</span>
+              <span className="stat-name">{t("diseasesCount", lang)}</span>
             </div>
           </div>
 
@@ -155,75 +165,88 @@ function Profile({ user, history, lang, onLangChange, onLogout, onProfileUpdate,
           
           {isEditing && (
             <form onSubmit={handleSaveProfile} className="edit-profile-card glass-card">
-              <h3>Update Field Credentials</h3>
+              <h3>{t("editProfile", lang)}</h3>
               
               <div className="form-group-field">
-                <label>Location (City / Region)</label>
+                <label>{t("location", lang)}</label>
                 <input 
                   type="text" 
-                  className="input-text-box"
+                  className="input-field"
                   value={editLocation}
                   onChange={(e) => setEditLocation(e.target.value)}
-                  placeholder="e.g. California, USA"
+                  placeholder={lang === "ta" ? "எ.க. சென்னை, தமிழ்நாடு" : "e.g. California, USA"}
                 />
               </div>
 
               <div className="form-group-field">
-                <label>Avatar Photo</label>
+                <label>{t("profilePhoto", lang)}</label>
                 <input 
                   type="file" 
                   accept="image/*"
                   onChange={handleImageChange}
                   className="file-upload-input"
                 />
+                {editProfileImage && (
+                  <img src={editProfileImage} alt="Preview" style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover", marginTop: "8px", border: "2px solid var(--border-color)" }} />
+                )}
               </div>
 
-              <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? "Saving Profile..." : "Save Credentials"}
+              <button type="submit" className="btn btn-hero" disabled={loading} style={{ marginTop: "8px" }}>
+                {loading ? t("saving", lang) : t("saveChangesBtn", lang)}
               </button>
             </form>
           )}
 
           {/* PREFERENCES PANEL */}
           <div className="preferences-panel glass-card">
-            <h3>System Settings & Preferences</h3>
+            <h3>{t("settingsPreferences", lang)}</h3>
 
-            <div className="pref-item" onClick={() => onLangChange(lang === "en" ? "ta" : "en")}>
+            <div className="pref-item" onClick={() => onLangChange(lang === "en" ? "ta" : "en")} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && onLangChange(lang === "en" ? "ta" : "en")}>
               <div className="pref-left">
-                <Globe size={18} color="#10b981" />
-                <span>Application Language</span>
+                <Globe size={20} color="#22c55e" />
+                <span>{t("language", lang)}</span>
               </div>
               <span className="pref-val">{lang === "en" ? "English" : "தமிழ்"}</span>
+              <ChevronRight size={16} color="#6b7280" />
             </div>
 
-            <div className="pref-item" onClick={onToggleTheme}>
+            <div className="pref-item" onClick={onToggleTheme} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && onToggleTheme()}>
               <div className="pref-left">
-                {theme === "light" ? <Moon size={18} color="#10b981" /> : <Sun size={18} color="#10b981" />}
-                <span>Interface Theme</span>
+                {theme === "light" ? <Moon size={20} color="#22c55e" /> : <Sun size={20} color="#22c55e" />}
+                <span>{t("themeMode", lang)}</span>
               </div>
-              <span className="pref-val">{theme === "light" ? "Light Mode" : "Dark Mode"}</span>
+              <span className="pref-val">{theme === "light" ? t("lightMode", lang) : t("darkMode", lang)}</span>
+              <ChevronRight size={16} color="#6b7280" />
             </div>
 
             <div className="pref-item">
               <div className="pref-left">
-                <Bell size={18} color="#10b981" />
-                <span>Disease Spray Alerts</span>
+                <Bell size={20} color="#22c55e" />
+                <span>{t("diseaseAlerts", lang)}</span>
               </div>
               <ChevronRight size={16} color="#6b7280" />
             </div>
 
             <div className="pref-item">
               <div className="pref-left">
-                <Shield size={18} color="#10b981" />
-                <span>Data Privacy & Security</span>
+                <Shield size={20} color="#22c55e" />
+                <span>{t("privacy", lang)}</span>
+              </div>
+              <ChevronRight size={16} color="#6b7280" />
+            </div>
+
+            <div className="pref-item">
+              <div className="pref-left">
+                <HelpCircle size={20} color="#22c55e" />
+                <span>{t("help", lang)}</span>
               </div>
               <ChevronRight size={16} color="#6b7280" />
             </div>
           </div>
 
           <button className="btn-logout-identity" onClick={onLogout}>
-            <LogOut size={16} />
-            <span>Sign Out of Workstation</span>
+            <LogOut size={18} />
+            <span>{t("logout", lang)}</span>
           </button>
 
         </div>

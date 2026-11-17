@@ -1,105 +1,115 @@
 /* =====================================================
    DESIGN SYSTEM VARIABLE TOKENS
-   LeafGuard AI - Premium Light Theme (Cinematic Botanical)
- ===================================================== */
+   LeafGuard AI — Village-Friendly Theme (High Contrast, Large Targets)
+   ===================================================== */
 
 :root {
-  /* Colors (Dark Cinematic Defaults) */
-  --bg-primary: #040806;      /* Near-black cinematic background */
-  --bg-secondary: #08120d;    /* Dark botanical depth */
-  --primary: #10b981;         /* Emerald Green Accent */
-  --primary-hover: #059669;
-  --primary-light: rgba(16, 185, 129, 0.15);
-  --primary-dark: #064e3b;
+  /* ── Village-Friendly Colors ──
+       High contrast for outdoor sunlight visibility.
+       Warm earthy tones that resonate with farming communities.  */
+  --bg-primary: #0b1209;        /* Deep earth black — low glare in sunlight */
+  --bg-secondary: #141f12;      /* Slightly lighter earth */
+  --primary: #22c55e;           /* Vibrant leaf green — high visibility */
+  --primary-hover: #16a34a;
+  --primary-light: rgba(34, 197, 94, 0.15);
+  --primary-dark: #14532d;      /* Deep green for text on light */
   --secondary: #6b7280;
-  --accent: #34d399;
-  --accent-light: rgba(52, 211, 153, 0.15);
-  --accent-dark: #059669;
-  --card-bg: rgba(12, 22, 17, 0.75); /* Dark glass surface */
-  --card-hover-bg: rgba(16, 30, 23, 0.85);
-  
-  /* Status Colors */
-  --color-healthy: #10b981;
-  --color-healthy-light: rgba(16, 185, 129, 0.12);
+  --accent: #f59e0b;            /* Amber — attention/warmth */
+  --accent-light: rgba(245, 158, 11, 0.15);
+  --accent-dark: #7c3aed;
+  --card-bg: rgba(16, 26, 16, 0.85);
+  --card-hover-bg: rgba(22, 40, 22, 0.9);
+
+  /* ── Status Colors ── */
+  --color-healthy: #22c55e;
+  --color-healthy-light: rgba(34, 197, 94, 0.12);
   --color-warning: #f59e0b;
   --color-warning-light: rgba(245, 158, 11, 0.12);
   --color-danger: #ef4444;
   --color-danger-light: rgba(239, 68, 68, 0.12);
-  
-  /* Typography Colors */
-  --text-primary: #f3f4f6;    /* Bright white for high contrast */
-  --text-secondary: #9ca3af;  /* Muted silver text */
-  --text-light: #6b7280;      /* Muted gray text */
-  --text-white: #FFFFFF;
-  
-  /* Borders */
-  --border-color: rgba(110, 142, 126, 0.16);
-  --border-color-hover: rgba(110, 142, 126, 0.3);
-  --border-style: 1px solid var(--border-color);
-  
-  /* Shadows */
-  --shadow-soft: 0 10px 30px rgba(28, 56, 43, 0.04);
-  --shadow-medium: 0 16px 40px rgba(28, 56, 43, 0.08);
-  --shadow-pill: 0 4px 15px rgba(110, 142, 126, 0.08);
-  --shadow-active: 0 8px 24px rgba(110, 142, 126, 0.16);
 
-  /* Fonts */
-  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: 'Outfit', -apple-system, sans-serif;
-  --font-serif: 'Playfair Display', Georgia, serif;
+  /* ── Typography Colors ── */
+  --text-primary: #ffffff;      /* Pure white — maximum contrast */
+  --text-secondary: #d1d5db;    /* Light gray */
+  --text-light: #9ca3af;        /* Muted */
+  --text-white: #ffffff;
+  --text-on-primary: #064e3b;   /* Dark text on green buttons */
 
-  /* Border Radii (matching user requested 20-28px range for cards) */
-  --radius-xs: 8px;
-  --radius-sm: 14px;
-  --radius-md: 20px;
-  --radius-lg: 26px;
-  --radius-xl: 32px;
-  --radius-pill: 100px;
+  /* ── Borders ── */
+  --border-color: rgba(110, 142, 126, 0.25);
+  --border-color-hover: rgba(110, 142, 126, 0.4);
+  --border-style: 2px solid var(--border-color);  /* Thicker borders for visibility */
 
-  /* Transitions */
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* ── Shadows ── */
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --shadow-pill: 0 6px 20px rgba(34, 197, 94, 0.2);
+  --shadow-active: 0 10px 28px rgba(34, 197, 94, 0.25);
+
+  /* ── Fonts ──
+       System fonts for maximum compatibility on low-end devices.
+       No external web fonts — critical for slow rural connections.  */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+
+  /* ── Border Radii ──
+       Large, friendly rounded corners.  */
+  --radius-xs: 10px;
+  --radius-sm: 16px;
+  --radius-md: 22px;
+  --radius-lg: 30px;
+  --radius-xl: 38px;
+  --radius-pill: 999px;
+
+  /* ── Touch Targets ──
+       Minimum 44px for easy tapping with thick fingers / gloves.  */
+  --touch-min: 48px;
+  --touch-comfortable: 56px;
+
+  /* ── Transitions ── */
+  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* ── Layout ── */
+  --header-height: 70px;
+  --bottom-nav-height: 80px;
+  --page-max-width: 900px;
 }
 
-/* =====================================================
-   DARK THEME OVERRIDES (Midnight Forest)
- ===================================================== */
+/* ── Dark Theme Overrides ──
+   Reduced brightness for night-time field use.  */
 .theme-dark {
-  /* Colors */
-  --bg-primary: #060C09;      /* Midnight forest black */
-  --bg-secondary: #0D1612;    /* Dark forest charcoal */
-  --primary: #85A392;         /* Lighter Sage for dark contrast */
-  --primary-hover: #9BB8A7;
-  --primary-light: rgba(110, 142, 126, 0.16);
-  --primary-dark: #EAEFEA;    /* Cream-white for headers */
-  --secondary: #6E8275;
-  --accent: #E09F9A;          /* Soft rose tint */
-  --accent-light: rgba(224, 159, 154, 0.12);
-  --accent-dark: #F0C3C0;
-  --card-bg: rgba(16, 26, 21, 0.85); /* Darker green-gray translucent card */
-  --card-hover-bg: rgba(21, 36, 29, 0.9);
-  
-  /* Status Colors */
-  --color-healthy: #6CB88F;   /* Bright emerald */
-  --color-healthy-light: rgba(108, 184, 143, 0.12);
-  --color-warning: #E5B273;
-  --color-warning-light: rgba(229, 178, 115, 0.12);
-  --color-danger: #E27D76;
-  --color-danger-light: rgba(226, 125, 118, 0.12);
-  
-  /* Typography Colors */
-  --text-primary: #EAEFEA;    /* Off-white primary text */
-  --text-secondary: #A0B2A6;  /* Muted sage secondary text */
-  --text-light: #5F7467;      /* Darker sage for metadata */
-  --text-white: #FFFFFF;
-  
-  /* Borders */
+  --bg-primary: #070c06;
+  --bg-secondary: #0d160c;
+  --primary: #4ade80;
+  --primary-hover: #22c55e;
+  --primary-light: rgba(74, 222, 128, 0.12);
+  --primary-dark: #a7f3d0;
+  --card-bg: rgba(12, 20, 12, 0.9);
+  --card-hover-bg: rgba(18, 32, 18, 0.95);
+  --text-primary: #f3f4f6;
+  --text-secondary: #a7f3d0;
+  --text-light: #6b7280;
   --border-color: rgba(110, 142, 126, 0.2);
-  --border-color-hover: rgba(110, 142, 126, 0.35);
-  
-  /* Shadows */
-  --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.35);
-  --shadow-medium: 0 12px 35px rgba(0, 0, 0, 0.5);
-  --shadow-pill: 0 4px 15px rgba(0, 0, 0, 0.25);
-  --shadow-active: 0 8px 20px rgba(110, 142, 126, 0.2);
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-medium: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ── High Contrast / Accessibility ──
+   For users with visual impairments or bright sunlight.  */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: rgba(255, 255, 255, 0.4);
+    --text-secondary: #ffffff;
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* ── Reduce Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

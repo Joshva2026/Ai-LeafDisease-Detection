@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Bot, User, Loader2 } from "lucide-react";
+import { MessageSquare, X, Send, Bot, User, Loader2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import api from "../../api/api";
+import { t } from "../../data/translations";
 import "./Chatbot.css";
 
 function Chatbot({ currentDisease }) {
@@ -13,6 +14,8 @@ function Chatbot({ currentDisease }) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState(null);
   const chatEndRef = useRef(null);
 
   // Auto-scroll to the bottom of the chat list
@@ -21,6 +24,43 @@ function Chatbot({ currentDisease }) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, loading]);
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recog = new SpeechRecognition();
+        recog.continuous = false;
+        recog.interimResults = false;
+        recog.lang = "ta-IN"; // Default to Tamil for voice input
+        
+        recog.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          setInput(transcript);
+          setIsListening(false);
+        };
+        
+        recog.onerror = (event) => {
+          console.warn("Speech recognition error:", event.error);
+          setIsListening(false);
+        };
+        
+        recog.onend = () => {
+          setIsListening(false);
+        };
+        
+        setRecognition(recog);
+      }
+    }
+  }, []);
+
+  const startListening = () => {
+    if (recognition && !isListening) {
+      setIsListening(true);
+      recognition.start();
+    }
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -60,26 +100,26 @@ function Chatbot({ currentDisease }) {
     <div className="chatbot-wrapper">
       {/* Floating Toggle Button */}
       {!isOpen && (
-        <button className="chat-toggle-btn" onClick={() => setIsOpen(true)}>
-          <MessageSquare size={24} />
+        <button className="chat-toggle-btn" onClick={() => setIsOpen(true)} aria-label="Open AI Assistant">
+          <MessageSquare size={26} />
           <span className="badge-pulse"></span>
         </button>
       )}
 
       {/* Floating Chat Window */}
       {isOpen && (
-        <div className="chat-window-glass">
+        <div className="chat-window-glass" role="dialog" aria-modal="true" aria-label="AI Plant Doctor">
           {/* Header */}
           <div className="chat-header">
             <div className="chat-title">
-              <Bot size={20} className="bot-header-icon" />
+              <Bot size={22} className="bot-header-icon" />
               <div>
-                <h4>NVIDIA AI DOCTOR</h4>
+                <h4>NVIDIA AI Doctor</h4>
                 <p>Powered by NVIDIA AI Engine</p>
               </div>
             </div>
-            <button className="chat-close-btn" onClick={() => setIsOpen(false)}>
-              <X size={18} />
+            <button className="chat-close-btn" onClick={() => setIsOpen(false)} aria-label="Close chat">
+              <X size={20} />
             </button>
           </div>
 
@@ -95,7 +135,7 @@ function Chatbot({ currentDisease }) {
             {messages.map((msg, i) => (
               <div key={i} className={`chat-bubble-row ${msg.sender}`}>
                 <div className="chat-avatar">
-                  {msg.sender === "bot" ? <Bot size={14} /> : <User size={14} />}
+                  {msg.sender === "bot" ? <Bot size={16} /> : <User size={16} />}
                 </div>
                 <div className="chat-bubble">
                   {/* Basic parsing for markdown bold text */}
@@ -118,10 +158,10 @@ function Chatbot({ currentDisease }) {
             {loading && (
               <div className="chat-bubble-row bot">
                 <div className="chat-avatar">
-                  <Bot size={14} />
+                  <Bot size={16} />
                 </div>
                 <div className="chat-bubble loading">
-                  <Loader2 size={16} className="spin-icon" />
+                  <Loader2 size={18} className="spin-icon" />
                   Thinking...
                 </div>
               </div>
@@ -131,15 +171,25 @@ function Chatbot({ currentDisease }) {
 
           {/* Input Form */}
           <form onSubmit={handleSend} className="chat-input-bar">
+            <button
+              type="button"
+              className={`voice-btn ${isListening ? "listening" : ""}`}
+              onClick={startListening}
+              disabled={loading || !recognition}
+              aria-label={isListening ? "Stop listening" : "Voice input"}
+            >
+              {isListening ? <MicOff size={20} color="#ef4444" /> : <Mic size={20} />}
+            </button>
             <input
               type="text"
               placeholder="Ask about treatment, soil, crop care..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={loading}
+              aria-label="Your question"
             />
             <button type="submit" disabled={loading || !input.trim()}>
-              <Send size={16} />
+              <Send size={18} />
             </button>
           </form>
         </div>

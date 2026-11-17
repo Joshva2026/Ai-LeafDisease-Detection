@@ -43,7 +43,7 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
     <>
       <nav className={`desktop-navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="navbar-brand" onClick={() => onViewChange("home")}>
-          <Leaf className="navbar-logo-icon" size={22} />
+          <Leaf className="navbar-logo-icon" size={24} />
           <span>{t("logoName", lang)}</span>
         </div>
 
@@ -52,11 +52,7 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
           {links.map((link) => (
             <li key={link.id}>
               <button
-                className={`navbar-link-btn ${
-                  activeView === link.id || (link.id === "scan" && activeView === "diagnosis")
-                    ? "active"
-                    : ""
-                }`}
+                className={`navbar-link-btn ${activeView === link.id || (link.id === "scan" && activeView === "diagnosis") ? "active" : ""}`}
                 onClick={() => onViewChange(link.id)}
               >
                 {link.label}
@@ -71,8 +67,8 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
           <button
             className="theme-toggle-btn"
             onClick={() => onLangChange(lang === "en" ? "ta" : "en")}
-            title="Switch Language / மொழி மாற்றவும்"
-            style={{ fontSize: "12px", fontWeight: "700", padding: "8px 12px", borderRadius: "16px", letterSpacing: "0.5px" }}
+            title={lang === "en" ? "Switch to Tamil / தமிழில் மாற்றவும்" : "Switch to English / ஆங்கிலத்தில் மாற்றவும்"}
+            style={{ fontSize: "13px", fontWeight: "700", padding: "10px 16px", borderRadius: "var(--radius-pill)", letterSpacing: "0.5px" }}
           >
             {lang === "en" ? "தமிழ்" : "EN"}
           </button>
@@ -82,11 +78,11 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
             onClick={onToggleTheme}
             title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
           >
-            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
           </button>
 
           <button className="navbar-logout-btn" onClick={onLogout}>
-            <LogOut size={13} />
+            <LogOut size={16} />
             <span>{t("logout", lang)}</span>
           </button>
         </div>
@@ -97,13 +93,13 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
           onClick={() => setDrawerOpen(true)}
           title="Open Menu"
         >
-          <Menu size={22} />
+          <Menu size={24} />
         </button>
       </nav>
 
       {/* Mobile Drawer Overlay */}
-      <div 
-        className={`mobile-menu-overlay ${drawerOpen ? "open" : ""}`} 
+      <div
+        className={`mobile-menu-overlay ${drawerOpen ? "open" : ""}`}
         onClick={() => setDrawerOpen(false)}
       />
 
@@ -111,15 +107,15 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
       <div className={`mobile-menu-drawer ${drawerOpen ? "open" : ""}`}>
         <div className="drawer-header">
           <div className="navbar-brand">
-            <Leaf className="navbar-logo-icon" size={20} />
+            <Leaf className="navbar-logo-icon" size={22} />
             <span>{t("logoName", lang)}</span>
           </div>
-          <button 
+          <button
             className="drawer-close-btn"
             onClick={() => setDrawerOpen(false)}
             title="Close Menu"
           >
-            <X size={20} />
+            <X size={22} />
           </button>
         </div>
 
@@ -129,14 +125,10 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
             return (
               <li key={link.id}>
                 <button
-                  className={`mobile-menu-link ${
-                    activeView === link.id || (link.id === "scan" && activeView === "diagnosis")
-                      ? "active"
-                      : ""
-                  }`}
+                  className={`mobile-menu-link ${activeView === link.id || (link.id === "scan" && activeView === "diagnosis") ? "active" : ""}`}
                   onClick={() => handleLinkClick(link.id)}
                 >
-                  <IconComponent size={18} />
+                  <IconComponent size={20} />
                   <span>{link.label}</span>
                 </button>
               </li>
@@ -146,8 +138,8 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
 
         <div className="drawer-actions">
           {/* Mobile Language row */}
-          <div 
-            className="drawer-action-row" 
+          <div
+            className="drawer-action-row"
             onClick={() => onLangChange(lang === "en" ? "ta" : "en")}
             style={{ cursor: "pointer" }}
           >
@@ -157,21 +149,21 @@ function Navbar({ activeView, onViewChange, theme, onToggleTheme, onLogout, lang
             </span>
           </div>
 
-          <div 
+          <div
             className="drawer-action-row"
             onClick={onToggleTheme}
             style={{ cursor: "pointer" }}
           >
             <span>{t("themeMode", lang)}</span>
-            {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
           </div>
 
-          <button 
-            className="btn btn-secondary" 
+          <button
+            className="btn btn-secondary"
             onClick={() => { setDrawerOpen(false); onLogout(); }}
-            style={{ color: "var(--color-danger)", borderColor: "rgba(197, 94, 87, 0.15)", gap: "6px" }}
+            style={{ color: "var(--color-danger)", borderColor: "rgba(239, 68, 68, 0.2)", gap: "8px", padding: "14px 24px" }}
           >
-            <LogOut size={14} />
+            <LogOut size={16} />
             <span>{t("logout", lang)}</span>
           </button>
         </div>

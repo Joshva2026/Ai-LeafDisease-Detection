@@ -1,10 +1,18 @@
 @import "./variables.css";
 
-/* Reset & Base Styles */
+/* =====================================================
+   RESET & BASE STYLES
+   ===================================================== */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html {
+  /* Prevent text size adjustment on mobile orientation change */
+  -webkit-text-size-adjust: 100%;
+  font-size: 16px;
 }
 
 body {
@@ -15,7 +23,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
-  overflow-x: hidden; /* Allow natural vertical scrolling */
+  overflow-x: hidden;
+  line-height: 1.6;
 }
 
 /* Root Layout Container */
@@ -26,7 +35,6 @@ body {
   flex-direction: column;
 }
 
-/* App Container - Fits the full viewport */
 .app-container {
   width: 100%;
   min-height: 100vh;
@@ -38,264 +46,62 @@ body {
 }
 
 /* =====================================================
-   AMBIENT GLOW SYSTEM
- ===================================================== */
-.ambient-glow-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.glow-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  -webkit-filter: blur(120px);
-  opacity: 0.32;
-  will-change: transform;
-  pointer-events: none;
-}
-
-/* Light mode glows */
-.glow-blob-1 {
-  top: -10%;
-  left: -10%;
-  width: 50vw;
-  height: 50vw;
-  background: radial-gradient(circle, rgba(78, 135, 106, 0.4) 0%, rgba(78, 135, 106, 0) 70%);
-}
-
-.glow-blob-2 {
-  top: 10%;
-  right: -5%;
-  width: 45vw;
-  height: 45vw;
-  background: radial-gradient(circle, rgba(229, 179, 176, 0.28) 0%, rgba(229, 179, 176, 0) 70%);
-}
-
-.glow-blob-3 {
-  top: 45%;
-  left: 20%;
-  width: 55vw;
-  height: 55vw;
-  background: radial-gradient(circle, rgba(140, 162, 149, 0.25) 0%, rgba(140, 162, 149, 0) 70%);
-}
-
-.glow-blob-4 {
-  bottom: -15%;
-  right: 5%;
-  width: 48vw;
-  height: 48vw;
-  background: radial-gradient(circle, rgba(78, 135, 106, 0.35) 0%, rgba(78, 135, 106, 0) 70%);
-}
-
-/* Dark mode overrides (reduce neon brightness, soft midnight tones) */
-.theme-dark .glow-blob-1 {
-  background: radial-gradient(circle, rgba(133, 163, 146, 0.15) 0%, rgba(133, 163, 146, 0) 70%);
-}
-.theme-dark .glow-blob-2 {
-  background: radial-gradient(circle, rgba(224, 159, 154, 0.08) 0%, rgba(224, 159, 154, 0) 70%);
-}
-.theme-dark .glow-blob-3 {
-  background: radial-gradient(circle, rgba(110, 142, 126, 0.12) 0%, rgba(110, 142, 126, 0) 70%);
-}
-.theme-dark .glow-blob-4 {
-  background: radial-gradient(circle, rgba(133, 163, 146, 0.16) 0%, rgba(133, 163, 146, 0) 70%);
-}
-
-/* Mobile responsive blurs & sizes for peak performance */
-@media (max-width: 768px) {
-  .glow-blob {
-    filter: blur(80px);
-    -webkit-filter: blur(80px);
-    opacity: 0.2;
-  }
-  .glow-blob-1 { width: 70vw; height: 70vw; top: -15%; left: -20%; }
-  .glow-blob-2 { width: 60vw; height: 60vw; top: 5%; right: -20%; }
-  .glow-blob-3 { display: none; } /* Disable heavy center blobs on mobile browsers */
-  .glow-blob-4 { width: 85vw; height: 85vw; bottom: -20%; right: -20%; }
-}
-
-/* =====================================================
-   SCROLL FADE-IN TRANSITIONS
- ===================================================== */
-.fade-in-section {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
-}
-
-.fade-in-section.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fade-in-section {
-    transition: none;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* Slide Section - Premium 100vh Presentation */
-.slide-section {
-  min-height: calc(100vh - 96px); /* Full height minus navbar */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 40px 0;
-}
-
-/* Scroll Container: Standard flow wrapper */
-.scroll-container {
-  flex: 1;
-  width: 100%;
-  box-sizing: border-box;
-  z-index: 1;
-  padding-top: 96px; 
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px));
-}
-
-/* Mobile responsive padding */
-@media (max-width: 768px) {
-  .scroll-container {
-    padding-top: 60px; /* Space for MobileHeader */
-    padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px)); /* Ensure ample space for BottomNav so nothing is hidden */
-  }
-}
-
-/* Layout Centering Wrapper for Page Contents */
-.page-wrapper {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px 24px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-/* Scrollbar Customization */
-.scroll-container::-webkit-scrollbar {
-  width: 6px;
-}
-.scroll-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-.scroll-container::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: var(--radius-pill);
-}
-
-/* Typography styles */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.25;
-}
-
-h1 {
-  font-family: var(--font-serif);
-  font-weight: 700;
-}
-
-p {
-  color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-/* Cards Layout Style (Premium Rounded Floating Surfaces) */
-.card {
-  background-color: var(--card-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: var(--radius-lg);
-  border: var(--border-style);
-  padding: 24px;
-  box-shadow: var(--shadow-soft);
-  transition: var(--transition-smooth);
-}
-.card:hover {
-  border-color: var(--border-color-hover);
-  box-shadow: var(--shadow-medium);
-  background-color: var(--card-hover-bg);
-}
-
-/* Custom Buttons styling */
+   VILLAGE-FRIENDLY BUTTONS
+   Large touch targets, high contrast, easy to tap
+   ===================================================== */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 26px;
+  gap: 10px;
+  padding: 16px 28px;
   border-radius: var(--radius-pill);
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 16px;
   border: none;
   cursor: pointer;
   transition: var(--transition-smooth);
   width: 100%;
   text-decoration: none;
   box-sizing: border-box;
+  min-height: var(--touch-min);
+  touch-action: manipulation;
 }
 
 .btn-primary {
-  background-color: var(--primary-dark);
-  color: var(--bg-primary);
+  background-color: var(--primary);
+  color: var(--text-on-primary);
   box-shadow: var(--shadow-pill);
 }
 
-.theme-dark .btn-primary {
-  color: #060c09;
-  background-color: #e9efea;
-}
-.theme-dark .btn-primary:hover {
-  background-color: #ffffff;
-}
-
 .btn-primary:hover {
-  opacity: 0.95;
-  transform: translateY(-1px);
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-active);
 }
+
 .btn-primary:active {
   transform: translateY(1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .btn-secondary {
   background-color: var(--primary-light);
   color: var(--text-primary);
-  border: 1px solid var(--border-color);
-}
-.btn-secondary:hover {
-  background-color: var(--bg-secondary);
-  transform: translateY(-1px);
+  border: 2px solid var(--border-color);
 }
 
-.btn-accent {
-  background-color: var(--accent);
-  color: var(--primary-dark);
-  box-shadow: var(--shadow-pill);
-}
-.btn-accent:hover {
-  filter: brightness(0.95);
+.btn-secondary:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-2px);
+  border-color: var(--border-color-hover);
 }
 
 .btn:disabled {
@@ -305,33 +111,82 @@ p {
   box-shadow: none !important;
 }
 
-/* Standardizing Form Inputs */
+/* Large primary action button — for the main scan CTA */
+.btn-hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  color: var(--text-on-primary);
+  font-size: 18px;
+  padding: 20px 32px;
+  min-height: var(--touch-comfortable);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-hero:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-active);
+}
+
+.btn-hero:active {
+  transform: translateY(1px);
+}
+
+/* =====================================================
+   FORM INPUTS ── large, easy to tap ──
+   ===================================================== */
 .input-field {
   width: 100%;
-  padding: 12px 18px;
+  padding: 16px 20px;
   border-radius: var(--radius-md);
-  border: var(--border-style);
+  border: 2px solid var(--border-color);
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 16px;
   outline: none;
   transition: var(--transition-smooth);
+  min-height: var(--touch-min);
 }
+
 .input-field:focus {
   border-color: var(--primary);
   background-color: var(--card-bg);
-  box-shadow: 0 0 0 3px rgba(78, 135, 106, 0.1);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
 }
 
-/* Severity pill styles */
+.input-field::placeholder {
+  color: var(--text-light);
+}
+
+/* =====================================================
+   CARDS ── village-friendly glass cards ──
+   ===================================================== */
+.card {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+  border: var(--border-style);
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+}
+
+.card:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-medium);
+}
+
+/* =====================================================
+   SEVERITY PILLS ──
+   ===================================================== */
 .severity-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 12px;
+  gap: 6px;
+  padding: 6px 14px;
   border-radius: var(--radius-pill);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -350,8 +205,87 @@ p {
 }
 
 /* =====================================================
-   RESPONSIVE UTILITIES
- ===================================================== */
+   SCROLL & LAYOUT ──
+   ===================================================== */
+.scroll-container {
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1;
+  padding-top: var(--header-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 20px));
+}
+
+@media (max-width: 768px) {
+  .scroll-container {
+    padding-top: 60px;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px));
+  }
+}
+
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-section {
+  min-height: calc(100vh - var(--header-height));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.page-wrapper {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* =====================================================
+   TYPOGRAPHY ── larger for village users ──
+   ===================================================== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+h1 { font-size: clamp(28px, 6vw, 42px); }
+h2 { font-size: clamp(24px, 5vw, 32px); }
+h3 { font-size: clamp(20px, 4vw, 26px); }
+h4 { font-size: clamp(18px, 3vw, 22px); }
+
+p {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.small-text {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+/* =====================================================
+   RESPONSIVE UTILITIES ──
+   ===================================================== */
 .mobile-only { display: none !important; }
 .mobile-only-block { display: none !important; }
 .desktop-only { display: flex !important; }
@@ -363,48 +297,120 @@ p {
 }
 
 /* =====================================================
-   SEGMENTED CONTROL (LANGUAGE TOGGLE)
- ===================================================== */
+   SEGMENTED CONTROL ── language toggle ──
+   ===================================================== */
 .segmented-control {
   display: flex;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-pill);
   padding: 4px;
   width: 100%;
-  max-width: 320px;
+  max-width: 340px;
   margin: 0 auto;
   position: relative;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .segmented-btn {
   flex: 1;
   background: transparent;
   border: none;
-  border-radius: var(--radius-full);
-  padding: 10px 16px;
-  color: var(--text-color-secondary);
-  font-weight: 600;
-  font-size: 0.95rem;
+  border-radius: var(--radius-pill);
+  padding: 12px 18px;
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
-  min-height: 44px; /* Touch target */
+  min-height: var(--touch-min);
   position: relative;
   z-index: 1;
 }
 
-.segmented-btn:hover {
-  color: var(--text-color);
-}
-
 .segmented-btn.active {
-  color: var(--bg-color);
-  background: var(--primary-color);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  color: var(--bg-primary);
+  background: var(--primary);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 .segmented-btn:focus-visible {
-  outline: 2px solid var(--primary-color);
+  outline: 3px solid var(--primary);
   outline-offset: 2px;
+}
+
+/* =====================================================
+   LOADING STATES ──
+   ===================================================== */
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 4px solid rgba(34, 197, 94, 0.2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.skeleton-line {
+  height: 16px;
+  background: linear-gradient(90deg, var(--bg-secondary) 0%, var(--border-color) 50%, var(--bg-secondary) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* =====================================================
+   OFFLINE / ERROR BANNER ──
+   ===================================================== */
+.offline-banner {
+  background: var(--color-danger);
+  color: white;
+  padding: 16px 24px;
+  border-radius: var(--radius-md);
+  margin: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: var(--shadow-medium);
+}
+
+.retry-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.retry-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* =====================================================
+   SCROLLBAR ──
+   ===================================================== */
+.scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-container::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-pill);
 }

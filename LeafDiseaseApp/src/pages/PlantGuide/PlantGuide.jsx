@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
-import { Search, ArrowLeft, Info, Activity, Stethoscope, ShieldCheck, Maximize2, X, Sparkles, Filter, Leaf } from "lucide-react";
+import { Search, ArrowLeft, Info, Activity, Stethoscope, ShieldCheck, Maximize2, X, Sparkles, Filter, Leaf, ChevronDown, ChevronUp } from "lucide-react";
 import { plantGuideData } from "../../data/plantGuideData";
 import diseaseData from "../../data/diseaseData";
+import { t } from "../../data/translations";
+import { getMediaUrl } from "../../utils/mediaUrl";
 import "./PlantGuide.css";
 
 function PlantGuide({ onViewChange, lang }) {
@@ -19,11 +21,11 @@ function PlantGuide({ onViewChange, lang }) {
   }, []);
 
   const categories = [
-    { id: "all", label: lang === "ta" ? "அனைத்தும்" : "ALL" },
-    { id: "healthy", label: lang === "ta" ? "ஆரோக்கியமான" : "HEALTHY" },
-    { id: "bacterial", label: lang === "ta" ? "பாக்டீரியா" : "BACTERIAL" },
-    { id: "fungal", label: lang === "ta" ? "பூஞ்சை" : "FUNGAL" },
-    { id: "viral", label: lang === "ta" ? "வைரஸ்" : "VIRAL" }
+    { id: "all", label: t("allCrops", lang) },
+    { id: "healthy", label: t("healthyStatus", lang) },
+    { id: "bacterial", label: t("bacterial", lang) },
+    { id: "fungal", label: t("fungal", lang) },
+    { id: "viral", label: t("viral", lang) }
   ];
 
   const filteredSpecimens = useMemo(() => {
@@ -58,11 +60,19 @@ function PlantGuide({ onViewChange, lang }) {
       <header className="archive-hero">
         <div className="archive-badge">
           <span className="badge-pulse-dot"></span>
-          <span>{lang === "ta" ? "பயிர் நோய்கள் களஞ்சியம்" : "BOTANICAL ARCHIVE"}</span>
+          <span>{t("guides", lang)}</span>
         </div>
-        <h1 className="archive-title">{lang === "ta" ? "இலையை அறியுங்கள். நோயைப் புரிந்து கொள்ளுங்கள்." : "Know The Leaf. Understand The Disease."}</h1>
+        <h1 className="archive-title">
+          {lang === "ta" 
+            ? "தாவர நோய்கள் பற்றி அனைத்தையும் அறியுங்கள்" 
+            : "Know The Leaf. Understand The Disease."
+          }
+        </h1>
         <p className="archive-subtitle">
-          {lang === "ta" ? "38 வகையான பயிர் நோய்கள் மற்றும் 14 வகையான பயிர்களைப் பற்றிய விரிவான தகவல்களை உள்ளடக்கிய டிஜிட்டல் நூலகம்." : "An editorial specimen library powered by 38 dataset leaf pathology classes. Inspect real leaf specimens across 14 crop species."}
+          {lang === "ta" 
+            ? "38 வகையான பயிர் நோய்கள் மற்றும் 14 வகையான பயிர்களைப் பற்றிய விரிவான தகவல்கள்." 
+            : "Learn about 38 plant diseases across 14 major crops. Detailed symptoms, causes, treatments, and prevention."
+          }
         </p>
       </header>
 
@@ -70,13 +80,14 @@ function PlantGuide({ onViewChange, lang }) {
       <div className="archive-bar glass-card">
         {/* Search Input */}
         <div className="archive-search-box">
-          <Search size={18} className="search-icon" />
+          <Search size={20} className="search-icon" />
           <input
             type="text"
-            placeholder={lang === "ta" ? "பயிர் அல்லது நோயை தேடுங்கள்..." : "Search botanical archive (e.g. Tomato, Early Blight)..."}
+            placeholder={lang === "ta" ? "பயிர் அல்லது நோயை தேடுங்கள்..." : "Search crops, diseases, or symptoms..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="archive-search-input"
+            aria-label="Search plant guide"
           />
         </div>
 
@@ -95,14 +106,14 @@ function PlantGuide({ onViewChange, lang }) {
 
         {/* Species Filter Pills */}
         <div className="archive-species-pills">
-          <span className="species-filter-lbl">{lang === "ta" ? "பயிர் வகைகள்:" : "SPECIES:"}</span>
+          <span className="species-filter-lbl">{lang === "ta" ? "பயிர் வகைகள்:" : "CROPS:"}</span>
           {speciesList.map((sp) => (
             <button
               key={sp}
               className={`species-pill ${selectedSpecies === sp ? "active" : ""}`}
               onClick={() => setSelectedSpecies(sp)}
             >
-              {sp === "all" ? "ALL SPECIES" : sp.toUpperCase()}
+              {sp === "all" ? (lang === "ta" ? "அனைத்து பயிர்கள்" : "ALL CROPS") : sp.toUpperCase()}
             </button>
           ))}
         </div>
@@ -111,10 +122,17 @@ function PlantGuide({ onViewChange, lang }) {
       {/* BOTANICAL SPECIMENS GRID BY SPECIES */}
       <div className="archive-specimen-viewport">
         {Object.keys(groupedBySpecies).length === 0 ? (
-          <div className="archive-empty-card glass-card">
-            <Leaf size={44} style={{ color: "#34d399", marginBottom: "12px" }} />
-            <h3>{lang === "ta" ? "நீங்கள் தேடிய நோய் அல்லது பயிர் கிடைக்கவில்லை." : "No specimens found matching your criteria."}</h3>
-            <p>Try searching for another plant species or resetting your filter tabs.</p>
+          <div className="archive-empty-card glass-card" style={{ textAlign: "center", padding: "48px 24px" }}>
+            <Leaf size={56} color="#22c55e" style={{ marginBottom: "16px" }} />
+            <h3 style={{ fontSize: "20px", color: "#fff", marginBottom: "10px" }}>
+              {lang === "ta" ? "நீங்கள் தேடிய பயிர் அல்லது நோய் கிடைக்கவில்லை" : "No Matching Records Found"}
+            </h3>
+            <p style={{ color: "#9ca3af", marginBottom: "20px" }}>
+              {lang === "ta" ? "தேடல் வார்த்தையை மாற்றி முயற்சிக்கவும்" : "Try searching for another plant species or resetting your filter tabs."}
+            </p>
+            <button className="btn btn-secondary" onClick={() => { setSearchQuery(""); setSelectedCategory("all"); setSelectedSpecies("all"); }}>
+              {t("resetFilters", lang)}
+            </button>
           </div>
         ) : (
           Object.entries(groupedBySpecies).map(([speciesName, items]) => (
@@ -125,7 +143,7 @@ function PlantGuide({ onViewChange, lang }) {
                   <h2 className="species-main-name">{speciesName.toUpperCase()}</h2>
                   <span className="species-latin-name">{items[0]?.latin}</span>
                 </div>
-                <span className="species-count-badge">{items.length} REAL DATASET SPECIMENS</span>
+                <span className="species-count-badge">{items.length} {lang === "ta" ? "நோய் வகைகள்" : "Conditions"}</span>
               </div>
 
               <div className="specimens-editorial-grid">
@@ -140,9 +158,13 @@ function PlantGuide({ onViewChange, lang }) {
                     >
                       <div className="specimen-img-frame">
                         <img 
-                          src={specimen.image} 
+                          src={getMediaUrl(specimen.image)} 
                           alt={`${specimen.species} - ${specimen.diseaseName}`}
                           className="specimen-real-img" 
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://images.unsplash.com/photo-1545241047-6083a3684587?w=300";
+                          }}
                         />
                         <div className={`category-tag ${specimen.category}`}>
                           {specimen.category.toUpperCase()}
@@ -151,11 +173,12 @@ function PlantGuide({ onViewChange, lang }) {
                           className="btn-zoom-img"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setFullscreenImage(specimen.image);
+                            setFullscreenImage(getMediaUrl(specimen.image));
                           }}
-                          title="Zoom Specimen Image"
+                          title={lang === "ta" ? "படத்தை பெரிதாக்கு" : "Zoom Specimen Image"}
+                          aria-label={lang === "ta" ? "படத்தை பெரிதாக்கு" : "Zoom image"}
                         >
-                          <Maximize2 size={14} />
+                          <Maximize2 size={16} />
                         </button>
                       </div>
 
@@ -170,8 +193,8 @@ function PlantGuide({ onViewChange, lang }) {
                         <div className="specimen-card-footer">
                           <span className="specimen-key-code">#{specimen.key.split('___')[1] || 'healthy'}</span>
                           <button className="btn-explore-specimen">
-                            <span>Inspect</span>
-                            <Sparkles size={12} />
+                            <span>{t("learnMore", lang)}</span>
+                            <Sparkles size={14} />
                           </button>
                         </div>
                       </div>
@@ -187,64 +210,64 @@ function PlantGuide({ onViewChange, lang }) {
 
       {/* SPECIMEN EXPANDABLE DETAIL MODAL */}
       {activeSpecimen && (
-        <div className="specimen-detail-modal-overlay" onClick={() => setActiveSpecimen(null)}>
+        <div className="specimen-detail-modal-overlay" onClick={() => setActiveSpecimen(null)} role="dialog" aria-modal="true" aria-labelledby="specimen-title">
           <div className="specimen-detail-modal glass-card" onClick={(e) => e.stopPropagation()}>
             
             <div className="modal-top-bar">
-              <span className="modal-specimen-code">BOTANICAL RECORD #{activeSpecimen.key}</span>
-              <button className="modal-close-btn" onClick={() => setActiveSpecimen(null)}>
-                <X size={20} />
+              <span className="modal-specimen-code">{lang === "ta" ? "தாவர பதிவு" : "Botanical Record"} #{activeSpecimen.key}</span>
+              <button className="modal-close-btn" onClick={() => setActiveSpecimen(null)} aria-label="Close">
+                <X size={22} />
               </button>
             </div>
 
             <div className="modal-body-layout">
               <div className="modal-img-column">
                 <img 
-                  src={activeSpecimen.image} 
+                  src={getMediaUrl(activeSpecimen.image)} 
                   alt={activeSpecimen.diseaseName} 
                   className="modal-specimen-img"
-                  onClick={() => setFullscreenImage(activeSpecimen.image)}
+                  onClick={() => setFullscreenImage(getMediaUrl(activeSpecimen.image))}
                 />
-                <span className="modal-zoom-hint">Click image to enlarge high-res specimen</span>
+                <span className="modal-zoom-hint">{lang === "ta" ? "படத்தை காணקלிக் செய்யவும்" : "Click image to enlarge"}</span>
               </div>
 
               <div className="modal-info-column">
                 <span className="modal-species-tag">{activeSpecimen.species} ({activeSpecimen.latin})</span>
-                <h2 className="modal-disease-title">{activeSpecimen.diseaseName}</h2>
+                <h2 id="specimen-title" className="modal-disease-title">{activeSpecimen.diseaseName}</h2>
 
                 <div className="modal-section">
-                  <h4><Info size={16} color="#10b981" /> Description</h4>
+                  <h4><Info size={18} color="#22c55e" /> {t("summary", lang)}</h4>
                   <p>{activeSpecimen.description}</p>
                 </div>
 
                 <div className="modal-section">
-                  <h4><Activity size={16} color="#f59e0b" /> Visual Pathology Characteristics</h4>
+                  <h4><Activity size={18} color="#f59e0b" /> {t("symptoms", lang)}</h4>
                   <p>{activeSpecimen.visuals}</p>
                 </div>
 
                 {diseaseData[activeSpecimen.key] && (
                   <>
                     <div className="modal-section">
-                      <h4><Stethoscope size={16} color="#34d399" /> Agronomic Treatment</h4>
+                      <h4><Stethoscope size={18} color="#3b82f6" /> {t("treatmentManagement", lang)}</h4>
                       <p>{diseaseData[activeSpecimen.key].treatment}</p>
                     </div>
 
                     <div className="modal-section">
-                      <h4><ShieldCheck size={16} color="#60a5fa" /> Prevention Strategy</h4>
+                      <h4><ShieldCheck size={18} color="#10b981" /> {t("prevention", lang)}</h4>
                       <p>{diseaseData[activeSpecimen.key].prevention}</p>
                     </div>
                   </>
                 )}
 
                 <button 
-                  className="btn btn-primary btn-modal-scan-this"
+                  className="btn btn-hero btn-modal-scan-this"
                   onClick={() => {
                     setActiveSpecimen(null);
                     onViewChange("scan");
                   }}
                 >
-                  <Sparkles size={16} />
-                  <span>Scan A Similar Specimen</span>
+                  <Sparkles size={18} />
+                  <span>{lang === "ta" ? "போலிய இலை ஸ்கேன் செய்க" : "Scan Similar Leaf"}</span>
                 </button>
               </div>
             </div>
@@ -255,13 +278,13 @@ function PlantGuide({ onViewChange, lang }) {
 
       {/* FULLSCREEN HIGH-RES IMAGE VIEWER */}
       {fullscreenImage && (
-        <div className="fullscreen-viewer slide-section" onClick={() => setFullscreenImage(null)}>
+        <div className="fullscreen-viewer slide-section" onClick={() => setFullscreenImage(null)} role="dialog" aria-modal="true" aria-label={t("fullscreenView", lang)}>
           <div className="fs-header">
-            <span>High-Resolution Dataset Specimen</span>
-            <button className="fs-close" onClick={() => setFullscreenImage(null)}><X size={24}/></button>
+            <span>{lang === "ta" ? "உயர் துணுக்கம் படம்" : "High-Resolution Specimen"}</span>
+            <button className="fs-close" onClick={() => setFullscreenImage(null)} aria-label="Close"><X size={26}/></button>
           </div>
           <div className="fs-img-container">
-            <img src={fullscreenImage} alt="Fullscreen Specimen" className="fs-img" />
+            <img src={fullscreenImage} alt={t("fullscreenSpecimen", lang)} className="fs-img" />
           </div>
         </div>
       )}

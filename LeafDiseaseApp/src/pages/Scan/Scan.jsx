@@ -13,6 +13,7 @@ function Scan({ onPredictionSuccess, lang }) {
   const [compressStats, setCompressStats] = useState(null);
   const [isWakingUp, setIsWakingUp] = useState(false);
   const [analysisStageIndex, setAnalysisStageIndex] = useState(0);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const stages = [
     t("stage1", lang),
@@ -21,14 +22,13 @@ function Scan({ onPredictionSuccess, lang }) {
     t("stage4", lang),
     t("stage5", lang)
   ];
-  
+
   const [useCamera, setUseCamera] = useState(false);
-  const [cameraStatus, setCameraStatus] = useState("idle"); 
+  const [cameraStatus, setCameraStatus] = useState("idle");
   const [facingMode, setFacingMode] = useState("environment");
   const [torchAvailable, setTorchAvailable] = useState(false);
   const [torchOn, setTorchOn] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  
+
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -38,7 +38,6 @@ function Scan({ onPredictionSuccess, lang }) {
       videoRef.current.srcObject = streamRef.current;
       videoRef.current.play().catch((err) => console.error("Video play error:", err));
 
-      // Check for torch capability
       try {
         const track = streamRef.current.getVideoTracks()[0];
         const capabilities = track.getCapabilities ? track.getCapabilities() : {};
@@ -56,9 +55,7 @@ function Scan({ onPredictionSuccess, lang }) {
     try {
       const track = streamRef.current.getVideoTracks()[0];
       const nextTorch = !torchOn;
-      await track.applyConstraints({
-        advanced: [{ torch: nextTorch }]
-      });
+      await track.applyConstraints({ advanced: [{ torch: nextTorch }] });
       setTorchOn(nextTorch);
     } catch (err) {
       console.warn("Torch toggle failed:", err);
@@ -91,7 +88,7 @@ function Scan({ onPredictionSuccess, lang }) {
     setImage(null);
     setFile(null);
     setCompressStats(null);
-    
+
     const targetFacing = overrideFacing || facingMode;
 
     try {
@@ -101,12 +98,12 @@ function Scan({ onPredictionSuccess, lang }) {
       }
       let stream;
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { 
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
             facingMode: targetFacing,
             width: { ideal: 1280 },
             height: { ideal: 720 }
-          } 
+          }
         });
       } catch (e) {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -131,7 +128,6 @@ function Scan({ onPredictionSuccess, lang }) {
 
   const capturePhoto = async () => {
     if (videoRef.current) {
-      // Haptic pulse on capture
       if (typeof navigator !== "undefined" && navigator.vibrate) {
         navigator.vibrate([35, 25, 35]);
       }
@@ -141,12 +137,11 @@ function Scan({ onPredictionSuccess, lang }) {
       canvas.height = videoRef.current.videoHeight || 480;
       const ctx = canvas.getContext("2d");
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      
-      const rawDataUrl = canvas.toDataURL("image/jpeg", 0.95);
+
+      const rawDataUrl = canvas.toDataURL("image/jpeg", 0.9);
       stopCamera();
       setUseCamera(false);
 
-      // Client-side compression
       setCompressing(true);
       try {
         const compressed = await compressImage(rawDataUrl, 1024, 0.85);
@@ -174,7 +169,7 @@ function Scan({ onPredictionSuccess, lang }) {
         setErrorMsg(t("err413", lang) || "File is too large (max 20MB)");
         return;
       }
-      
+
       setCompressing(true);
       try {
         const compressed = await compressImage(selected, 1024, 0.85);
@@ -234,7 +229,6 @@ function Scan({ onPredictionSuccess, lang }) {
       clearInterval(stageInterval);
 
       if (response.data && response.data.success) {
-        // Haptic success vibration
         if (typeof navigator !== "undefined" && navigator.vibrate) {
           navigator.vibrate([50, 40, 60]);
         }
@@ -248,9 +242,9 @@ function Scan({ onPredictionSuccess, lang }) {
     } catch (error) {
       clearTimeout(timeoutId);
       clearInterval(stageInterval);
-      
+
       console.error("----- PREDICT API ERROR -----", error);
-      
+
       if (error.response?.data?.error) {
         setErrorMsg(error.response.data.error);
       } else if (error.code === 'ECONNABORTED') {
@@ -258,12 +252,12 @@ function Scan({ onPredictionSuccess, lang }) {
       } else if (!error.response) {
         setErrorMsg(t("errNetwork", lang));
       } else {
-        const safeMessage = typeof error.response?.data === 'string' 
-          ? error.response.data.substring(0, 120) 
+        const safeMessage = typeof error.response?.data === 'string'
+          ? error.response.data.substring(0, 120)
           : JSON.stringify(error.response?.data).substring(0, 120);
         setErrorMsg(safeMessage || t("err500", lang));
       }
-      
+
       setLoading(false);
       setIsWakingUp(false);
     }
@@ -271,11 +265,10 @@ function Scan({ onPredictionSuccess, lang }) {
 
   return (
     <div className="field-scan-container fade-in-section">
-      
       {/* Header */}
       <header className="field-header">
         <div className="field-badge">
-          <Sprout size={16} />
+          <Sprout size={18} />
           <span>{t("fieldDiagnosticStation", lang)}</span>
         </div>
         <h1 className="field-title">{t("plantDoctor", lang)}</h1>
@@ -285,11 +278,11 @@ function Scan({ onPredictionSuccess, lang }) {
       </header>
 
       {errorMsg && (
-        <div className="field-error-banner glass-card">
-          <AlertCircle size={20} color="#f87171" />
+        <div className="field-error-banner glass-card" role="alert">
+          <AlertCircle size={22} color="#ef4444" />
           <span>{errorMsg}</span>
           <button className="error-close" onClick={() => setErrorMsg("")}>
-            <X size={16} />
+            <X size={18} />
           </button>
         </div>
       )}
@@ -299,15 +292,15 @@ function Scan({ onPredictionSuccess, lang }) {
         {!image && !useCamera ? (
           <div className="scan-init-card glass-card">
             <div className="upload-options">
-              <button className="scan-primary-btn" onClick={() => startCamera()}>
-                <Camera size={24} />
+              <button className="scan-primary-btn btn-hero" onClick={() => startCamera()}>
+                <Camera size={26} />
                 <span>{t("takePhotoAction", lang)}</span>
               </button>
               <div className="scan-divider">
                 <span>{t("or", lang)}</span>
               </div>
-              <button className="scan-secondary-btn" onClick={triggerFileUpload}>
-                <UploadCloud size={20} />
+              <button className="scan-secondary-btn btn-hero" onClick={triggerFileUpload}>
+                <UploadCloud size={22} />
                 <span>{t("uploadImageAction", lang)}</span>
               </button>
               <input
@@ -318,7 +311,7 @@ function Scan({ onPredictionSuccess, lang }) {
                 onChange={handleFileChange}
               />
             </div>
-            
+
             <div className="scan-tips-grid">
               <div className="tip-item">
                 <div className="tip-dot green"></div>
@@ -338,16 +331,16 @@ function Scan({ onPredictionSuccess, lang }) {
           <div className="camera-viewfinder glass-card">
             {cameraStatus === "requesting" && (
               <div className="camera-loading">
-                <Loader2 size={32} className="spin-anim" />
-                <p>{t("initCamera", lang)}</p>
+                <Loader2 size={34} className="spin-anim" />
+                <p className="camera-loading-text">{t("initCamera", lang)}</p>
               </div>
             )}
-            
+
             {cameraStatus === "denied" && (
               <div className="camera-error">
-                <AlertCircle size={40} color="#f87171" />
+                <AlertCircle size={44} color="#ef4444" />
                 <p>{t("cameraDenied", lang) || "Camera access permission was denied. Please allow camera permissions in browser/app settings."}</p>
-                <button className="btn btn-secondary" onClick={clearSelection}>
+                <button className="btn btn-secondary" onClick={clearSelection} minHeight={48}>
                   {t("goBack", lang)}
                 </button>
               </div>
@@ -355,9 +348,9 @@ function Scan({ onPredictionSuccess, lang }) {
 
             {cameraStatus === "unavailable" && (
               <div className="camera-error">
-                <AlertCircle size={40} color="#f87171" />
-                <p>Camera not available or device not supported. You can upload an image instead.</p>
-                <button className="btn btn-secondary" onClick={triggerFileUpload}>
+                <AlertCircle size={44} color="#ef4444" />
+                <p>Camera not available on this device. You can upload an image instead.</p>
+                <button className="btn btn-secondary" onClick={triggerFileUpload} minHeight={48}>
                   <UploadCloud size={18} />
                   <span>Upload Image</span>
                 </button>
@@ -366,35 +359,32 @@ function Scan({ onPredictionSuccess, lang }) {
 
             <div className={`video-wrapper ${cameraStatus === "ready" ? "active" : ""}`}>
               <video ref={videoRef} playsInline autoPlay muted />
-              
+
               {/* LEAF ALIGNMENT GUIDE HUD */}
               <div className="leaf-hud-overlay">
                 <div className="leaf-hud-instructions">
                   <span>{lang === "ta" ? "இலையை வழிகாட்டியில் பொருத்தவும்" : "Align leaf within guide target"}</span>
                 </div>
-                
-                {/* SVG Leaf Outline Reticle */}
+
                 <svg className="leaf-silhouette-guide" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path 
-                    d="M100 20 C140 60 170 110 160 160 C150 200 120 220 100 225 C80 220 50 200 40 160 C30 110 60 60 100 20 Z" 
-                    stroke="rgba(52, 211, 153, 0.75)" 
-                    strokeWidth="2.5" 
+                  <path
+                    d="M100 20 C140 60 170 110 160 160 C150 200 120 220 100 225 C80 220 50 200 40 160 C30 110 60 60 100 20 Z"
+                    stroke="rgba(34, 197, 94, 0.8)"
+                    strokeWidth="3"
                     strokeDasharray="6 4"
                   />
-                  <line x1="100" y1="25" x2="100" y2="220" stroke="rgba(52, 211, 153, 0.4)" strokeWidth="1.5" />
-                  <line x1="100" y1="80" x2="140" y2="100" stroke="rgba(52, 211, 153, 0.3)" strokeWidth="1.5" />
-                  <line x1="100" y1="120" x2="60" y2="140" stroke="rgba(52, 211, 153, 0.3)" strokeWidth="1.5" />
-                  <line x1="100" y1="160" x2="135" y2="180" stroke="rgba(52, 211, 153, 0.3)" strokeWidth="1.5" />
+                  <line x1="100" y1="25" x2="100" y2="220" stroke="rgba(34, 197, 94, 0.5)" strokeWidth="2" />
+                  <line x1="100" y1="80" x2="140" y2="100" stroke="rgba(34, 197, 94, 0.4)" strokeWidth="2" />
+                  <line x1="100" y1="120" x2="60" y2="140" stroke="rgba(34, 197, 94, 0.4)" strokeWidth="2" />
+                  <line x1="100" y1="160" x2="135" y2="180" stroke="rgba(34, 197, 94, 0.4)" strokeWidth="2" />
                 </svg>
 
-                {/* Corner reticle brackets */}
                 <div className="bracket tl"></div>
                 <div className="bracket tr"></div>
                 <div className="bracket bl"></div>
                 <div className="bracket br"></div>
               </div>
-              
-              {/* Camera Quick Tools */}
+
               <div className="camera-hud-top-tools">
                 {torchAvailable && (
                   <button className={`hud-tool-btn ${torchOn ? "active" : ""}`} onClick={toggleTorch} title="Toggle Torch">
@@ -406,15 +396,14 @@ function Scan({ onPredictionSuccess, lang }) {
                 </button>
               </div>
 
-              {/* Shutter and Cancel controls */}
               <div className="camera-controls">
                 <button className="cam-cancel-btn" onClick={clearSelection} title="Cancel">
-                  <X size={24} />
+                  <X size={26} />
                 </button>
                 <button className="cam-shutter-btn" onClick={capturePhoto} title="Capture Leaf Photo">
                   <div className="shutter-inner"></div>
                 </button>
-                <div style={{ width: 44 }}></div> {/* Balance layout */}
+                <div style={{ width: 44 }}></div>
               </div>
             </div>
           </div>
@@ -430,42 +419,42 @@ function Scan({ onPredictionSuccess, lang }) {
               )}
               {!loading && (
                 <button className="preview-close-btn" onClick={clearSelection}>
-                  <X size={20} />
+                  <X size={22} />
                 </button>
               )}
             </div>
 
-            {/* Client-Side Optimization Badge */}
             {compressStats && compressStats.compressionRatio > 0 && (
               <div className="compression-pill-badge">
-                <ShieldCheck size={14} color="#10b981" />
+                <ShieldCheck size={14} color="#22c55e" />
                 <span>
-                  {lang === "ta" 
-                    ? `வேகமான பரிமாற்றம்: ${Math.round(compressStats.compressedSize / 1024)} KB (-${compressStats.compressionRatio}%)`
+                  {lang === "ta"
+                    ? `விரைவான பதிவேற்றம்: ${Math.round(compressStats.compressedSize / 1024)} KB (-${compressStats.compressionRatio}%)`
                     : `Optimized for fast upload: ${Math.round(compressStats.compressedSize / 1024)} KB (-${compressStats.compressionRatio}%)`}
                 </span>
               </div>
             )}
 
             <div className="preview-actions">
-              <button 
-                className="btn btn-primary analyze-cta-btn" 
-                onClick={handleAnalyze} 
+              <button
+                className="btn btn-primary btn-hero analyze-cta-btn"
+                onClick={handleAnalyze}
                 disabled={loading || compressing}
+                minHeight={56}
               >
                 {loading ? (
                   <>
-                    <Loader2 size={18} className="spin-anim" />
+                    <Loader2 size={20} className="spin-anim" />
                     <span>{stages[analysisStageIndex]}</span>
                   </>
                 ) : compressing ? (
                   <>
-                    <Loader2 size={18} className="spin-anim" />
+                    <Loader2 size={20} className="spin-anim" />
                     <span>Optimizing...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles size={18} />
+                    <Sparkles size={20} />
                     <span>{t("diagnoseNow", lang)}</span>
                     <ArrowRight size={18} />
                   </>
@@ -474,14 +463,11 @@ function Scan({ onPredictionSuccess, lang }) {
             </div>
 
             {isWakingUp && loading && (
-              <p className="wake-up-hint">
-                {t("coldStartHint", lang)}
-              </p>
+              <p className="wake-up-hint">{t("coldStartHint", lang)}</p>
             )}
           </div>
         )}
       </div>
-
     </div>
   );
 }

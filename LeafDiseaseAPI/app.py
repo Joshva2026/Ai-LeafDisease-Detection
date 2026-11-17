@@ -1,28 +1,48 @@
 # ==========================================
 # app.py : Leaf Disease Detection API
+# Production-ready for Render + Vercel deployment
 # ==========================================
+
+import os
+import sys
+import sqlite3
+import uuid
+import datetime
+import traceback
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-import tensorflow as tf
-import numpy as np
-from PIL import Image
-import os
-import cv2
-import matplotlib.cm as cm
 
-# Initialize Flask App
+# Lazy TensorFlow import — only load when prediction is actually needed.
+# This prevents cold-start failures on serverless platforms (Vercel/Render)
+# where the model file may exceed size limits or cause timeouts.
+tf = None
+np = None
+Image = None
+cv2 = None
+cm = None
+model = None
+grad_model = None
+last_conv_layer_name = None
+_model_loading = False
+_model_load_error = None
+
 app = Flask(__name__)
-# Removed 10 MB limit to allow high-res images
-CORS(app)
 
+# ── CORS ──────────────────────────────────────────────────────────────────
+# Allow the deployed frontend (Vercel) + localhost dev.  Update with your
+# production domain(s) as needed.
+_cors_origins = os.getenv("CORS_ORIGINS", "*")
+CORS(app, resources={r"/*": {"origins": _cors_origins.split(",") if _cors_origins != "*" else "*"}})
+
+# ── Register AI blueprint ─────────────────────────────────────────────────
 from routes.ai import ai_bp
 app.register_blueprint(ai_bp)
 
-# Initialize Rate Limiter
+# ── Rate Limiter ──────────────────────────────────────────────────────────
 limiter = Limiter(
     get_remote_address,
     app=app,
@@ -44,45 +64,130 @@ def request_entity_too_large(e):
         "error": "File too large."
     }), 413
 
-# Load .env file natively if it exists
+# ── Load .env natively ────────────────────────────────────────────────────
 if os.path.exists(".env"):
     with open(".env") as f:
         for line in f:
-            if line.strip() and not line.startswith("#") and "=" in line:
-                key, val = line.strip().split("=", 1)
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, val = line.split("=", 1)
                 os.environ[key.strip()] = val.strip()
 
 print("[OK] Running app.py from:", os.path.abspath(__file__))
 
+# ── Configuration ─────────────────────────────────────────────────────────
+MODEL_PATH = os.getenv("MODEL_PATH", "model/leaf_disease_model.keras")
+UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "uploads")
+DATABASE_PATH = os.getenv("DATABASE_PATH", "database.db")
 
-# Model Load
-MODEL_PATH = "model/leaf_disease_model.keras"
+# Max content length: 16 MB (override via env if needed)
+try:
+    app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_CONTENT_LENGTH", "16777216"))
+except ValueError:
+    app.config["MAX_CONTENT_LENGTH"] = 16777216
 
-model = tf.keras.models.load_model(MODEL_PATH)
-print("[OK] Model Loaded Successfully")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-def find_last_conv_layer(model):
-    for layer in reversed(model.layers):
+# ── Ensure database tables exist ──────────────────────────────────────────
+def init_db():
+    try:
+        conn = sqlite3.connect(DATABASE_PATH)
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                location TEXT,
+                profile_image TEXT
+            )
+        """)
+        for col_def in ["location TEXT", "profile_image TEXT"]:
+            try:
+                cursor.execute(f"ALTER TABLE users ADD COLUMN {col_def}")
+            except sqlite3.OperationalError:
+                pass
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS scans (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT,
+                timestamp TEXT NOT NULL,
+                filename TEXT,
+                disease TEXT NOT NULL,
+                confidence REAL NOT NULL
+            )
+        """)
+        conn.commit()
+        conn.close()
+        print("[OK] Database initialized")
+    except Exception as e:
+        print(f"[WARN] Database init failed: {e}")
+
+init_db()
+
+# ── Lazy model loader ────────────────────────────────────────────────────
+def _load_model():
+    """Load TensorFlow model lazily on first prediction request."""
+    global tf, np, Image, cv2, cm, model, grad_model, last_conv_layer_name, _model_loading, _model_load_error
+
+    if model is not None:
+        return True
+    if _model_load_error:
+        return False
+    if _model_loading:
+        return False  # Already loading, wait
+
+    _model_loading = True
+    try:
+        import tensorflow as tf_mod
+        import numpy as np_mod
+        from PIL import Image as Image_mod
+        import cv2 as cv2_mod
+        import matplotlib.cm as cm_mod
+
+        tf = tf_mod
+        np = np_mod
+        Image = Image_mod
+        cv2 = cv2_mod
+        cm = cm_mod
+
+        if not os.path.exists(MODEL_PATH):
+            _model_load_error = f"Model file not found at {MODEL_PATH}"
+            print(f"[WARN] {_model_load_error}")
+            return False
+
+        model = tf.keras.models.load_model(MODEL_PATH)
+        print(f"[OK] Model loaded from {MODEL_PATH}")
+
+        last_conv_layer_name = _find_last_conv_layer(model)
+        grad_model = tf.keras.models.Model(
+            inputs=model.input,
+            outputs=[model.get_layer(last_conv_layer_name).output, model.output]
+        )
+        print("[OK] Grad-CAM explainability model initialized")
+        return True
+    except Exception as e:
+        _model_load_error = str(e)
+        print(f"[WARN] Model loading failed: {e}")
+        traceback.print_exc()
+        return False
+    finally:
+        _model_loading = False
+
+def _find_last_conv_layer(model_obj):
+    for layer in reversed(model_obj.layers):
         if isinstance(layer, tf.keras.layers.Conv2D):
             return layer.name
-    for layer in reversed(model.layers):
+    for layer in reversed(model_obj.layers):
         name = layer.name.lower()
         if 'conv' in name and 'bn' not in name and 'batch' not in name:
             return layer.name
-    for layer in reversed(model.layers):
+    for layer in reversed(model_obj.layers):
         if len(layer.output_shape) == 4:
             return layer.name
     raise ValueError("No convolutional layer found in the model.")
 
-last_conv_layer_name = find_last_conv_layer(model)
-grad_model = tf.keras.models.Model(
-    inputs=model.input,
-    outputs=[model.get_layer(last_conv_layer_name).output, model.output]
-)
-print("[OK] Grad-CAM Explainability Model Initialized")
-
-# Classes
-
+# ── Class names (38 PlantVillage classes) ─────────────────────────────────
 class_names = [
     'Apple___Apple_scab',
     'Apple___Black_rot',
@@ -124,172 +229,164 @@ class_names = [
     'Tomato___healthy'
 ]
 
-
-UPLOAD_FOLDER = "uploads"
-
-os.makedirs(
-    UPLOAD_FOLDER,
-    exist_ok=True
-)
-
-
-# Home API
+# ── Routes ────────────────────────────────────────────────────────────────
 
 @app.route("/")
 def home():
     return jsonify({
-        "message": "🌿 Leaf Disease Detection API Running"
+        "message": "🌿 Leaf Disease Detection API Running",
+        "status": "ok",
+        "model_loaded": model is not None,
+        "model_path": MODEL_PATH
     })
-
-import uuid
 
 @app.route("/health")
 def health_check():
     return jsonify({
         "status": "healthy",
-        "model_loaded": model is not None
+        "model_loaded": model is not None,
+        "model_loading_error": _model_load_error
     })
 
+# ── Leaf quality gate ────────────────────────────────────────────────────
+
 def is_likely_leaf(img):
-    # Resize for faster deterministic processing
+    """Validate that the uploaded image is actually a plant leaf."""
+    import cv2 as cv2_mod
+    import numpy as np_mod
+
     img_small = img.resize((224, 224))
-    img_cv = cv2.cvtColor(np.array(img_small), cv2.COLOR_RGB2BGR)
-    gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
-    
-    # 1. Quality Gate: Exposure / Luminance
-    mean_lum = float(np.mean(gray))
+    img_cv = cv2_mod.cvtColor(np_mod.array(img_small), cv2_mod.COLOR_RGB2BGR)
+    gray = cv2_mod.cvtColor(img_cv, cv2_mod.COLOR_BGR2GRAY)
+
+    # 1. Exposure / Luminance
+    mean_lum = float(np_mod.mean(gray))
     if mean_lum < 22.0:
         return False, "The image is too dark. Please take a photo with adequate lighting. / படம் மிகவும் இருட்டாக உள்ளது. போதுமான வெளிச்சத்தில் படம் எடுக்கவும்."
     if mean_lum > 248.0:
         return False, "The image is washed out by glare. Please retake the photo without direct flash. / படம் அதிக வெளிச்சமாக உள்ளது."
-        
-    # 2. Quality Gate: Blur detection via Laplacian variance
-    variance = float(cv2.Laplacian(gray, cv2.CV_64F).var())
+
+    # 2. Blur detection
+    variance = float(cv2_mod.Laplacian(gray, cv2_mod.CV_64F).var())
     if variance < 25.0:
         return False, "The image is too blurry. Please hold steady and focus on the leaf. / படம் மிகவும் மங்கலாக உள்ளது. தெளிவாகப் படமெடுக்கவும்."
 
-    # 3. Non-Leaf Gate: Human Skin / Face Detection
-    # Skin tone in YCrCb: Cr in [133, 173] and Cb in [77, 127]
-    ycrcb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2YCrCb)
-    skin_mask = cv2.inRange(ycrcb, np.array([0, 133, 77]), np.array([255, 173, 127]))
-    skin_ratio = cv2.countNonZero(skin_mask) / (224 * 224)
-    
-    # Green and Vegetation Mask
-    hsv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2HSV)
-    lower_green = np.array([25, 35, 35])
-    upper_green = np.array([95, 255, 255])
-    mask_green = cv2.inRange(hsv, lower_green, upper_green)
-    green_ratio = cv2.countNonZero(mask_green) / (224 * 224)
-    
-    # Yellow / Chlorotic leaf mask
-    lower_yellow = np.array([14, 70, 50])
-    upper_yellow = np.array([35, 255, 255])
-    mask_yellow = cv2.inRange(hsv, lower_yellow, upper_yellow)
-    
-    # Brown / Necrotic leaf lesions
-    lower_dark_brown = np.array([8, 60, 25])
-    upper_dark_brown = np.array([24, 255, 160])
-    mask_dark_brown = cv2.inRange(hsv, lower_dark_brown, upper_dark_brown)
-    
-    mask_plant = cv2.bitwise_or(mask_green, cv2.bitwise_or(mask_yellow, mask_dark_brown))
-    total_pixels = 224 * 224
-    plant_pixels = cv2.countNonZero(mask_plant)
-    plant_ratio = plant_pixels / total_pixels
+    # 3. Human skin / face detection
+    ycrcb = cv2_mod.cvtColor(img_cv, cv2_mod.COLOR_BGR2YCrCb)
+    skin_mask = cv2_mod.inRange(ycrcb, np_mod.array([0, 133, 77]), np_mod.array([255, 173, 127]))
+    skin_ratio = cv2_mod.countNonZero(skin_mask) / (224 * 224)
 
-    # If skin strongly dominates and plant pixels are negligible, reject as human/skin
-    if skin_ratio > 0.45 and green_ratio < 0.05 and plant_ratio < 0.15:
+    hsv = cv2_mod.cvtColor(img_cv, cv2_mod.COLOR_BGR2HSV)
+    lower_green = np_mod.array([25, 35, 35])
+    upper_green = np_mod.array([95, 255, 255])
+    mask_green = cv2_mod.inRange(hsv, lower_green, upper_green)
+
+    lower_yellow = np_mod.array([14, 70, 50])
+    upper_yellow = np_mod.array([35, 255, 255])
+    mask_yellow = cv2_mod.inRange(hsv, lower_yellow, upper_yellow)
+
+    lower_dark_brown = np_mod.array([8, 60, 25])
+    upper_dark_brown = np_mod.array([24, 255, 160])
+    mask_dark_brown = cv2_mod.inRange(hsv, lower_dark_brown, upper_dark_brown)
+
+    mask_plant = cv2_mod.bitwise_or(mask_green, cv2_mod.bitwise_or(mask_yellow, mask_dark_brown))
+    total_pixels = 224 * 224
+    plant_ratio = cv2_mod.countNonZero(mask_plant) / total_pixels
+
+    if skin_ratio > 0.45 and np_mod.mean(mask_green) < 0.05 and plant_ratio < 0.15:
         return False, "The image appears to contain human skin or a portrait rather than plant foliage. Please photograph only the crop leaf. / இது மனிதர் அல்லது தோல் படமாக உள்ளது. பயிர் இலையை மட்டும் படம் எடுக்கவும்."
 
-    # Minimum plant foliage coverage
     if plant_ratio < 0.06:
         return False, "🌿 No plant foliage detected. Please capture a clear, close-up photo of the affected plant leaf. / 🌿 இது இலை படம் போல தெரியவில்லை. நோய் பாதிக்கப்பட்ட அல்லது ஆரோக்கியமான தாவர இலையை மட்டும் தெளிவாக படம் எடுத்து மீண்டும் முயற்சி செய்யுங்கள்."
 
-    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask_plant, connectivity=8)
+    num_labels, labels, stats, centroids = cv2_mod.connectedComponentsWithStats(mask_plant, connectivity=8)
     if num_labels > 1:
-        max_area = max(stats[1:, cv2.CC_STAT_AREA]) # Skip background label 0
+        max_area = max(stats[1:, cv2_mod.CC_STAT_AREA])
         if max_area / total_pixels < 0.025:
             return False, "🌿 The detected foliage is too small or scattered. Please position the leaf centrally in the frame. / 🌿 இலை மிகச்சிறியதாக உள்ளது. இலையை மையத்தில் வைத்து தெளிவாக படம் எடுக்கவும்."
 
     return True, "Valid leaf"
 
+# ── Grad-CAM ─────────────────────────────────────────────────────────────
 
 def make_gradcam_heatmap(img_array, grad_model, pred_index=None):
-    with tf.GradientTape() as tape:
+    import tensorflow as tf_mod
+    with tf_mod.GradientTape() as tape:
         last_conv_layer_output, preds = grad_model(img_array)
         if pred_index is None:
-            pred_index = tf.argmax(preds[0])
+            pred_index = tf_mod.argmax(preds[0])
         class_channel = preds[:, pred_index]
     grads = tape.gradient(class_channel, last_conv_layer_output)
-    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+    pooled_grads = tf_mod.reduce_mean(grads, axis=(0, 1, 2))
     last_conv_layer_output = last_conv_layer_output[0]
-    heatmap = last_conv_layer_output @ pooled_grads[..., tf.newaxis]
-    heatmap = tf.squeeze(heatmap)
-    heatmap = tf.maximum(heatmap, 0)
-    max_val = tf.math.reduce_max(heatmap)
+    heatmap = last_conv_layer_output @ pooled_grads[..., tf_mod.newaxis]
+    heatmap = tf_mod.squeeze(heatmap)
+    heatmap = tf_mod.maximum(heatmap, 0)
+    max_val = tf_mod.math.reduce_max(heatmap)
     if max_val > 0:
         heatmap = heatmap / max_val
     return heatmap.numpy()
 
 def save_and_display_gradcam(img_path, heatmap, cam_path, alpha=0.4):
-    img = cv2.imread(img_path)
-    heatmap = np.uint8(255 * heatmap)
+    import cv2 as cv2_mod
+    import numpy as np_mod
     import matplotlib
+    img = cv2_mod.imread(img_path)
+    heatmap = np_mod.uint8(255 * heatmap)
     jet = matplotlib.colormaps.get_cmap("jet")
     jet_colors = jet(np.arange(256))[:, :3]
-    jet_colors = np.uint8(255 * jet_colors)
+    jet_colors = np_mod.uint8(255 * jet_colors)
     colorized_heatmap = jet_colors[heatmap]
-    colorized_heatmap = cv2.resize(colorized_heatmap, (img.shape[1], img.shape[0]))
+    colorized_heatmap = cv2_mod.resize(colorized_heatmap, (img.shape[1], img.shape[0]))
     superimposed_img = colorized_heatmap * alpha + img
-    superimposed_img = np.clip(superimposed_img, 0, 255).astype(np.uint8)
-    cv2.imwrite(cam_path, superimposed_img)
+    superimposed_img = np_mod.clip(superimposed_img, 0, 255).astype(np_mod.uint8)
+    cv2_mod.imwrite(cam_path, superimposed_img)
 
+# ── Prediction endpoint ──────────────────────────────────────────────────
 
-# Prediction API
 @app.route("/predict", methods=["POST"])
 @limiter.limit("20 per minute")
 def predict():
+    # Lazy-load model on first request
+    if not _load_model():
+        return jsonify({
+            "success": False,
+            "error": "AI model is not available on this server. Please contact support."
+        }), 503
+
     if "image" not in request.files:
         return jsonify({"success": False, "error": "No image uploaded"}), 400
 
     file = request.files["image"]
     if file.filename == '':
         return jsonify({"success": False, "error": "No image selected"}), 400
-        
+
     ext = os.path.splitext(file.filename)[1].lower()
     if ext not in ['.jpg', '.jpeg', '.png', '.webp']:
         return jsonify({"success": False, "error": "Unsupported file format. Please upload JPG, PNG, or WEBP."}), 400
 
-    # Generate safe unique filename
     safe_filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename) if file.filename else 'upload'}{ext}"
     filepath = os.path.join(UPLOAD_FOLDER, safe_filename)
-    file.save(filepath)
 
     try:
-        # Load and verify image
+        file.save(filepath)
+
         try:
             img = Image.open(filepath).convert("RGB")
-            # Downscale large images immediately to save memory
             img.thumbnail((1024, 1024))
-        except Exception as e:
+        except Exception:
             return jsonify({"success": False, "error": "Invalid or corrupted image file."}), 400
-        
-        # Leaf Heuristics Validation
+
         is_leaf, leaf_msg = is_likely_leaf(img)
         if not is_leaf:
-            return jsonify({
-                "success": False,
-                "error": leaf_msg
-            }), 400
+            return jsonify({"success": False, "error": leaf_msg}), 400
 
-        # Resize and process for deep model
         img_resized = img.resize((224, 224))
         img_array = np.array(img_resized) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
 
-        # Run model prediction
-        prediction = model.predict(img_array)
-        
-        # Extract Top-3 predictions
+        prediction = model.predict(img_array, verbose=0)
+
         top_indices = np.argsort(prediction[0])[-3:][::-1]
         top_predictions = []
         for idx in top_indices:
@@ -297,7 +394,6 @@ def predict():
             parts = raw_class.split('___')
             plant_name = parts[0].replace('_', ' ') if len(parts) > 1 else raw_class
             condition_name = parts[1].replace('_', ' ') if len(parts) > 1 else ""
-            
             top_predictions.append({
                 "disease": raw_class,
                 "formatted_name": f"{plant_name} — {condition_name}" if condition_name else plant_name,
@@ -307,22 +403,21 @@ def predict():
         primary_match = top_predictions[0]
         confidence = primary_match["confidence"]
         disease_raw = primary_match["disease"]
-        
+
         parts = disease_raw.split('___')
         plant = parts[0].replace('_', ' ') if len(parts) > 1 else disease_raw
         disease_formatted = parts[1].replace('_', ' ') if len(parts) > 1 else ""
         is_healthy = "healthy" in disease_formatted.lower()
         health_status = "Healthy" if is_healthy else "Diseased"
 
-        # Severity Estimation
         severity = "Healthy"
         if not is_healthy:
             if confidence > 90: severity = "Severe"
             elif confidence > 65: severity = "Moderate"
             else: severity = "Mild"
 
-        # Confidence and uncertainty validation
         top_diff = (prediction[0][top_indices[0]] - prediction[0][top_indices[1]]) * 100 if len(top_indices) > 1 else confidence
+
         if confidence < 50.0:
             return jsonify({
                 "success": False,
@@ -335,7 +430,7 @@ def predict():
                 "error": f"Ambiguous condition detected between {top_predictions[0]['formatted_name']} ({confidence}%) and {top_predictions[1]['formatted_name']} ({top_predictions[1]['confidence']}%). Please capture the leaf closer under uniform lighting."
             }), 400
 
-        # Generate Grad-CAM image
+        gradcam_url = None
         try:
             heatmap = make_gradcam_heatmap(img_array, grad_model, pred_index=int(top_indices[0]))
             gradcam_filename = f"gradcam_{safe_filename}"
@@ -344,29 +439,25 @@ def predict():
             gradcam_url = f"/uploads/{gradcam_filename}"
         except Exception as cam_err:
             print("Grad-CAM generation failed:", cam_err)
-            gradcam_url = None
 
-        # Save scan history to database
         username = request.form.get("username", "Guest")
-        import datetime
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        
-        conn = sqlite3.connect(DATABASE_PATH)
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO scans (username, timestamp, filename, disease, confidence) VALUES (?, ?, ?, ?, ?)",
-            (username, timestamp, safe_filename, disease_raw, confidence)
-        )
-        conn.commit()
-        conn.close()
 
-        # Try to delete original and gradcam image after generating base64 if needed, 
-        # but we need to keep history working. History reads from UPLOAD_FOLDER so we keep it.
-        # Alternatively, we rely on a cron/cleanup job. For now, we will leave it as per previous implementation to support history API.
+        try:
+            conn = sqlite3.connect(DATABASE_PATH)
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO scans (username, timestamp, filename, disease, confidence) VALUES (?, ?, ?, ?, ?)",
+                (username, timestamp, safe_filename, disease_raw, confidence)
+            )
+            conn.commit()
+            conn.close()
+        except Exception as db_err:
+            print("DB save failed:", db_err)
 
         return jsonify({
             "success": True,
-            "disease": disease_raw,  # preserve exact string for frontend compatibility
+            "disease": disease_raw,
             "plant": plant,
             "health_status": health_status,
             "disease_formatted": disease_formatted if not is_healthy else "No disease detected",
@@ -376,6 +467,7 @@ def predict():
             "gradcam_url": gradcam_url,
             "original_url": f"/uploads/{safe_filename}"
         })
+
     except Exception as e:
         return jsonify({"success": False, "error": f"Error processing image: {str(e)}"}), 500
 
@@ -383,6 +475,7 @@ def predict():
 @app.route("/uploads/<filename>")
 def serve_upload(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
 
 @app.route("/api/image/get_base64/<filename>")
 def get_image_base64(filename):
@@ -400,52 +493,9 @@ def get_image_base64(filename):
     return jsonify({"success": False, "error": "File not found"}), 404
 
 
-# ==========================================
-# SQLITE AUTHENTICATION & DATABASE
-# ==========================================
-import sqlite3
+# ── Auth & Database (same as before, with init_db already called) ─────────
+
 from werkzeug.security import generate_password_hash, check_password_hash
-import requests
-
-DATABASE_PATH = "database.db"
-
-def init_db():
-    conn = sqlite3.connect(DATABASE_PATH)
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            location TEXT,
-            profile_image TEXT
-        )
-    """)
-    # Run dynamic alters to prevent errors for pre-existing DBs
-    try:
-        cursor.execute("ALTER TABLE users ADD COLUMN location TEXT")
-    except sqlite3.OperationalError:
-        pass
-    try:
-        cursor.execute("ALTER TABLE users ADD COLUMN profile_image TEXT")
-    except sqlite3.OperationalError:
-        pass
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS scans (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            timestamp TEXT NOT NULL,
-            filename TEXT,
-            disease TEXT NOT NULL,
-            confidence REAL NOT NULL
-        )
-    """)
-    conn.commit()
-    conn.close()
-
-# Initialize DB on load
-init_db()
 
 @app.route("/api/auth/register", methods=["POST"])
 def register():
@@ -521,7 +571,6 @@ def update_profile():
     try:
         conn = sqlite3.connect(DATABASE_PATH)
         cursor = conn.cursor()
-        
         if profile_image:
             cursor.execute(
                 "UPDATE users SET location = ?, profile_image = ? WHERE username = ?",
@@ -535,7 +584,6 @@ def update_profile():
         conn.commit()
         conn.close()
 
-        # Fetch updated user info
         conn = sqlite3.connect(DATABASE_PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT id, location, profile_image FROM users WHERE username = ?", (username,))
@@ -555,16 +603,12 @@ def update_profile():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-# ==========================================
-# HISTORY LOGS ENDPOINT
-# ==========================================
 @app.route("/api/history", methods=["GET"])
 def history():
     username = request.args.get("username", "Guest")
     try:
         conn = sqlite3.connect(DATABASE_PATH)
         cursor = conn.cursor()
-        # Retrieve last 10 scans for this specific user
         cursor.execute(
             "SELECT timestamp, filename, disease, confidence FROM scans WHERE username = ? ORDER BY id DESC LIMIT 10",
             (username,)
@@ -586,15 +630,6 @@ def history():
         return jsonify({"success": True, "history": history_list})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-
-
-# ==========================================
-# NVIDIA & GEMINI AI INTEGRATION
-# ==========================================
-# The API endpoints (/api/ai/farmer-report and /api/chat) 
-# and their implementations are correctly handled in routes/ai.py
-# which is registered as a blueprint at the top of this file.
-
 
 
 if __name__ == "__main__":

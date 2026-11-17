@@ -1,9 +1,8 @@
 import { useState, useMemo } from "react";
-import { FileText, Search, ArrowUpDown, Eye, History as HistoryIcon, Sparkles } from "lucide-react";
+import { FileText, Search, ArrowUpDown, Eye, History as HistoryIcon, Sparkles, CheckCircle, AlertTriangle } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
 import { getMediaUrl } from "../../utils/mediaUrl";
-import diseaseData from "../../data/diseaseData";
 import "./History.css";
 
 function History({ history, onViewChange, onSelectPrediction, lang }) {
@@ -12,26 +11,19 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
   const [sortOrder, setSortOrder] = useState("newest");
 
   const handleSelectScan = (scan) => {
-    const info = diseaseData[scan.disease] || {
-      description: "No specific description available.",
-      symptoms: ["No symptoms available."],
-      treatment: "Consult local agricultural extensions.",
-      prevention: "Maintain crop hygiene and ventilation."
-    };
-
+    const details = mapClassName(scan.disease);
     onSelectPrediction({
       success: true,
       disease: scan.disease,
       confidence: scan.confidence,
       original_url: scan.original_url,
       gradcam_url: scan.gradcam_url,
-      description: info.description,
-      symptoms: info.symptoms,
-      treatment: info.treatment,
-      prevention: info.prevention,
-      timestamp: scan.timestamp
+      timestamp: scan.timestamp,
+      disease_formatted: details.displayName,
+      health_status: details.isHealthy ? "Healthy" : "Diseased",
+      plant: details.plantName,
+      severity: details.severity || "Unknown"
     });
-    
     onViewChange("diagnosis");
   };
 
@@ -80,26 +72,27 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
       <header className="memory-header">
         <div className="memory-badge">
           <span className="badge-pulse-dot"></span>
-          <span>{lang === "ta" ? "இலை நினைவகம்" : "LEAF MEMORY ARCHIVE"}</span>
+          <span>{t("history", lang)}</span>
         </div>
-        <h1 className="memory-title">{lang === "ta" ? "பரிசோதிக்கப்பட்ட இலைகள்" : "Preserved Leaf Specimens"}</h1>
+        <h1 className="memory-title">{t("recentDiagnoses", lang)}</h1>
         <p className="memory-subtitle">
-          {lang === "ta" 
-            ? "நீங்கள் பரிசோதித்த அனைத்து இலைகளின் வரலாறும் இங்கு பாதுகாக்கப்படும். AI அறிக்கைகளையும் வரைபடங்களையும் மீண்டும் பார்க்கலாம்."
-            : '"Every leaf you analyze leaves a memory." Review your historical field pathology scans, Grad-CAM heatmaps, and past diagnoses.'}
+          {lang === "ta"
+            ? "நீங்கள் பரிசோதித்த அனைத்து இலைகளின் வரலாற்றையும் இங்கு பாதுகாக்கப்படும்."
+            : "All your analyzed leaves are preserved here. Review past diagnoses, Grad-CAM heatmaps, and AI Farmer Reports."}
         </p>
       </header>
 
       {/* CONTROLS BAR */}
       <div className="memory-controls-bar glass-card">
         <div className="memory-search-box">
-          <Search size={16} className="search-icon" />
+          <Search size={18} className="search-icon" />
           <input
             type="text"
-            placeholder={lang === "ta" ? "தேடுங்கள்..." : "Search specimen archive..."}
+            placeholder={t("scanGuidance", lang)}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="memory-search-input"
+            aria-label="Search history"
           />
         </div>
 
@@ -108,50 +101,51 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
             className={`memory-tab ${filter === "all" ? "active" : ""}`}
             onClick={() => setFilter("all")}
           >
-            {lang === "ta" ? "அனைத்தும்" : "All Memory"} ({safeHistory.length})
+            {t("allCrops", lang)} ({safeHistory.length})
           </button>
           <button
             className={`memory-tab ${filter === "healthy" ? "active" : ""}`}
             onClick={() => setFilter("healthy")}
           >
-            {t("healthyStatus", lang)}
+            <CheckCircle size={14} /> {t("healthyStatus", lang)}
           </button>
           <button
             className={`memory-tab ${filter === "diseases" ? "active" : ""}`}
             onClick={() => setFilter("diseases")}
           >
-            {t("diseasedStatus", lang)}
+            <AlertTriangle size={14} /> {t("diseasedStatus", lang)}
           </button>
         </div>
 
-        <button className="memory-sort-btn" onClick={toggleSort} title="Sort by Timestamp">
-          <ArrowUpDown size={15} />
-          <span>{sortOrder === "newest" ? "Newest Scans" : "Oldest Scans"}</span>
+        <button className="memory-sort-btn" onClick={toggleSort} title={t("scanGuidanceShort", lang)}>
+          <ArrowUpDown size={16} />
+          <span>{sortOrder === "newest" ? t("newestFirst", lang) : t("oldestFirst", lang)}</span>
         </button>
       </div>
 
       {/* TIMELINE SPECIMEN GRID */}
       <div className="memory-timeline-content">
         {safeHistory.length === 0 ? (
-          <div className="memory-empty-card glass-card" style={{ textAlignment: "center", padding: "48px 24px" }}>
-            <HistoryIcon size={48} className="empty-icon" style={{ color: "#34d399", marginBottom: "16px" }} />
-            <h3 style={{ fontSize: "20px", color: "#ffffff", marginBottom: "8px" }}>
-              {lang === "ta" ? "இலை நினைவகம் காலியாக உள்ளது" : "LEAF MEMORY ARCHIVE IS EMPTY"}
+          <div className="memory-empty-card glass-card" style={{ textAlign: "center", padding: "48px 24px" }}>
+            <HistoryIcon size={56} className="empty-icon" style={{ color: "#22c55e", marginBottom: "20px" }} />
+            <h3 style={{ fontSize: "22px", color: "#ffffff", marginBottom: "10px" }}>
+              {lang === "ta" ? "வரலாறு காலியாக உள்ளது" : "No Scan History Yet"}
             </h3>
-            <p style={{ color: "#9ca3af", maxWidth: "460px", margin: "0 auto 20px auto", lineHeight: "1.6" }}>
+            <p style={{ color: "#9ca3af", maxWidth: "460px", margin: "0 auto 24px auto", lineHeight: "1.6" }}>
               {lang === "ta"
-                ? "நீங்கள் இன்னும் எந்த இலையையும் பரிசோதிக்கவில்லை. நீங்கள் பரிசோதிக்கும் இலைகள் மற்றும் AI மருத்துவ அறிக்கைகள் இங்கு சேமிக்கப்படும்."
-                : "No specimens analyzed yet. Your analyzed leaves, Grad-CAM heatmaps, and AI Farmer Reports will be preserved here."}
+                ? "நீங்கள் இன்னும் எந்த இலையையும் பரிசோதிக்கவில்லை. முதலில் ஒரு இலை படம் எடுத்து நோய் கண்டறிதலைத் தொடங்கவும்."
+                : "You haven't scanned any leaves yet. Start by taking a photo of a leaf to detect diseases."}
             </p>
-            <button className="btn btn-primary" onClick={() => onViewChange("scan")} style={{ maxWidth: "240px", margin: "0 auto" }}>
-              {lang === "ta" ? "முதல் பரிசோதனையைத் தொடங்கு" : "START FIRST SCAN"}
+            <button className="btn btn-hero" onClick={() => onViewChange("scan")} style={{ maxWidth: "280px", margin: "0 auto" }}>
+              <Sparkles size={20} />
+              <span>{lang === "ta" ? "முதல் স্কேன் தொடங்கு" : "Start First Scan"}</span>
             </button>
           </div>
         ) : filteredAndSortedList.length === 0 ? (
-          <div className="memory-empty-card glass-card" style={{ textAlignment: "center", padding: "40px 24px" }}>
-            <Search size={40} className="empty-icon" style={{ color: "#9ca3af", marginBottom: "12px" }} />
-            <h3 style={{ color: "#ffffff" }}>No Matching Specimens Found</h3>
-            <p style={{ color: "#9ca3af" }}>No scans match "{searchQuery}". Try clearing your search query or switching filters.</p>
+          <div className="memory-empty-card glass-card" style={{ textAlign: "center", padding: "40px 24px" }}>
+            <Search size={44} className="empty-icon" style={{ color: "#9ca3af", marginBottom: "16px" }} />
+            <h3 style={{ color: "#ffffff" }}>{lang === "ta" ? "பொருத்தமான முறைகள் இல்லை" : "No Matching Specimens"}</h3>
+            <p style={{ color: "#9ca3af" }}>{lang === "ta" ? "தேடல் வார்த்தையை மாற்றி முயற்சிக்கவும்" : `No scans match "${searchQuery}". Try clearing your search or switching filters.`}</p>
           </div>
         ) : (
           <div className="specimen-timeline-list">
@@ -175,7 +169,7 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
                     />
                     {scan.gradcam_url && (
                       <div className="specimen-overlay-badge">
-                        <Sparkles size={12} />
+                        <Sparkles size={14} />
                         <span>Grad-CAM</span>
                       </div>
                     )}
@@ -185,7 +179,8 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
                   <div className="specimen-body">
                     <div className="specimen-meta-top">
                       <span className={`specimen-status-tag ${isHealthy ? 'healthy' : 'danger'}`}>
-                        {isHealthy ? 'Healthy Specimen' : 'Pathology Detected'}
+                        {isHealthy ? <CheckCircle size={12} /> : <AlertTriangle size={12} />}
+                        {isHealthy ? t("healthy", lang) : t("diseaseDetected", lang)}
                       </span>
                       <span className="specimen-date">{scan.timestamp}</span>
                     </div>
@@ -194,10 +189,10 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
                     <p className="specimen-disease-subtitle">{details.diseaseName}</p>
 
                     <div className="specimen-footer">
-                      <span className="specimen-conf-score">{Math.round(scan.confidence)}% AI Confidence Match</span>
+                      <span className="specimen-conf-score">{Math.round(scan.confidence)}% {t("confidence", lang)}</span>
                       <button className="btn-view-specimen">
-                        <Eye size={14} />
-                        <span>Open Report</span>
+                        <Eye size={16} />
+                        <span>{t("openReport", lang)}</span>
                       </button>
                     </div>
                   </div>

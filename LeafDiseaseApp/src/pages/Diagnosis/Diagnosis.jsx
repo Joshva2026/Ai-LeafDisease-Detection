@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff, Volume2, VolumeX, Pause, Play, Sliders, Columns } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff, Volume2, VolumeX, Pause, Play, Sliders, Columns, Mic, MicOff } from "lucide-react";
 import ErrorBoundary from "../../components/ErrorBoundary/ErrorBoundary";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
@@ -10,7 +10,6 @@ import "./Diagnosis.css";
 function Diagnosis({ prediction, onViewChange, lang }) {
   const [saved, setSaved] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState(null);
-  const [aiReport, setAiReport] = useState(null);
   
   // Cache the normalized JSON reports to allow instant switching
   const [cachedReports, setCachedReports] = useState({ en: null, ta: null });
@@ -23,13 +22,13 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const [origImgError, setOrigImgError] = useState(false);
   const [camImgError, setCamImgError] = useState(false);
 
-  // Phase 3C: Interactive Grad-CAM Slider State
+  // Interactive Grad-CAM Slider State
   const [viewMode, setViewMode] = useState("slider"); // "slider" | "grid"
   const [sliderPos, setSliderPos] = useState(50);
   const sliderRef = useRef(null);
   const isDragging = useRef(false);
 
-  // Phase 3D: Audio TTS State
+  // Text-to-Speech (TTS) Audio Readout
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [audioLang, setAudioLang] = useState(lang || "ta");
@@ -48,6 +47,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     };
   }, []);
 
+  // Auto-fetch AI report when prediction changes
   useEffect(() => {
     if (prediction && reportStatus === "idle") {
       fetchAiReport(lang);
@@ -57,6 +57,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const fetchAiReport = async (targetLang) => {
     if (!prediction) return;
 
+    // Use cached report if available
     if (cachedReports[targetLang]) {
       console.log(`[AI Report] Using cached ${targetLang} report.`);
       setReportStatus("success");
@@ -69,7 +70,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     try {
       let englishReport = cachedReports.en;
       
-      // Step 1: Ensure English report
+      // Step 1: Ensure English report exists
       if (!englishReport) {
         console.log("[AI Report] Generating English source report...");
         const res = await api.post("/api/ai/farmer-report", {
@@ -90,6 +91,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
         }
       }
 
+      // If target is English, we're done
       if (targetLang === "en") {
         setReportStatus("success");
         return;
@@ -110,7 +112,8 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           setCachedReports(prev => ({ ...prev, ta: tamilReport }));
           setReportStatus("success");
         } else {
-          console.warn("[AI Report] Tamil translation failed, using English cache:", res.data);
+          console.warn("[AI Report] Tamil translation failed, using English:", res.data);
+          // Fallback: use English report with Tamil UI labels
           setCachedReports(prev => ({ ...prev, ta: englishReport }));
           setReportStatus("success");
         }
@@ -118,7 +121,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     } catch (e) {
       if (!isMounted.current) return;
       console.error("[AI Report] Request error:", e.message || e);
-      // Fallback: don't leave farmer hanging if offline
       setReportStatus("error");
     }
   };
@@ -200,7 +202,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
   const handlePlayTTS = () => {
     if (typeof window === "undefined" || !window.speechSynthesis) {
-      setTtsNotice("Text-to-Speech is not supported on this device/browser.");
+      setTtsNotice(lang === "ta" ? "இந்த கருவி உங்கள் இயங்குதளத்தில் தக்கவில்லை." : "Text-to-Speech is not supported on this device/browser.");
       return;
     }
 
@@ -223,7 +225,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     if (audioLang === "ta") {
       selectedVoice = voices.find(v => v.lang.startsWith("ta") || v.name.toLowerCase().includes("tamil"));
       if (!selectedVoice) {
-        setTtsNotice("Tamil voice not installed on this device. Reading in English instead.");
+        setTtsNotice(lang === "ta" ? "தமிழ் குரல் நிறுவப்படவில்லை. ஆங்கிலத்தில் வாசிக்கிறது." : "Tamil voice not installed. Reading in English instead.");
         selectedVoice = voices.find(v => v.lang.startsWith("en-IN") || v.lang.startsWith("en"));
       }
     } else {
@@ -233,8 +235,9 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     if (selectedVoice) {
       utterance.voice = selectedVoice;
     }
-    utterance.rate = 0.95; // Slightly slower for clarity in rural fields
+    utterance.rate = 0.9; // Slower for clarity in rural fields
     utterance.pitch = 1.0;
+    utterance.volume = 1.0;
 
     utterance.onstart = () => {
       setIsSpeaking(true);
@@ -273,11 +276,13 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
   if (!prediction) {
     return (
-      <div className="diag-empty-wrapper slide-section">
+      <div className="diag-empty-wrapper slide-section fade-in-section">
         <div className="glass-card diag-empty-card">
-          <p>{t("noDiagnosisData", lang)}</p>
-          <button className="btn btn-primary" onClick={() => onViewChange("scan")} style={{ marginTop: "16px" }}>
-            {t("goToScanPage", lang)}
+          <Sprout size={48} color="#9ca3af" style={{ marginBottom: '16px' }} />
+          <p style={{ fontSize: '18px', marginBottom: '20px' }}>{t("noDiagnosisData", lang)}</p>
+          <button className="btn btn-hero" onClick={() => onViewChange("scan")} style={{ width: '100%' }}>
+            <Camera size={20} />
+            <span>{t("goToScanPage", lang)}</span>
           </button>
         </div>
       </div>
@@ -296,12 +301,12 @@ function Diagnosis({ prediction, onViewChange, lang }) {
       
       {/* Top Header Navigation */}
       <div className="reveal-top-bar">
-        <button className="btn-back-scan" onClick={() => onViewChange("scan")}>
-          <ArrowLeft size={18} />
+        <button className="btn-back-scan" onClick={() => onViewChange("scan")} aria-label={t("backToScan", lang)}>
+          <ArrowLeft size={20} />
           <span>{t("backToScan", lang)}</span>
         </button>
         <span className="reveal-tag">
-          <Sprout size={14} />
+          <Sprout size={16} />
           {t("plantDoctorReport", lang)}
         </span>
       </div>
@@ -315,11 +320,11 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
           <div className="reveal-meta-row">
             <span className={`reveal-status-pill ${isHealthy ? 'healthy' : 'danger'}`}>
-              {isHealthy ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
+              {isHealthy ? <CheckCircle size={18} /> : <AlertTriangle size={18} />}
               <span>{isHealthy ? t("healthy", lang) : t("diseaseDetected", lang)}</span>
             </span>
             <span className="reveal-confidence-pill">
-              <Sparkles size={16} color="#fbbf24" />
+              <Sparkles size={18} color="#fbbf24" />
               <span>{Math.round(prediction.confidence)}% {t("confidence", lang)}</span>
             </span>
             <span className="reveal-crop-pill">
@@ -334,10 +339,10 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           </div>
         </div>
 
-        {/* AUDIO READOUT ACCESSIBILITY TOOLBAR (Phase 3D) */}
+        {/* AUDIO READOUT ACCESSIBILITY TOOLBAR */}
         <div className="tts-accessibility-bar glass-card">
           <div className="tts-title-info">
-            <Volume2 size={18} color="#34d399" />
+            <Volume2 size={20} color="#22c55e" />
             <span className="tts-label">
               {lang === "ta" ? "குரல் வழிகாட்டல் (TTS)" : "Voice Audio Advisory"}
             </span>
@@ -348,31 +353,33 @@ function Diagnosis({ prediction, onViewChange, lang }) {
               <button 
                 className={`tts-lang-btn ${audioLang === "ta" ? "active" : ""}`}
                 onClick={() => { setAudioLang("ta"); handleStopTTS(); }}
+                aria-pressed={audioLang === "ta"}
               >
                 தமிழ்
               </button>
               <button 
                 className={`tts-lang-btn ${audioLang === "en" ? "active" : ""}`}
                 onClick={() => { setAudioLang("en"); handleStopTTS(); }}
+                aria-pressed={audioLang === "en"}
               >
                 English
               </button>
             </div>
 
             {!isSpeaking ? (
-              <button className="tts-action-btn play" onClick={handlePlayTTS} title="Play Audio">
-                <Play size={16} />
+              <button className="tts-action-btn play" onClick={handlePlayTTS} title={lang === "ta" ? "கேட்கவும்" : "Listen"} aria-label={lang === "ta" ? "தமிழில் வாசிக்கவும்" : "Read in English"}>
+                <Play size={18} />
                 <span>{lang === "ta" ? "கேட்கவும்" : "Listen"}</span>
               </button>
             ) : (
               <>
-                <button className="tts-action-btn pause" onClick={handlePauseTTS} title="Pause Audio">
-                  <Pause size={16} />
-                  <span>Pause</span>
+                <button className="tts-action-btn pause" onClick={handlePauseTTS} title="Pause" aria-label="Pause">
+                  <Pause size={18} />
+                  <span>{lang === "ta" ? "நிறுத்து" : "Pause"}</span>
                 </button>
-                <button className="tts-action-btn stop" onClick={handleStopTTS} title="Stop Audio">
-                  <VolumeX size={16} />
-                  <span>Stop</span>
+                <button className="tts-action-btn stop" onClick={handleStopTTS} title="Stop" aria-label="Stop">
+                  <VolumeX size={18} />
+                  <span>{lang === "ta" ? "முடி" : "Stop"}</span>
                 </button>
               </>
             )}
@@ -394,21 +401,23 @@ function Diagnosis({ prediction, onViewChange, lang }) {
             <button 
               className={`segmented-btn ${viewMode === "slider" ? "active" : ""}`}
               onClick={() => setViewMode("slider")}
+              aria-pressed={viewMode === "slider"}
             >
-              <Sliders size={14} />
+              <Sliders size={16} />
               <span>{lang === "ta" ? "ஒப்பீட்டு ஸ்லைடர்" : "Interactive Split"}</span>
             </button>
             <button 
               className={`segmented-btn ${viewMode === "grid" ? "active" : ""}`}
               onClick={() => setViewMode("grid")}
+              aria-pressed={viewMode === "grid"}
             >
-              <Columns size={14} />
+              <Columns size={16} />
               <span>{lang === "ta" ? "பக்கவாட்டு பார்வை" : "Side by Side"}</span>
             </button>
           </div>
         </div>
 
-        {/* VIEW 1: INTERACTIVE GRAD-CAM SPLIT COMPARISON SLIDER (Phase 3C) */}
+        {/* VIEW 1: INTERACTIVE GRAD-CAM SPLIT COMPARISON SLIDER */}
         {viewMode === "slider" && gradcamUrl && !origImgError && !camImgError ? (
           <div className="interactive-slider-container">
             <div 
@@ -418,6 +427,12 @@ function Diagnosis({ prediction, onViewChange, lang }) {
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onTouchMove={handleTouchMove}
+              role="slider"
+              aria-label={lang === "ta" ? "AI கவன வரைபடத்தை ஒப்பிடவும்" : "Compare AI attention heatmap"}
+              tabIndex={0}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={sliderPos}
             >
               {/* Bottom Image: Original Leaf */}
               <img 
@@ -475,7 +490,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
             {/* Scientific AI Attention Explanatory Label */}
             <div className="gradcam-scientific-disclaimer">
-              <Activity size={14} color="#34d399" />
+              <Activity size={16} color="#22c55e" />
               <span>
                 {lang === "ta"
                   ? "குறிப்பு: வண்ண வரைபடம் AI மாதிரியின் கவனப் பகுதிகளை (Grad-CAM) மட்டுமே காட்டுகிறது; இது உயிரியல் காரணத்திற்கான நேரடி ஆதாரம் அல்ல."
@@ -489,13 +504,13 @@ function Diagnosis({ prediction, onViewChange, lang }) {
             {/* ORIGINAL IMAGE */}
             <div className="reveal-image-box">
               <div className="reveal-image-header">
-                <Eye size={16} />
+                <Eye size={18} />
                 <span>{t("originalImage", lang)}</span>
               </div>
               <div className="reveal-img-wrapper" onClick={() => !origImgError && setFullscreenImage(originalUrl)}>
                 {origImgError ? (
                   <div className="no-heatmap error-state">
-                    <ImageOff size={24} color="#f87171" />
+                    <ImageOff size={28} color="#ef4444" />
                     <span>{t("imageLoadFailed", lang)}</span>
                   </div>
                 ) : (
@@ -505,7 +520,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                       alt="Original Leaf" 
                       onError={() => setOrigImgError(true)}
                     />
-                    <button className="expand-btn"><Maximize2 size={16} /></button>
+                    <button className="expand-btn" aria-label="Expand image"><Maximize2 size={18} /></button>
                   </>
                 )}
               </div>
@@ -514,7 +529,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
             {/* GRAD-CAM HEATMAP */}
             <div className="reveal-image-box heatmap-box">
               <div className="reveal-image-header">
-                <Activity size={16} color="#fbbf24" />
+                <Activity size={18} color="#fbbf24" />
                 <span>{t("attentionMap", lang)}</span>
               </div>
               <div className="reveal-img-wrapper" onClick={() => gradcamUrl && !camImgError && setFullscreenImage(gradcamUrl)}>
@@ -524,7 +539,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                   </div>
                 ) : camImgError ? (
                   <div className="no-heatmap error-state">
-                    <ImageOff size={24} color="#f87171" />
+                    <ImageOff size={28} color="#ef4444" />
                     <span>{t("imageLoadFailed", lang)}</span>
                   </div>
                 ) : (
@@ -534,7 +549,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                       alt="AI Heatmap" 
                       onError={() => setCamImgError(true)}
                     />
-                    <button className="expand-btn"><Maximize2 size={16} /></button>
+                    <button className="expand-btn" aria-label="Expand heatmap"><Maximize2 size={18} /></button>
                   </>
                 )}
               </div>
@@ -546,9 +561,9 @@ function Diagnosis({ prediction, onViewChange, lang }) {
       {/* FARMER AI ADVISORY REPORT SECTION */}
       <section className="farmer-report-section fade-in-up" style={{ animationDelay: "0.3s" }}>
         {!showReport ? (
-          <div className="report-toggle-card glass-card" style={{ padding: '1.5rem', textAlign: 'center', marginTop: '1rem' }}>
-            <button className="btn btn-primary ai-reveal-btn" style={{ width: '100%', justifyContent: 'center' }} onClick={() => setShowReport(true)}>
-              <Bot size={20} />
+          <div className="report-toggle-card glass-card" style={{ padding: '20px', textAlign: 'center', marginTop: '16px' }}>
+            <button className="btn btn-hero ai-reveal-btn" style={{ width: '100%', justifyContent: 'center' }} onClick={() => setShowReport(true)}>
+              <Bot size={24} />
               <span>{t("needFullAiReport", lang)}</span>
             </button>
           </div>
@@ -556,11 +571,11 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           <>
             <div className="report-header-banner">
               <div className="report-title">
-                <Bot size={24} color="#34d399" />
+                <Bot size={28} color="#22c55e" />
                 <h2>{t("nvidiaFarmerAdvisory", lang)}</h2>
               </div>
-              <div className="report-lang-toggle" style={{ width: '100%', padding: '10px 0' }}>
-                <div className="segmented-control" role="radiogroup" aria-label="Language Selector">
+              <div className="report-lang-toggle" style={{ width: '100%', padding: '12px 0' }}>
+                <div className="segmented-control" role="radiogroup" aria-label={lang === "ta" ? "மொழி தேர்வு" : "Language Selector"}>
                   <button 
                     className={`segmented-btn ${reportLang === "ta" ? "active" : ""}`}
                     onClick={() => handleLangToggle("ta")}
@@ -588,15 +603,15 @@ function Diagnosis({ prediction, onViewChange, lang }) {
               >
                 {reportStatus === "loading" ? (
                   <div className="ai-report-loading">
-                    <Loader2 size={32} className="spin-anim" color="#34d399" />
-                    <p>{t("generatingAiReport", lang)}</p>
+                    <Loader2 size={36} className="spin-anim" color="#22c55e" />
+                    <p style={{ marginTop: '12px', fontSize: '16px' }}>{t("generatingAiReport", lang)}</p>
                   </div>
                 ) : reportStatus === "error" ? (
                   <div className="ai-report-error">
-                    <AlertTriangle size={32} color="#fca5a5" />
-                    <p>{t("aiUnavailable", lang)}</p>
-                    <button className="btn btn-secondary" onClick={() => fetchAiReport(reportLang)}>
-                      <RefreshCw size={16} />
+                    <AlertTriangle size={36} color="#fca5a5" />
+                    <p style={{ marginTop: '12px', fontSize: '16px' }}>{t("aiUnavailable", lang)}</p>
+                    <button className="btn btn-secondary" onClick={() => fetchAiReport(reportLang)} style={{ marginTop: '16px' }}>
+                      <RefreshCw size={18} />
                       <span>{t("retry", lang)}</span>
                     </button>
                   </div>
@@ -637,7 +652,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     {/* 5. Immediate Actions */}
                     {Array.isArray(aiStructured.immediate_actions) && aiStructured.immediate_actions.length > 0 && (
                       <div className="report-block action-block">
-                        <h3><AlertTriangle size={18} color="#f87171" /> {t("immediateActions", lang)}</h3>
+                        <h3><AlertTriangle size={20} color="#ef4444" /> {t("immediateActions", lang)}</h3>
                         <ul>
                           {aiStructured.immediate_actions.map((act, i) => <li key={i}>{act}</li>)}
                         </ul>
@@ -657,7 +672,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     {/* 7. Prevention */}
                     {Array.isArray(aiStructured.prevention) && aiStructured.prevention.length > 0 && (
                       <div className="report-block prevention-block">
-                        <h3><ShieldCheck size={18} color="#34d399" /> {t("prevention", lang)}</h3>
+                        <h3><ShieldCheck size={20} color="#22c55e" /> {t("prevention", lang)}</h3>
                         <ul>
                           {aiStructured.prevention.map((p_item, i) => <li key={i}>{p_item}</li>)}
                         </ul>
@@ -674,15 +689,15 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     
                     {/* 9. Farmer Advice */}
                     {Array.isArray(aiStructured.farmer_advice) && aiStructured.farmer_advice.length > 0 && (
-                      <div className="report-block highlight-block" style={{ marginTop: '1rem', background: 'rgba(52, 211, 153, 0.1)' }}>
+                      <div className="report-block highlight-block" style={{ marginTop: '16px', background: 'rgba(34, 197, 94, 0.1)' }}>
                         <h3>{t("farmerAdvice", lang) || "Farmer Advice"}</h3>
                         <ul>{aiStructured.farmer_advice.map((advice, i) => <li key={i}>{advice}</li>)}</ul>
                       </div>
                     )}
                   </div>
-                ) : reportStatus === "success" && aiReport ? (
-                  <div className="unstructured-report">
-                    <div dangerouslySetInnerHTML={{ __html: String(aiReport).replace(/\n/g, '<br/>') }} />
+                ) : reportStatus === "success" && !aiStructured ? (
+                  <div className="ai-report-loading">
+                    <p>Preparing diagnosis advisory...</p>
                   </div>
                 ) : (
                   <div className="ai-report-loading">
@@ -697,24 +712,25 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
       {/* FIXED BOTTOM ACTION BAR */}
       <div className="reveal-bottom-actions glass-panel">
-        <button className="btn btn-secondary action-btn" onClick={() => onViewChange("scan")}>
-          <Camera size={18} />
+        <button className="btn btn-secondary action-btn" onClick={() => onViewChange("scan")} style={{ flex: 1 }}>
+          <Camera size={20} />
           <span>{t("scanAnother", lang)}</span>
         </button>
         <button 
           className={`btn action-btn ${saved ? 'btn-success' : 'btn-primary'}`} 
           onClick={handleSave} 
           disabled={saved}
+          style={{ flex: 1 }}
         >
-          <BookmarkCheck size={18} />
+          <BookmarkCheck size={20} />
           <span>{saved ? t("savedToHistory", lang) : t("saveDiagnosis", lang)}</span>
         </button>
       </div>
 
       {fullscreenImage && (
-        <div className="fullscreen-image-modal" onClick={() => setFullscreenImage(null)}>
-          <button className="close-fs-btn" onClick={() => setFullscreenImage(null)}>
-            <X size={24} />
+        <div className="fullscreen-image-modal" onClick={() => setFullscreenImage(null)} role="dialog" aria-modal="true" aria-label="Fullscreen image">
+          <button className="close-fs-btn" onClick={() => setFullscreenImage(null)} aria-label="Close">
+            <X size={26} />
           </button>
           <img src={fullscreenImage} alt="Fullscreen View" onClick={(e) => e.stopPropagation()} />
         </div>

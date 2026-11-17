@@ -1,273 +1,442 @@
 /* =====================================================
-   LEAF MEMORY ARCHIVE — HISTORY STYLING
+   HISTORY / LEAF MEMORY — Village-Friendly Design
    ===================================================== */
 
 .leaf-memory-container {
-  padding: 40px 6% 60px 6%;
-  max-width: 1000px;
+  padding: 24px 16px;
+  max-width: 700px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
 }
 
-/* Memory Header */
+[dir="rtl"] .leaf-memory-container {
+  text-align: right;
+}
+
+/* Header */
 .memory-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   text-align: center;
-  gap: 12px;
+  margin-bottom: 24px;
+}
+
+[dir="rtl"] .memory-header {
+  text-align: right;
 }
 
 .memory-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 16px;
-  border-radius: 20px;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: #10b981;
+  background: rgba(34, 197, 94, 0.12);
+  border: 2px solid rgba(34, 197, 94, 0.25);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  color: #22c55e;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.badge-pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
 }
 
 .memory-title {
-  font-size: clamp(28px, 5vw, 42px);
-  font-weight: 900;
-  letter-spacing: -0.5px;
-  color: #ffffff;
+  font-size: clamp(24px, 5vw, 32px);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 10px;
+  line-height: 1.3;
 }
 
 .memory-subtitle {
-  font-size: 15px;
   color: #9ca3af;
-  max-width: 620px;
+  font-size: 15px;
   line-height: 1.6;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 /* Controls Bar */
 .memory-controls-bar {
-  border-radius: 18px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 16px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 16px;
-  flex-wrap: wrap;
+  padding: 20px;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border-color);
+  background: var(--card-bg);
 }
 
 .memory-search-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px 16px;
-  border-radius: 10px;
-  flex: 1;
-  min-width: 220px;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-light);
+  pointer-events: none;
+}
+
+[dir="rtl"] .search-icon {
+  left: auto;
+  right: 14px;
 }
 
 .memory-search-input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #ffffff;
-  font-size: 13px;
   width: 100%;
+  padding: 14px 16px 14px 48px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  outline: none;
+  transition: all 0.2s;
+  min-height: var(--touch-min);
+}
+
+[dir="rtl"] .memory-search-input {
+  padding: 14px 48px 14px 16px;
+}
+
+.memory-search-input:focus {
+  border-color: var(--primary);
+  background: var(--card-bg);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+}
+
+.memory-search-input::placeholder {
+  color: var(--text-light);
 }
 
 .memory-filter-tabs {
   display: flex;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .memory-tab {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #9ca3af;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 2px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+  min-height: var(--touch-min);
+}
+
+.memory-tab:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .memory-tab.active {
-  background: rgba(16, 185, 129, 0.2);
-  border-color: #10b981;
-  color: #ffffff;
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--bg-primary);
 }
 
 .memory-sort-btn {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #d1d5db;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
+  background: transparent;
+  border: 2px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
+  transition: all 0.2s;
+  min-height: var(--touch-min);
+  margin-left: auto;
+}
+
+[dir="rtl"] .memory-sort-btn {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.memory-sort-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* Timeline Content */
 .memory-timeline-content {
-  width: 100%;
-}
-
-.specimen-timeline-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.specimen-card {
-  border-radius: 20px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* Empty State */
+.memory-empty-card {
+  border-radius: var(--radius-xl);
+  border: 2px dashed var(--border-color);
+  text-align: center;
+}
+
+.empty-icon {
+  opacity: 0.6;
+}
+
+.memory-empty-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.memory-empty-card p {
+  color: #9ca3af;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Specimen List */
+.specimen-timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.specimen-card {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 16px;
+  padding: 16px;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border-color);
+  background: var(--card-bg);
   cursor: pointer;
-  transition: transform 0.25s ease, border-color 0.25s ease;
-  text-align: left;
+  transition: all 0.2s;
+  min-height: 100px;
 }
 
 .specimen-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
+  border-color: var(--border-color-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.specimen-card:active {
+  transform: translateY(0);
+}
+
+[dir="rtl"] .specimen-card {
+  grid-template-columns: 1fr 100px;
 }
 
 .specimen-visual-box {
   position: relative;
-  width: 100%;
-  height: 160px;
-  border-radius: 14px;
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
   background: #000;
+  flex-shrink: 0;
+}
+
+[dir="rtl"] .specimen-visual-box {
+  margin-left: auto;
 }
 
 .specimen-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.specimen-card:hover .specimen-thumb {
+  transform: scale(1.05);
 }
 
 .specimen-overlay-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #34d399;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 800;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
+  background: rgba(34, 197, 94, 0.9);
+  color: #040806;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
 }
 
 .specimen-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
 }
 
 .specimen-meta-top {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .specimen-status-tag {
-  font-size: 11px;
-  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .specimen-status-tag.healthy {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .specimen-status-tag.danger {
   background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .specimen-date {
-  font-size: 11px;
-  color: #6b7280;
+  font-size: 12px;
+  color: var(--text-light);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .specimen-plant-title {
   font-size: 16px;
-  font-weight: 800;
-  color: #ffffff;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .specimen-disease-subtitle {
   font-size: 13px;
   color: #9ca3af;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .specimen-footer {
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
 }
 
 .specimen-conf-score {
   font-size: 12px;
+  color: var(--primary);
   font-weight: 700;
-  color: #10b981;
 }
 
 .btn-view-specimen {
-  background: transparent;
-  border: none;
-  color: #d1d5db;
-  font-size: 12px;
-  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 6px;
+  background: transparent;
+  border: 2px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: var(--touch-min);
 }
 
-.memory-empty-card {
-  padding: 60px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 12px;
-  border-radius: 20px;
+.btn-view-specimen:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
-@media (max-width: 640px) {
+/* Mobile adjustments */
+@media (max-width: 480px) {
   .leaf-memory-container {
-    padding: 20px 4% 40px 4%;
+    padding: 16px 12px;
   }
 
   .memory-controls-bar {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 16px;
+  }
+
+  .memory-tab,
+  .memory-sort-btn {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .memory-search-input {
+    padding: 12px 12px 12px 40px;
+    font-size: 15px;
+  }
+
+  [dir="rtl"] .memory-search-input {
+    padding: 12px 40px 12px 12px;
+  }
+
+  .specimen-card {
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  [dir="rtl"] .specimen-card {
+    grid-template-columns: 1fr 80px;
+  }
+
+  .specimen-visual-box {
+    width: 80px;
+    height: 80px;
+  }
+
+  .specimen-plant-title {
+    font-size: 14px;
+  }
+
+  .specimen-disease-subtitle {
+    font-size: 12px;
   }
 }

@@ -1,191 +1,279 @@
-.home-cinematic-wrapper {
+/* =====================================================
+   HOME — Village-Friendly Cinematic Landing
+   High contrast, large touch targets, simple flow
+   ===================================================== */
+
+.home-village-wrapper {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  min-height: 100vh;
-  color: #fff;
+}
+
+[dir="rtl"] .home-village-wrapper {
+  text-align: right;
 }
 
 .cinematic-scene {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
+  width: 100%;
   padding: 40px 20px;
 }
 
 .scene-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at center, transparent 0%, rgba(4, 39, 30, 0.8) 100%);
-  z-index: 1;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .scene-content {
   position: relative;
-  z-index: 2;
-  max-width: 1000px;
-  width: 100%;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
   text-align: center;
 }
 
-/* SCENE 1: Village Morning */
-.scene-village {
-  background: url('https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
-  background-attachment: fixed;
+[dir="rtl"] .scene-content {
+  text-align: right;
 }
 
+/* Fade-in animation */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Village badge */
 .farmer-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(16, 185, 129, 0.2);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  padding: 8px 16px;
-  border-radius: 30px;
-  color: #34d399;
-  font-weight: 600;
+  gap: 10px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 2px solid rgba(34, 197, 94, 0.25);
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  color: #22c55e;
   font-size: 14px;
-  margin-bottom: 24px;
-  backdrop-filter: blur(10px);
-}
-
-.cinematic-title {
-  font-size: 48px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  line-height: 1.2;
-  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
-}
-
-.farmer-name {
-  color: #34d399;
-}
-
-.cinematic-subtitle {
-  font-size: 20px;
-  color: #e5e7eb;
-  max-width: 600px;
-  margin: 0 auto 40px auto;
-  line-height: 1.6;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-}
-
-.cinematic-cta {
-  padding: 16px 32px;
-  font-size: 18px;
-  border-radius: 30px;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-  margin: 0 auto;
-}
-
-/* SCENE 2: The Flow */
-.scene-flow {
-  background: var(--bg-primary);
-  min-height: auto;
-  padding: 80px 20px;
-}
-
-.section-heading {
-  font-size: 32px;
   font-weight: 700;
-  margin-bottom: 48px;
-  color: #fff;
-}
-
-.flow-steps-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 24px;
-}
-
-.flow-step-card {
-  padding: 32px 24px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.flow-step-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-}
-
-.step-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin-bottom: 20px;
 }
 
-.flow-step-card h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
+/* Hero title */
+.cinematic-title {
+  font-size: clamp(28px, 7vw, 44px);
+  font-weight: 800;
+  line-height: 1.2;
   color: #fff;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.farmer-name {
+  color: #22c55e;
+}
+
+.cinematic-subtitle {
+  font-size: clamp(16px, 3vw, 20px);
+  color: #d1d5db;
+  line-height: 1.6;
+  margin-bottom: 28px;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+[dir="rtl"] .cinematic-subtitle {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Hero CTA */
+.cinematic-cta {
+  min-height: 56px;
+  font-size: 18px;
+  padding: 18px 32px;
+  gap: 12px;
+}
+
+.cinematic-cta:hover {
+  transform: translateY(-3px);
+}
+
+/* Section headings */
+.section-heading {
+  font-size: clamp(24px, 5vw, 32px);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.section-subtitle {
+  font-size: 16px;
+  color: #9ca3af;
+  margin-bottom: 28px;
+}
+
+/* Flow steps grid */
+.flow-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.flow-step-card {
+  padding: 24px 16px;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border-color);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.flow-step-card:hover {
+  border-color: var(--border-color-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-medium);
+}
+
+.step-number {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--text-on-primary);
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--bg-primary);
+}
+
+.step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.step-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.flow-step-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
 }
 
 .flow-step-card p {
   font-size: 14px;
   color: #9ca3af;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-/* SCENE 3: Action */
+/* Step-specific accent colors */
+.step-1 .step-number { background: #22c55e; }
+.step-2 .step-number { background: #f59e0b; }
+.step-3 .step-number { background: #3b82f6; }
+.step-4 .step-number { background: #10b981; }
+
+.step-1:hover { border-color: rgba(34, 197, 94, 0.5); }
+.step-2:hover { border-color: rgba(245, 158, 11, 0.5); }
+.step-3:hover { border-color: rgba(59, 130, 246, 0.5); }
+.step-4:hover { border-color: rgba(16, 185, 129, 0.5); }
+
+/* Action banner */
 .scene-action {
-  background: linear-gradient(180deg, var(--bg-primary) 0%, #031510 100%);
-  min-height: 60vh;
+  padding-bottom: 60px;
 }
 
 .action-banner {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 48px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.action-text {
-  text-align: left;
+  gap: 20px;
+  padding: 32px 24px;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border-color);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(16, 26, 16, 0.9) 100%);
+  text-align: center;
 }
 
 .action-text h2 {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 12px;
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
 }
 
 .action-text p {
-  color: #9ca3af;
   font-size: 16px;
+  color: #d1d5db;
+  line-height: 1.6;
 }
 
-@media (max-width: 768px) {
-  .cinematic-title {
-    font-size: 32px;
+.action-banner .btn-hero {
+  min-width: 200px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .cinematic-scene {
+    padding: 32px 16px;
   }
-  .cinematic-subtitle {
-    font-size: 16px;
+
+  .flow-steps-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
+
+  .flow-step-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    text-align: left;
+  }
+
+  [dir="rtl"] .flow-step-card {
+    text-align: right;
+  }
+
+  .step-number {
+    position: static;
+    transform: none;
+    flex-shrink: 0;
+  }
+
+  .step-icon {
+    margin-bottom: 0;
+  }
+
+  .flow-step-card h3 {
+    font-size: 15px;
+  }
+
+  .flow-step-card p {
+    font-size: 13px;
+  }
+
   .action-banner {
-    flex-direction: column;
-    text-align: center;
-    gap: 24px;
-    padding: 32px 20px;
-  }
-  .action-text {
-    text-align: center;
+    padding: 24px 18px;
   }
 }

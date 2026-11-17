@@ -1,6 +1,7 @@
 /* =====================================================
    DISEASE PARSING AND MAPPING HELPER
- ===================================================== */
+   LeafGuard AI - Village-Friendly Bilingual Support
+  ===================================================== */
 
 export const mapClassName = (className, lang = "en") => {
   if (!className) {
@@ -29,7 +30,7 @@ export const mapClassName = (className, lang = "en") => {
   // Clean Disease Name
   let diseaseName = diseaseRaw.replace(/_/g, " ");
   
-  // Custom corrections
+  // Custom corrections for display names
   const lowerDisease = diseaseName.toLowerCase();
   if (lowerDisease.includes("cercospora") || lowerDisease.includes("gray leaf spot")) {
     diseaseName = "Gray Leaf Spot";
@@ -137,7 +138,7 @@ export const mapClassName = (className, lang = "en") => {
       "Scab": "இலை சொறி நோய் (Scab)",
       "Black Rot": "கரு அழுகல் நோய் (Black Rot)",
       "Cedar Apple Rust": "சிடார் ஆப்பிள் துரு நோய்",
-      "Esca (Black Measles)": "எஸ்கா கரும்புள்ளி நோய்",
+      "Esca (Black Measles)": "எஸ்கா கருப்புள்ளி நோய்",
       "Leaf Blight (Isariopsis)": "இலை கருகல் நோய் (Blight)",
       "Common Rust": "சாதாரண துரு நோய்",
       "Gray Leaf Spot": "சாம்பல் இலை புள்ளி நோய்",
@@ -170,7 +171,9 @@ export const mapClassName = (className, lang = "en") => {
 
     result.plantName = tPlant;
     result.diseaseName = tDisease;
-    result.displayName = diseaseName === "Healthy" ? `${tPlant} (${tDisease})` : `${tPlant} - ${tDisease}`;
+    result.displayName = isHealthy 
+      ? `${tPlant} (${tDisease})` 
+      : `${tPlant} - ${tDisease}`;
   }
 
   return result;
