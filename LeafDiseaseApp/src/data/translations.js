@@ -131,6 +131,9 @@ export const translations = {
     treatmentManagement: "Treatment & Management",
     prevention: "Prevention",
     imageLoadFailed: "Failed to load image. Please try again.",
+    downloadPDF: "Download PDF Report",
+    generatingPDF: "Generating PDF...",
+    pdfError: "Failed to generate PDF. Please try again.",
 
     // My Plants Page
     myCollection: "My Plants Collection",
@@ -359,6 +362,9 @@ export const translations = {
     treatmentManagement: "சிகிச்சை / மேலாண்மை",
     prevention: "தடுப்பு முறைகள்",
     imageLoadFailed: "படத்தை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+    downloadPDF: "PDF அறிக்கை பதிவிறக்கவும்",
+    generatingPDF: "PDF உருவாக்கப்படுகிறது...",
+    pdfError: "PDF உருவாக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
 
     // My Plants Page
     myCollection: "எனது பயிர்களின் தொகுப்பு",

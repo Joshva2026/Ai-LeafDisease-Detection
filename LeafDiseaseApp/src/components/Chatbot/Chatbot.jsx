@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Bot, User, Loader2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { MessageSquare, X, Send, Bot, User, Loader2, Mic, MicOff, Volume2, VolumeX, ClipboardCheck, AlertCircle } from "lucide-react";
 import api from "../../api/api";
 import { t } from "../../data/translations";
 import "./Chatbot.css";
@@ -62,6 +62,14 @@ function Chatbot({ currentDisease }) {
     }
   };
 
+  // Build conversation history for AI context
+  const buildConversationHistory = () => {
+    return messages.slice(-10).map(m => ({
+      role: m.sender === "user" ? "user" : "assistant",
+      content: m.text
+    }));
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
@@ -72,9 +80,14 @@ function Chatbot({ currentDisease }) {
     setLoading(true);
 
     try {
+      const conversationHistory = buildConversationHistory();
+      const diseaseInfo = currentDisease ? `Detected disease: ${currentDisease.replace(/___/g, " → ").replace(/_/g, " ")}` : "No disease detected yet";
+
       const response = await api.post("/api/chat", {
         message: userMessage,
-        context: currentDisease || ""
+        context: currentDisease || "",
+        history: conversationHistory,
+        diseaseInfo: diseaseInfo
       });
 
       if (response.data.success) {
@@ -94,6 +107,11 @@ function Chatbot({ currentDisease }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Copy message to clipboard
+  const copyMessage = (text) => {
+    navigator.clipboard.writeText(text);
   };
 
   return (
@@ -152,6 +170,16 @@ function Chatbot({ currentDisease }) {
                     </p>
                   ))}
                 </div>
+                {msg.sender === "bot" && (
+                  <button 
+                    className="copy-btn" 
+                    onClick={() => copyMessage(msg.text)}
+                    aria-label="Copy message"
+                    title="Copy"
+                  >
+                    <ClipboardCheck size={14} />
+                  </button>
+                )}
               </div>
             ))}
 

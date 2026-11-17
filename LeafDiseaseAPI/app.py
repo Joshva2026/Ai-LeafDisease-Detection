@@ -5,6 +5,20 @@
 
 import os
 import sys
+
+# Load .env file FIRST before any other imports
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed, rely on system env vars
+
+# TensorFlow CPU configuration - MUST be set before importing tensorflow
+os.environ.setdefault('TF_CPP_MIN_LOG_LEVEL', '2')  # Suppress INFO and WARNING logs
+os.environ.setdefault('TF_ENABLE_ONEDNN_OPTS', '0')  # Disable oneDNN optimizations
+os.environ.setdefault('CUDA_VISIBLE_DEVICES', '-1')  # Force CPU-only mode
+
+import sys
 import sqlite3
 import uuid
 import datetime

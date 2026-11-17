@@ -1,8 +1,12 @@
 import os
 import json
-from openai import OpenAI
+import logging
+from openai import OpenAI, APITimeoutError, APIConnectionError, AuthenticationError, RateLimitError, APIError
 
-def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, temperature=0.2, max_tokens=1800, timeout=45):
+# Set up logging
+logger = logging.getLogger(__name__)
+
+def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, temperature=0.2, max_tokens=1800, timeout=20):
     """
     Isolated NVIDIA AI Service helper using OpenAI Python SDK.
     Reads NVIDIA_API_KEY and NVIDIA_MODEL exclusively from backend environment.
@@ -12,7 +16,7 @@ def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, tem
     model_name = os.getenv("NVIDIA_MODEL", "nvidia/llama-3.1-nemotron-70b-instruct").strip()
 
     if not nvidia_key or nvidia_key in ("YOUR_NVIDIA_KEY_HERE", "YOUR_API_KEY_HERE"):
-        return None, f"Key exists=NO, Model={model_name}"
+        return None, f"NVIDIA API key not configured"
 
     try:
         client = OpenAI(
@@ -52,9 +56,29 @@ def call_nvidia_ai_service(user_prompt, system_prompt, response_format=None, tem
                 pass
             return content.strip() if content else None, None
 
+    except APITimeoutError:
+        error_msg = "NVIDIA API timeout"
+        logger.warning(f"[NVIDIA AI Service]: {error_msg}")
+        return None, error_msg
+    except AuthenticationError:
+        error_msg = "NVIDIA API authentication failed"
+        logger.warning(f"[NVIDIA AI Service]: {error_msg}")
+        return None, error_msg
+    except RateLimitError:
+        error_msg = "NVIDIA API rate limit exceeded"
+        logger.warning(f"[NVIDIA AI Service]: {error_msg}")
+        return None, error_msg
+    except APIConnectionError:
+        error_msg = "NVIDIA API connection error"
+        logger.warning(f"[NVIDIA AI Service]: {error_msg}")
+        return None, error_msg
+    except APIError as e:
+        error_msg = f"NVIDIA API error: {e.status_code}"
+        logger.warning(f"[NVIDIA AI Service]: {error_msg}")
+        return None, error_msg
     except Exception as e:
         error_msg = f"{type(e).__name__}: {str(e)}"
-        print("[NVIDIA AI Service Error]:", error_msg)
+        logger.warning(f"[NVIDIA AI Service]: {error_msg}")
         return None, error_msg
     return None, "No completion choices returned"
 

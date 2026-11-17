@@ -1,8 +1,12 @@
 import os
 import json
 import requests
+import logging
 
-def call_gemini_ai_service(user_prompt, system_prompt="", timeout=25):
+# Set up logging
+logger = logging.getLogger(__name__)
+
+def call_gemini_ai_service(user_prompt, system_prompt="", timeout=20):
     """
     Direct Gemini REST API service helper using requests.
     Uses GEMINI_API_KEY from environment or .env.
@@ -49,7 +53,23 @@ def call_gemini_ai_service(user_prompt, system_prompt="", timeout=25):
                 if parts and "text" in parts[0]:
                     return parts[0]["text"].strip(), None
             return None, "No candidates in Gemini response"
+        elif resp.status_code == 401:
+            return None, "Gemini authentication failed - invalid API key"
+        elif resp.status_code == 429:
+            return None, "Gemini rate limit exceeded"
+        elif resp.status_code >= 500:
+            return None, f"Gemini server error: HTTP {resp.status_code}"
         else:
             return None, f"Gemini HTTP {resp.status_code}: {resp.text[:150]}"
+    except requests.Timeout:
+        error_msg = "Gemini API timeout"
+        logger.warning(f"[Gemini AI Service]: {error_msg}")
+        return None, error_msg
+    except requests.ConnectionError:
+        error_msg = "Gemini API connection error"
+        logger.warning(f"[Gemini AI Service]: {error_msg}")
+        return None, error_msg
     except Exception as e:
-        return None, f"{type(e).__name__}: {str(e)}"
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        logger.warning(f"[Gemini AI Service]: {error_msg}")
+        return None, error_msg

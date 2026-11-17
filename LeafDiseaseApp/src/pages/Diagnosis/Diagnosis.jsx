@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff, Volume2, VolumeX, Pause, Play, Sliders, Columns, Mic, MicOff } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff, Volume2, VolumeX, Pause, Play, Sliders, Columns, Mic, MicOff, Download, FileText } from "lucide-react";
 import ErrorBoundary from "../../components/ErrorBoundary/ErrorBoundary";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
 import { getMediaUrl } from "../../utils/mediaUrl";
+import { generateScanPDF, downloadPDF, loadImageAsDataUrl } from "../../services/pdfService";
 import api from "../../api/api";
 import "./Diagnosis.css";
 
 function Diagnosis({ prediction, onViewChange, lang }) {
   const [saved, setSaved] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [generatingPDF, setGeneratingPDF] = useState(false);
   
   // Cache the normalized JSON reports to allow instant switching
   const [cachedReports, setCachedReports] = useState({ en: null, ta: null });
@@ -295,6 +297,42 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const gradcamUrl = prediction.gradcam_url ? getMediaUrl(prediction.gradcam_url) : null;
   
   const handleSave = () => setSaved(true);
+
+  // PDF Download Handler
+  const handleDownloadPDF = async () => {
+    if (generatingPDF) return;
+    setGeneratingPDF(true);
+    
+    try {
+      // Load images as data URLs for PDF embedding
+      const [imageDataUrl, gradcamDataUrl] = await Promise.all([
+        originalUrl ? loadImageAsDataUrl(originalUrl) : Promise.resolve(null),
+        gradcamUrl ? loadImageAsDataUrl(gradcamUrl) : Promise.resolve(null),
+      ]);
+
+      // Generate PDF with current report and images
+      const pdfBlob = await generateScanPDF({
+        prediction,
+        report: cachedReports[reportLang],
+        imageDataUrl,
+        gradcamDataUrl,
+        lang: reportLang,
+      });
+
+      // Create filename
+      const diseaseName = prediction.disease_formatted || prediction.disease || 'Unknown';
+      const safeName = diseaseName.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `LeafGuard_${safeName}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      // Download
+      downloadPDF(pdfBlob, filename);
+    } catch (e) {
+      console.error('PDF generation failed:', e);
+      alert(t('pdfError', lang) || 'Failed to generate PDF. Please try again.');
+    } finally {
+      setGeneratingPDF(false);
+    }
+  };
 
   return (
     <div className="disease-reveal-container fade-in-section">
@@ -715,6 +753,16 @@ function Diagnosis({ prediction, onViewChange, lang }) {
         <button className="btn btn-secondary action-btn" onClick={() => onViewChange("scan")} style={{ flex: 1 }}>
           <Camera size={20} />
           <span>{t("scanAnother", lang)}</span>
+        </button>
+        <button 
+          className={`btn action-btn ${generatingPDF ? 'btn-loading' : ''}`} 
+          onClick={handleDownloadPDF} 
+          disabled={generatingPDF}
+          style={{ flex: 1 }}
+          title={t("downloadPDF", lang)}
+        >
+          <Download size={20} />
+          <span>{generatingPDF ? t("generatingPDF", lang) : t("downloadPDF", lang)}</span>
         </button>
         <button 
           className={`btn action-btn ${saved ? 'btn-success' : 'btn-primary'}`} 

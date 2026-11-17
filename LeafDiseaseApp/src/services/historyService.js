@@ -1,13 +1,22 @@
 /**
  * LeafGuard AI - Unified History Service
- * Uses IndexedDB for web, Capacitor Preferences for Android/iOS
- * Keeps latest 10 scan results per user
+ * Uses Firebase Firestore (primary), IndexedDB (web fallback), Capacitor Preferences (Android/iOS fallback)
+ * Keeps latest 50 scan results per user (local) / unlimited (Firestore)
  */
+
+import { 
+  saveScanReport as firebaseSaveScan, 
+  getUserScans as firebaseGetScans, 
+  deleteScanReport as firebaseDeleteScan, 
+  clearUserScans as firebaseClearHistory,
+  isFirebaseEnabled,
+  firebaseDb
+} from './firebase';
 
 const DB_NAME = 'LeafGuardHistory';
 const DB_VERSION = 1;
 const STORE_NAME = 'scans';
-const MAX_ENTRIES = 10;
+const MAX_ENTRIES = 50; // Increased for better local history
 
 function isCapacitor() {
   return typeof window !== 'undefined' &&
@@ -297,78 +306,215 @@ function clearHistoryFromCapacitor(username) {
   });
 }
 
+// ============================================
+// UNIFIED HISTORY SERVICE WITH FIRESTORE SYNC
+// ============================================
+
 var historyService = {
-  getScans: function(username) {
-    if (username) {
-      if (isCapacitor()) {
-        return getScansFromCapacitor(username);
-      } else {
-        return getScansFromIndexedDB(username);
+  /**
+   * Get scans for a user - tries Firestore first, falls back to local storage
+   */
+  getScans: async function(username) {
+    const user = username || await getCurrentUsername();
+    
+    // Try Firestore first if enabled
+    if (isFirebaseEnabled()) {
+      try {
+        const firestoreScans = await firebaseGetScans(user);
+        if (firestoreScans && firestoreScans.length > 0) {
+          // Sync to local storage for offline access
+          await this._syncToLocal(user, firestoreScans);
+          return firestoreScans.map(s => ({ ...s, source: 'firestore' }));
+        }
+      } catch (e) {
+        console.warn('Firestore getScans failed, falling back to local:', e);
       }
     }
-    // No username provided: resolve from unified source
-    return getCurrentUsername().then(function(resolvedUsername) {
-      if (isCapacitor()) {
-        return getScansFromCapacitor(resolvedUsername);
-      } else {
-        return getScansFromIndexedDB(resolvedUsername);
-      }
-    });
+    
+    // Fallback to local storage
+    if (isCapacitor()) {
+      return getScansFromCapacitor(user);
+    } else {
+      return getScansFromIndexedDB(user);
+    }
   },
 
-  addScan: function(scan) {
-    var scanToSave = Object.assign({}, scan, {
+  /**
+   * Internal: sync Firestore scans to local storage
+   */
+  _syncToLocal: async function(username, scans) {
+    if (isCapacitor()) {
+      const Preferences = await getPreferences();
+      if (Preferences) {
+        const localScans = scans.slice(0, MAX_ENTRIES).map(scan => ({
+          ...scan,
+          id: scan.id || scan.firestoreId || generateScanId(),
+          capacitorId: scan.id || scan.firestoreId || generateScanId(),
+          firestoreId: scan.id,
+        }));
+        await Preferences.set({ key: 'history_' + username, value: JSON.stringify(localScans) });
+      }
+    } else {
+      const db = await initIndexedDB();
+      const transaction = db.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      
+      // Clear existing for this user
+      const index = store.index('username');
+      const keysRequest = index.getAllKeys(username);
+      keysRequest.onsuccess = () => {
+        keysRequest.result.forEach(key => store.delete(key));
+        scans.slice(0, MAX_ENTRIES).forEach(scan => {
+          const scanWithUser = { 
+            ...scan, 
+            username, 
+            id: scan.id || scan.firestoreId || undefined, // Let auto-increment handle it
+            firestoreId: scan.id 
+          };
+          store.add(scanWithUser);
+        });
+      };
+    }
+  },
+
+  /**
+   * Add a scan - saves to Firestore (if available) and local storage
+   */
+  addScan: async function(scan) {
+    const scanToSave = Object.assign({}, scan, {
       timestamp: scan.timestamp || new Date().toISOString()
     });
+    
+    const username = await getCurrentUsername();
+    let firestoreId = null;
+    let success = false;
 
-    if (isCapacitor()) {
-      // Ensure scan has username from unified source
-      return getCurrentUsername().then(function(username) {
-        var scanWithUser = Object.assign({}, scanToSave, { username: username });
-        return addScanToCapacitor(scanWithUser);
-      });
-    } else {
-      return addScanToIndexedDB(scanToSave).then(function() { return true; }).catch(function(e) {
-        console.error('Failed to add scan to IndexedDB:', e);
-        return false;
-      });
-    }
-  },
-
-  deleteScan: function(id) {
-    if (isCapacitor()) {
-      return deleteScanFromCapacitor(id);
-    } else {
-      return deleteScanFromIndexedDB(id).then(function() { return true; }).catch(function(e) {
-        console.error('Failed to delete scan from IndexedDB:', e);
-        return false;
-      });
-    }
-  },
-
-  clearHistory: function(username) {
-    if (username) {
-      if (isCapacitor()) {
-        return clearHistoryFromCapacitor(username);
-      } else {
-        return clearHistoryFromIndexedDB(username).then(function() { return true; }).catch(function(e) {
-          console.error('Failed to clear history from IndexedDB:', e);
-          return false;
+    // 1. Try Firestore first
+    if (isFirebaseEnabled()) {
+      try {
+        firestoreId = await firebaseSaveScan(username, {
+          ...scanToSave,
+          // Don't store images in Firestore
+          originalImageUrl: scanToSave.original_url || null,
+          gradcamImageUrl: scanToSave.gradcam_url || null,
         });
+        success = true;
+        console.log('[History] Saved to Firestore:', firestoreId);
+      } catch (e) {
+        console.warn('[History] Firestore save failed:', e);
       }
     }
-    // No username provided: resolve from unified source
-    return getCurrentUsername().then(function(resolvedUsername) {
-      if (isCapacitor()) {
-        return clearHistoryFromCapacitor(resolvedUsername);
-      } else {
-        return clearHistoryFromIndexedDB(resolvedUsername).then(function() { return true; }).catch(function(e) {
-          console.error('Failed to clear history from IndexedDB:', e);
-          return false;
-        });
+
+    // 2. Always save to local storage as backup/offline
+    const localScan = {
+      ...scanToSave,
+      firestoreId,
+      id: firestoreId || generateScanId(),
+    };
+
+    if (isCapacitor()) {
+      const localSuccess = await addScanToCapacitor({ ...localScan, username });
+      success = success || localSuccess;
+    } else {
+      try {
+        await addScanToIndexedDB(localScan);
+        success = true;
+      } catch (e) {
+        console.error('[History] IndexedDB save failed:', e);
       }
-    });
+    }
+
+    return success;
   },
+
+  /**
+   * Delete a scan from both Firestore and local storage
+   */
+  deleteScan: async function(id) {
+    const username = await getCurrentUsername();
+    let deleted = false;
+    let errors = [];
+
+    // 1. Try Firestore if the ID looks like a Firestore ID or we have a mapping
+    if (isFirebaseEnabled()) {
+      try {
+        await firebaseDeleteScan(username, id);
+        deleted = true;
+        console.log('[History] Deleted from Firestore:', id);
+      } catch (e) {
+        console.warn('[History] Firestore delete failed:', e);
+        errors.push(e.message);
+      }
+    }
+
+    // 2. Delete from local storage
+    let localDeleted = false;
+    if (isCapacitor()) {
+      localDeleted = await deleteScanFromCapacitor(id);
+    } else {
+      try {
+        await deleteScanFromIndexedDB(id);
+        localDeleted = true;
+      } catch (e) {
+        console.error('[History] IndexedDB delete failed:', e);
+        errors.push(e.message);
+      }
+    }
+    deleted = deleted || localDeleted;
+
+    if (!deleted) {
+      throw new Error('Failed to delete scan: ' + errors.join(', '));
+    }
+
+    return true;
+  },
+
+  /**
+   * Clear all history for a user from both Firestore and local storage
+   */
+  clearHistory: async function(username) {
+    const user = username || await getCurrentUsername();
+    let cleared = false;
+    let errors = [];
+
+    // 1. Clear Firestore
+    if (isFirebaseEnabled()) {
+      try {
+        const count = await firebaseClearHistory(user);
+        console.log('[History] Cleared', count, 'scans from Firestore');
+        cleared = true;
+      } catch (e) {
+        console.warn('[History] Firestore clear failed:', e);
+        errors.push(e.message);
+      }
+    }
+
+    // 2. Clear local storage
+    let localCleared = false;
+    if (isCapacitor()) {
+      localCleared = await clearHistoryFromCapacitor(user);
+    } else {
+      try {
+        await clearHistoryFromIndexedDB(user);
+        localCleared = true;
+      } catch (e) {
+        console.error('[History] IndexedDB clear failed:', e);
+        errors.push(e.message);
+      }
+    }
+    cleared = cleared || localCleared;
+
+    if (!cleared) {
+      throw new Error('Failed to clear history: ' + errors.join(', '));
+    }
+
+    return true;
+  },
+
+  /**
+   * Check if Firestore is available
+   */
+  isFirestoreEnabled: isFirebaseEnabled,
 
   isNative: function() { return isCapacitor(); }
 };

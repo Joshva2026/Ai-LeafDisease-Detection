@@ -1,1 +1,48 @@
-ஓசாதிகள் தடைமுறையாக அல்லது நோய் அறிகுறிகள் தோன்றியும் முதல் நிலையில் spray செய்யவும்.
+{
+  "diagnosis": "Tomato Yellow Leaf Curl Virus (TYLCV)",
+  "summary": "A severe viral disease transmitted by silverleaf whiteflies causing stunting, leaf curling, and yield loss. No cure exists; infected plants must be removed immediately to prevent spread.",
+  "symptoms": [
+    "Severe stunting of plant growth",
+    "Leaves small, cupped upward, and yellowed at margins",
+    "Premature flower drop",
+    "Poor fruit set and reduced yields"
+  ],
+  "causes": [
+    "Transmission by silverleaf whitefly (vector)",
+    "Introduction of virus into healthy plants by whiteflies",
+    "No systemic cure once plant is infected"
+  ],
+  "immediate_actions": [
+    "Immediately remove and destroy all infected plants",
+    "Check surrounding plants for early symptoms",
+    "Sanitize tools after handling affected plants",
+    "Monitor field edges for whitefly activity"
+  ],
+  "treatment": [
+    "No chemical cure available for TYLCV",
+    "Remove and burn infected plant material",
+    "Avoid composting diseased plants",
+    "Focus efforts on protecting remaining healthy plants"
+  ],
+  "prevention": [
+    "Plant TYLCV-resistant tomato varieties",
+    "Control whitefly populations with sticky traps",
+    "Use reflective mulches to deter whiteflies",
+    "Implement strict field sanitation practices",
+    "Remove weeds that may harbor whiteflies"
+  ],
+  "monitoring": [
+    "Inspect plants weekly for whitefly presence",
+    "Check leaf undersides for nymphs and eggs",
+    "Record symptom progression on a field map",
+    "Monitor neighboring crops for virus spread",
+    "Track whitefly counts using yellow sticky traps"
+  ],
+  "farmer_advice": [
+    "Act quickly: remove infected plants before virus spreads",
+    "Resistant varieties are your best long-term defense",
+    "Whitefly control is critical - focus on prevention not cure",
+    "Sanitize all equipment between fields",
+    "Consult local extension service for variety recommendations suited to your region"
+  ]
+}

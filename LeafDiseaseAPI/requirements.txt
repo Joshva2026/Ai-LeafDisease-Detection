@@ -26,3 +26,6 @@ openai
 
 # Security
 werkzeug
+
+# Environment Configuration
+python-dotenv==1.0.1

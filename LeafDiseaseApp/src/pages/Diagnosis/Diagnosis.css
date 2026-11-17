@@ -719,6 +719,15 @@
   color: #040806;
 }
 
+.btn-loading {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+.btn-loading .spin-anim {
+  animation: spin 1s linear infinite;
+}
+
 /* Fullscreen Modal */
 .fullscreen-image-modal {
   position: fixed;
