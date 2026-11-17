@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Auth from "./components/Auth/Auth";
 import api from "./api/api";
-import { loadHistory, saveHistory } from "./utils/historyStorage";
+import historyService from "./services/historyService";
 import Home from "./pages/Home/Home";
 import Scan from "./pages/Scan/Scan";
 import Diagnosis from "./pages/Diagnosis/Diagnosis";
@@ -91,29 +91,23 @@ function App() {
     };
   }, [view]); // Run re-binding whenever the view swaps
 
-  // Fetch scan history
-  const fetchHistory = async () => {
+  // Load scan history from local storage (IndexedDB/Capacitor)
+  const loadHistory = async () => {
     if (!user) return;
     try {
-      const response = await api.get(`/api/history?username=${user.username}`);
-      if (response.data.success && response.data.history && response.data.history.length > 0) {
-        setHistory(response.data.history);
-      } else {
-        const localHist = loadHistory(user.username);
-        setHistory(localHist);
-      }
+      const scans = await historyService.getScans(user.username);
+      setHistory(scans);
     } catch (err) {
-      console.error("Failed to fetch history:", err);
-      const localHist = loadHistory(user.username);
-      setHistory(localHist);
+      console.error("Failed to load history:", err);
+      setHistory([]);
     }
   };
 
   useEffect(() => {
     if (user) {
-      fetchHistory();
+      loadHistory();
     }
-  }, [user, prediction]);
+  }, [user]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -226,23 +220,29 @@ function App() {
               };
               setPrediction(predictionForState);
 
-              // Try to save lightweight history — failure must NOT block prediction
+              // Save to local history (IndexedDB/Capacitor) - failure must NOT block prediction
               if (user) {
-                try {
-                  const localHist = loadHistory(user.username);
-                  const historyEntry = {
-                    disease: result.disease || "Unknown",
-                    confidence: result.confidence || 0,
-                    original_url: result.original_url || "",
-                    gradcam_url: result.gradcam_url || "",
-                    timestamp: new Date().toISOString()
-                  };
-                  localHist.unshift(historyEntry);
-                  saveHistory(user.username, localHist);
-                  setHistory(localHist);
-                } catch (e) {
-                  console.warn("History could not be saved", e);
-                }
+                (async () => {
+                  try {
+                    const historyEntry = {
+                      disease: result.disease || "Unknown",
+                      plant: result.plant || "Unknown Plant",
+                      confidence: result.confidence || 0,
+                      original_url: result.original_url || "",
+                      gradcam_url: result.gradcam_url || "",
+                      disease_formatted: result.disease_formatted || result.disease || "Unknown Disease",
+                      health_status: result.health_status || "Unknown",
+                      severity: result.severity || "Unknown",
+                      top_predictions: result.top_predictions || [],
+                      timestamp: new Date().toISOString()
+                    };
+                    await historyService.addScan(historyEntry);
+                    const scans = await historyService.getScans(user.username);
+                    setHistory(scans);
+                  } catch (e) {
+                    console.warn("History could not be saved", e);
+                  }
+                })();
               }
 
               setView("diagnosis");

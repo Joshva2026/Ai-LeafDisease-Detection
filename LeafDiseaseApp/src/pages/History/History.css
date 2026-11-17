@@ -184,6 +184,72 @@
   color: var(--primary);
 }
 
+/* Clear History Button */
+.memory-clear-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 2px solid var(--color-danger);
+  color: var(--color-danger);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: var(--touch-min);
+}
+
+.memory-clear-btn:hover {
+  background: var(--color-danger-light);
+}
+
+/* Specimen Footer Actions */
+.specimen-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-delete-scan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 2px solid var(--color-danger);
+  color: var(--color-danger);
+  padding: 8px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: var(--touch-min);
+  min-width: var(--touch-min);
+}
+
+.btn-delete-scan:hover:not(:disabled) {
+  background: var(--color-danger-light);
+}
+
+.btn-delete-scan:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deleting-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-danger);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Timeline Content */
 .memory-timeline-content {
   display: flex;

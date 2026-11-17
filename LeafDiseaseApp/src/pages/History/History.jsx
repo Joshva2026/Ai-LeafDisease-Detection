@@ -1,14 +1,24 @@
-import { useState, useMemo } from "react";
-import { FileText, Search, ArrowUpDown, Eye, History as HistoryIcon, Sparkles, CheckCircle, AlertTriangle } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { FileText, Search, ArrowUpDown, Eye, History as HistoryIcon, Sparkles, CheckCircle, AlertTriangle, Trash2, Trash } from "lucide-react";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
 import { getMediaUrl } from "../../utils/mediaUrl";
+import historyService from "../../services/historyService";
 import "./History.css";
 
 function History({ history, onViewChange, onSelectPrediction, lang }) {
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
+  const [localHistory, setLocalHistory] = useState([]);
+  const [deletingId, setDeletingId] = useState(null);
+
+  // Sync local history with props
+  useEffect(() => {
+    if (Array.isArray(history)) {
+      setLocalHistory(history);
+    }
+  }, [history]);
 
   const handleSelectScan = (scan) => {
     const details = mapClassName(scan.disease);
@@ -27,8 +37,38 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
     onViewChange("diagnosis");
   };
 
+  // Delete a single scan from history
+  const handleDeleteScan = async (id) => {
+    setDeletingId(id);
+    try {
+      const success = await historyService.deleteScan(id);
+      if (success) {
+        setLocalHistory(prev => prev.filter(scan => scan.id !== id));
+      }
+    } catch (e) {
+      console.error("Failed to delete scan:", e);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // Clear all history
+  const handleClearHistory = async () => {
+    if (!window.confirm(t("clearHistoryConfirm", lang))) {
+      return;
+    }
+    try {
+      const success = await historyService.clearHistory();
+      if (success) {
+        setLocalHistory([]);
+      }
+    } catch (e) {
+      console.error("Failed to clear history:", e);
+    }
+  };
+
   const filteredAndSortedList = useMemo(() => {
-    let result = history.filter(scan => {
+    let result = localHistory.filter(scan => {
       const isHealthy = scan.disease.toLowerCase().includes("healthy");
       if (filter === "healthy" && !isHealthy) return false;
       if (filter === "diseases" && isHealthy) return false;
@@ -57,13 +97,13 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
     });
 
     return result;
-  }, [history, filter, searchQuery, sortOrder]);
+  }, [localHistory, filter, searchQuery, sortOrder]);
 
   const toggleSort = () => {
     setSortOrder(prev => prev === "newest" ? "oldest" : "newest");
   };
 
-  const safeHistory = Array.isArray(history) ? history : [];
+  const safeHistory = Array.isArray(localHistory) ? localHistory : [];
 
   return (
     <div className="leaf-memory-container fade-in-section">
@@ -121,6 +161,18 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
           <ArrowUpDown size={16} />
           <span>{sortOrder === "newest" ? t("newestFirst", lang) : t("oldestFirst", lang)}</span>
         </button>
+
+        {/* Clear History Button */}
+        {safeHistory.length > 0 && (
+          <button 
+            className="memory-clear-btn" 
+            onClick={handleClearHistory}
+            title={t("clearHistory", lang)}
+          >
+            <Trash size={16} />
+            <span>{t("clearHistory", lang)}</span>
+          </button>
+        )}
       </div>
 
       {/* TIMELINE SPECIMEN GRID */}
@@ -154,7 +206,7 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
               const isHealthy = details.isHealthy;
 
               return (
-                <div key={idx} className="specimen-card glass-card" onClick={() => handleSelectScan(scan)}>
+                <div key={scan.id || idx} className="specimen-card glass-card" onClick={() => handleSelectScan(scan)}>
                   
                   {/* SPECIMEN THUMBNAILS */}
                   <div className="specimen-visual-box">
@@ -190,10 +242,27 @@ function History({ history, onViewChange, onSelectPrediction, lang }) {
 
                     <div className="specimen-footer">
                       <span className="specimen-conf-score">{Math.round(scan.confidence)}% {t("confidence", lang)}</span>
-                      <button className="btn-view-specimen">
-                        <Eye size={16} />
-                        <span>{t("openReport", lang)}</span>
-                      </button>
+                      <div className="specimen-footer-actions">
+                        <button className="btn-view-specimen">
+                          <Eye size={16} />
+                          <span>{t("openReport", lang)}</span>
+                        </button>
+                        <button 
+                          className="btn-delete-scan"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteScan(scan.id);
+                          }}
+                          title={t("delete", lang)}
+                          disabled={deletingId === scan.id}
+                        >
+                          {deletingId === scan.id ? (
+                            <span className="deleting-spinner" />
+                          ) : (
+                            <Trash2 size={16} />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
 

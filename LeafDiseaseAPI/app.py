@@ -107,16 +107,6 @@ def init_db():
                 cursor.execute(f"ALTER TABLE users ADD COLUMN {col_def}")
             except sqlite3.OperationalError:
                 pass
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS scans (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT,
-                timestamp TEXT NOT NULL,
-                filename TEXT,
-                disease TEXT NOT NULL,
-                confidence REAL NOT NULL
-            )
-        """)
         conn.commit()
         conn.close()
         print("[OK] Database initialized")
@@ -440,21 +430,6 @@ def predict():
         except Exception as cam_err:
             print("Grad-CAM generation failed:", cam_err)
 
-        username = request.form.get("username", "Guest")
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-
-        try:
-            conn = sqlite3.connect(DATABASE_PATH)
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO scans (username, timestamp, filename, disease, confidence) VALUES (?, ?, ?, ?, ?)",
-                (username, timestamp, safe_filename, disease_raw, confidence)
-            )
-            conn.commit()
-            conn.close()
-        except Exception as db_err:
-            print("DB save failed:", db_err)
-
         return jsonify({
             "success": True,
             "disease": disease_raw,
@@ -599,35 +574,6 @@ def update_profile():
                 "profile_image": user_row[2] or ""
             }
         })
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
-
-@app.route("/api/history", methods=["GET"])
-def history():
-    username = request.args.get("username", "Guest")
-    try:
-        conn = sqlite3.connect(DATABASE_PATH)
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT timestamp, filename, disease, confidence FROM scans WHERE username = ? ORDER BY id DESC LIMIT 10",
-            (username,)
-        )
-        rows = cursor.fetchall()
-        conn.close()
-
-        history_list = []
-        for row in rows:
-            filename = row[1]
-            history_list.append({
-                "timestamp": row[0],
-                "filename": filename,
-                "disease": row[2],
-                "confidence": row[3],
-                "original_url": "/uploads/" + filename,
-                "gradcam_url": "/uploads/gradcam_" + filename
-            })
-        return jsonify({"success": True, "history": history_list})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 

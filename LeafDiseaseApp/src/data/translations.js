@@ -461,6 +461,13 @@ export const translations = {
     beginDiagnosis: "தொடங்கவும்",
     nextStep: "அடுத்து",
     scanGuidanceShort: "நோய் தாக்கிய இலையை தெளிவாக புகைப்படம் எடுக்கவும்.",
+
+    // History page
+    clearHistory: "வரலாற்றை நீக்கவும்",
+    clearHistoryConfirm: "அனைத்து வரலாற்றையும் நீக்க விரும்புகிறீர்களா? இந்தச் செயலை மீண்டும் மாற்ற முடியாது.",
+    delete: "நீக்கு",
+    deleting: "நீக்குகிறது...",
+    openReport: "அறிக்கை திற",
   }
 };
 
