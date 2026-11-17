@@ -158,10 +158,11 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   };
 
   const handleLangToggle = (newLang) => {
+    newLang = newLang || "ta";
     setReportLang(newLang);
     setAudioLang(newLang);
     fetchAiReport(newLang);
-  }, [prediction = {}, lang = "ta"]);
+  }, [newLang]);
 
   // ============================================================
   // GRAD-CAM SLIDER DRAG HANDLERS
