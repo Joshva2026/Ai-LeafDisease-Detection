@@ -76,10 +76,6 @@ async function registerTamilFont(doc) {
  * Generates professional PDF reports with images and disease information
  */
 
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
-import { mapClassName } from "../data/diseaseHelper";
-
 /**
  * Generate PDF for a scan result
  * @param {Object} params - Report parameters

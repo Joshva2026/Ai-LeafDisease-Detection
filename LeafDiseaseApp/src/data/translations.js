@@ -134,6 +134,11 @@ export const translations = {
     downloadPDF: "Download PDF Report",
     generatingPDF: "Generating PDF...",
     pdfError: "Failed to generate PDF. Please try again.",
+    preparingImages: "Preparing images...",
+    generatingReport: "Generating report...",
+    finalizingPDF: "Finalizing PDF...",
+    offlineMode: "You're offline. Some features may be limited.",
+    dismiss: "Dismiss",
 
     // My Plants Page
     myCollection: "My Plants Collection",
@@ -236,6 +241,17 @@ export const translations = {
     beginDiagnosis: "Begin Diagnosis",
     nextStep: "Next",
     scanGuidanceShort: "Capture a clear photo of the affected leaf.",
+    // Layout
+    expandSidebar: "Expand Sidebar",
+    collapseSidebar: "Collapse Sidebar",
+    farmer: "Farmer",
+    searchPlaceholder: "Search diseases, plants...",
+    pageTitle: "LeafGuard AI",
+    backToHome: "Back to Home",
+    getStarted: "Get Started",
+    welcome: "Welcome",
+    onboardingText: "Welcome to LeafGuard AI. Your personal plant doctor for Tamil Nadu farmers.",
+    scanLeaf: "Scan Leaf",
   },
   ta: {
     // Navigation / General
@@ -365,6 +381,11 @@ export const translations = {
     downloadPDF: "PDF அறிக்கை பதிவிறக்கவும்",
     generatingPDF: "PDF உருவாக்கப்படுகிறது...",
     pdfError: "PDF உருவாக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+    preparingImages: "படங்கள் தயாராகின்றன...",
+    generatingReport: "அறிக்கை உருவாக்கப்படுகிறது...",
+    finalizingPDF: "PDF முடிக்கப்படுகிறது...",
+    offlineMode: "நீங்கள் ஆஃப்லைனில் இருக்கிறீர்கள். சில அம்சங்கள் வேளை செய்யாது.",
+    dismiss: "தவிர்",
 
     // My Plants Page
     myCollection: "எனது பயிர்களின் தொகுப்பு",
@@ -467,6 +488,17 @@ export const translations = {
     beginDiagnosis: "தொடங்கவும்",
     nextStep: "அடுத்து",
     scanGuidanceShort: "நோய் தாக்கிய இலையை தெளிவாக புகைப்படம் எடுக்கவும்.",
+    // Layout
+    expandSidebar: "உலவி விரிவாக்கு",
+    collapseSidebar: "உலவி சுருக்கு",
+    farmer: "விவசாயி",
+    searchPlaceholder: "நோய்கள், பயிர்கள் தேடுக...",
+    pageTitle: "லீஃப்கார்ட் AI",
+    backToHome: "முகப்புக்குத் திரும்பு",
+    getStarted: "தொடங்கவும்",
+    welcome: "வரவேற்பு",
+    onboardingText: "லீஃப்கார்ட் AI-க்கு வரவேற்கிறோம். தமிழ்நாடு விவசாயிகளுக்கான உங்கள் தனிப்பட்ட தாவர மருத்துவர்.",
+    scanLeaf: "இலையை ஸ்கேன் செய்க",
 
     // History page
     clearHistory: "வரலாற்றை நீக்கவும்",

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff, Volume2, VolumeX, Pause, Play, Sliders, Columns, Mic, MicOff, Download, FileText, AlertCircle, WifiOff, Wifi } from "lucide-react";
+import { ArrowLeft, CheckCircle, AlertTriangle, RefreshCw, BookmarkCheck, Maximize2, X, Eye, Activity, Sparkles, Bot, Loader2, Sprout, ShieldCheck, Camera, ImageOff, Volume2, VolumeX, Pause, Play, Sliders, Columns, Mic, MicOff, Download, FileText, AlertCircle, WifiOff } from "lucide-react";
 import ErrorBoundary from "../../components/ErrorBoundary/ErrorBoundary";
 import { mapClassName } from "../../data/diseaseHelper";
 import { t } from "../../data/translations";
@@ -167,11 +167,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   // ============================================================
   // GRAD-CAM SLIDER DRAG HANDLERS
   // ============================================================
-  const [viewMode, setViewMode] = useState("slider"); // "slider" | "grid"
-  const [sliderPos, setSliderPos] = useState(50);
-  const sliderRef = useRef(null);
-  const isDragging = useRef(false);
-
   const handleSliderMove = (clientX) => {
     if (!sliderRef.current) return;
     const rect = sliderRef.current.getBoundingClientRect();
@@ -203,24 +198,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   // ============================================================
   // TEXT-TO-SPEECH (TTS) AUDIO READOUT
   // ============================================================
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [audioLang, setAudioLang] = useState(lang || "ta");
-  const [ttsNotice, setTtsNotice] = useState("");
-
-  // Guard to prevent state updates after unmount
-  const isMounted = useRef(true);
-
-  useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-      if (typeof window !== "undefined" && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
   const getSpeechScript = (targetLang) => {
     const details = mapClassName(prediction?.disease || "Unknown");
     const active = cachedReports[targetLang] || aiStructured;
@@ -319,11 +296,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   // ============================================================
   // PDF DOWNLOAD HANDLER WITH BETTER ERROR HANDLING
   // ============================================================
-  const [generatingPDF, setGeneratingPDF] = useState(false);
-  const [pdfError, setPdfError] = useState(null);
-  const [pdfProgress, setPdfProgress] = useState(0);
-  const [networkStatus, setNetworkStatus] = useState(navigator.onLine ? 'online' : 'offline');
-
   const handleDownloadPDF = async () => {
     if (generatingPDF) return;
     setGeneratingPDF(true);
@@ -372,195 +344,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const copyMessage = (text) => {
     navigator.clipboard.writeText(text);
   };
-
-  // Network status monitoring
-  const [networkStatus, setNetworkStatus] = useState(navigator.onLine ? 'online' : 'offline');
-  useEffect(() => {
-    const handleOnline = () => setNetworkStatus('online');
-    const handleOffline = () => setNetworkStatus('offline');
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  // ============================================================
-  // GUARD CLAUSES
-  // ============================================================
-  if (!prediction) {
-    return (
-      <div className="diag-empty-wrapper slide-section fade-in-section animate-slide-up">
-        <div className="card card-glass diag-empty-card">
-          <Sprout size={48} color="#9ca3af" style={{ marginBottom: '16px' }} />
-          <p style={{ fontSize: '18px', marginBottom: '20px' }}>{t("noDiagnosisData", lang)}</p>
-          <button className="btn btn-hero" onClick={() => onViewChange("scan")} style={{ width: '100%' }}>
-            <Camera size={20} />
-            <span>{t("goToScanPage", lang)}</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const details = mapClassName(prediction.disease || "Unknown");
-  const isHealthy = details.isHealthy;
-  const originalUrl = getMediaUrl(prediction.original_url);
-  const gradcamUrl = prediction.gradcam_url ? getMediaUrl(prediction.gradcam_url) : null;
-  const aiStructured = cachedReports[reportLang];
-  
-  const handleSave = () => setSaved(true);
-
-  // PDF Download Handler
-  const handleDownloadPDF = async () => {
-    if (generatingPDF) return;
-    setGeneratingPDF(true);
-    setPdfError(null);
-    setPdfProgress(0);
-    
-    try {
-      setPdfProgress(10);
-      // Load images as data URLs for PDF embedding
-      const [imageDataUrl, gradcamDataUrl] = await Promise.all([
-        originalUrl ? loadImageAsDataUrl(originalUrl) : Promise.resolve(null),
-        gradcamUrl ? loadImageAsDataUrl(gradcamUrl) : Promise.resolve(null),
-      ]);
-      setPdfProgress(30);
-
-      // Generate PDF with current report and images
-      const pdfBlob = await generateScanPDF({
-        prediction,
-        report: cachedReports[reportLang],
-        imageDataUrl,
-        gradcamDataUrl,
-        lang: reportLang,
-      });
-
-      // Create filename
-      const diseaseName = prediction.disease_formatted || prediction.disease || 'Unknown';
-      const safeName = diseaseName.replace(/[^a-zA-Z0-9]/g, '_');
-      const filename = `LeafGuard_${safeName}_${new Date().toISOString().split('T')[0]}.pdf`;
-
-      // Download
-      downloadPDF(pdfBlob, filename);
-      setPdfProgress(100);
-    } catch (e) {
-      console.error('PDF generation failed:', e);
-      const errorMsg = e.message || 'Failed to generate PDF. Please try again.';
-      setPdfError(errorMsg);
-      alert(t('pdfError', lang) || errorMsg);
-    } finally {
-      setGeneratingPDF(false);
-      setTimeout(() => setPdfProgress(0), 500);
-    }
-  };
-
-  // Copy message to clipboard
-  const copyMessage = (text) => {
-    navigator.clipboard.writeText(text);
-  };
-
-  // Network status monitoring
-  const [networkStatus, setNetworkStatus] = useState(navigator.onLine ? 'online' : 'offline');
-  useEffect(() => {
-    const handleOnline = () => setNetworkStatus('online');
-    const handleOffline = () => setNetworkStatus('offline');
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  // ============================================================
-  // GUARD CLAUSES
-  // ============================================================
-  if (!prediction) {
-    return (
-      <div className="diag-empty-wrapper slide-section fade-in-section animate-slide-up">
-        <div className="card card-glass diag-empty-card">
-          <Sprout size={48} color="#9ca3af" style={{ marginBottom: '16px' }} />
-          <p style={{ fontSize: '18px', marginBottom: '20px' }}>{t("noDiagnosisData", lang)}</p>
-          <button className="btn btn-hero" onClick={() => onViewChange("scan")} style={{ width: '100%' }}>
-            <Camera size={20} />
-            <span>{t("goToScanPage", lang)}</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const details = mapClassName(prediction.disease || "Unknown");
-  const isHealthy = details.isHealthy;
-  const originalUrl = getMediaUrl(prediction.original_url);
-  const gradcamUrl = prediction.gradcam_url ? getMediaUrl(prediction.gradcam_url) : null;
-  const aiStructured = cachedReports[reportLang];
-  
-  const handleSave = () => setSaved(true);
-
-  // PDF Download Handler
-  const handleDownloadPDF = async () => {
-    if (generatingPDF) return;
-    setGeneratingPDF(true);
-    setPdfError(null);
-    setPdfProgress(0);
-    
-    try {
-      setPdfProgress(10);
-      // Load images as data URLs for PDF embedding
-      const [imageDataUrl, gradcamDataUrl] = await Promise.all([
-        originalUrl ? loadImageAsDataUrl(originalUrl) : Promise.resolve(null),
-        gradcamUrl ? loadImageAsDataUrl(gradcamUrl) : Promise.resolve(null),
-      ]);
-      setPdfProgress(30);
-
-      // Generate PDF with current report and images
-      const pdfBlob = await generateScanPDF({
-        prediction,
-        report: cachedReports[reportLang],
-        imageDataUrl,
-        gradcamDataUrl,
-        lang: reportLang,
-      });
-
-      // Create filename
-      const diseaseName = prediction.disease_formatted || prediction.disease || 'Unknown';
-      const safeName = diseaseName.replace(/[^a-zA-Z0-9]/g, '_');
-      const filename = `LeafGuard_${safeName}_${new Date().toISOString().split('T')[0]}.pdf`;
-
-      // Download
-      downloadPDF(pdfBlob, filename);
-      setPdfProgress(100);
-    } catch (e) {
-      console.error('PDF generation failed:', e);
-      const errorMsg = e.message || 'Failed to generate PDF. Please try again.';
-      setPdfError(errorMsg);
-      alert(t('pdfError', lang) || errorMsg);
-    } finally {
-      setGeneratingPDF(false);
-      setTimeout(() => setPdfProgress(0), 500);
-    }
-  };
-
-  // Copy message to clipboard
-  const copyMessage = (text) => {
-    navigator.clipboard.writeText(text);
-  };
-
-  // Network status monitoring
-  const [networkStatus, setNetworkStatus] = useState(navigator.onLine ? 'online' : 'offline');
-  useEffect(() => {
-    const handleOnline = () => setNetworkStatus('online');
-    const handleOffline = () => setNetworkStatus('offline');
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
 
   // ============================================================
   // GUARD CLAUSES
@@ -1129,13 +912,8 @@ function Diagnosis({ prediction, onViewChange, lang }) {
         </div>
       )}
 
-      {/* Offline Banner on Scan Page */}
-      {view === "scan" && networkStatus === 'offline' && (
-        <div className="offline-banner card card-glass animate-slide-down" role="alert">
-          <WifiOff size={18} color="#f59e0b" />
-          <span>{t("offlineMode", lang) || "You're offline. Scans will be saved locally and synced when online."}</span>
-        </div>
-      )}
+      {/* Offline Banner on Scan Page - only show on scan view, not here */}
+      {/* Removed - this belongs in Scan.jsx */}
     </div>
   );
 }

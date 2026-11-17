@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Camera, UploadCloud, AlertCircle, X, Loader2, Sparkles, Sprout, ArrowRight, Check, RefreshCw, Zap, ZapOff, ShieldCheck } from "lucide-react";
+import { Camera, UploadCloud, AlertCircle, X, Loader2, Sparkles, Sprout, ArrowRight, Check, RefreshCw, Zap, ZapOff, ShieldCheck, WifiOff } from "lucide-react";
 import { t } from "../../data/translations";
 import api from "../../api/api";
 import { compressImage } from "../../utils/imageCompressor";
@@ -14,6 +14,19 @@ function Scan({ onPredictionSuccess, lang }) {
   const [isWakingUp, setIsWakingUp] = useState(false);
   const [analysisStageIndex, setAnalysisStageIndex] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
+  const [networkStatus, setNetworkStatus] = useState(navigator.onLine ? 'online' : 'offline');
+
+  // Monitor network status
+  useEffect(() => {
+    const handleOnline = () => setNetworkStatus('online');
+    const handleOffline = () => setNetworkStatus('offline');
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const stages = [
     t("stage1", lang),
@@ -300,6 +313,14 @@ function Scan({ onPredictionSuccess, lang }) {
           <button className="error-close" onClick={() => setErrorMsg("")}>
             <X size={18} />
           </button>
+        </div>
+      )}
+
+      {/* Offline Banner */}
+      {networkStatus === 'offline' && (
+        <div className="offline-banner card card-glass animate-slide-down" role="alert">
+          <WifiOff size={18} color="#f59e0b" />
+          <span>{t("offlineMode", lang) || "You're offline. Scans will be saved locally and synced when online."}</span>
         </div>
       )}
 
