@@ -823,6 +823,514 @@
   to { opacity: 1; transform: scale(1); }
 }
 
+/* ============================================================
+   PDF PROGRESS OVERLAY
+   ============================================================ */
+.pdf-progress-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: fadeIn var(--transition-smooth) ease-out;
+}
+
+.pdf-progress-modal {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-6);
+  min-width: 280px;
+  max-width: 90vw;
+  animation: scaleIn var(--transition-spring) ease-out;
+}
+
+.pdf-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.pdf-progress-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.pdf-progress-percent {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 48px;
+  text-align: right;
+}
+
+.pdf-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.pdf-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%);
+  border-radius: var(--radius-pill);
+  transition: width var(--transition-smooth);
+}
+
+.pdf-progress-status {
+  margin-top: var(--space-3);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+/* ============================================================
+   PDF ERROR TOAST
+   ============================================================ */
+.pdf-error-toast {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + var(--space-4));
+  left: var(--space-4);
+  right: var(--space-4);
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  animation: slideUp var(--transition-spring) ease-out;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.toast-dismiss {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.toast-dismiss:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* ============================================================
+   NETWORK STATUS TOAST
+   ============================================================ */
+.network-toast {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + var(--space-4));
+  left: var(--space-4);
+  right: var(--space-4);
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  animation: slideUp var(--transition-spring) ease-out.
+}
+
+.network-toast WifiOff {
+  color: #f59e0b.
+  flex-shrink: 0.
+}
+
+/* ============================================================
+   OFFLINE BANNER (for Scan page)
+   ============================================================ */
+.offline-banner {
+  display: flex.
+  align-items: center.
+  gap: var(--space-3).
+  padding: var(--space-3) var(--space-4).
+  background: var(--color-warning-light).
+  border: 1px solid var(--color-warning).
+  border-radius: var(--radius-lg).
+  color: var(--color-warning).
+  font-size: 13px.
+  font-weight: 500.
+  animation: slideDown var(--transition-smooth) ease-out.
+  margin-bottom: var(--space-4).
+}
+
+.offline-banner WifiOff {
+  color: #f59e0b.
+  flex-shrink: 0.
+}
+
+/* ============================================================
+   BOTTOM ACTIONS - ENHANCED
+   ============================================================ */
+.reveal-bottom-actions {
+  position: fixed.
+  bottom: 0.
+  left: 0.
+  right: 0.
+  display: flex.
+  gap: var(--space-3).
+  padding: var(--space-4).
+  background: linear-gradient(to top, rgba(11, 18, 9, 0.98), transparent).
+  z-index: 50.
+  padding-bottom: env(safe-area-inset-bottom, var(--space-4)).
+}
+
+.action-btn {
+  flex: 1.
+  min-height: var(--touch-comfortable).
+  font-size: 14px.
+  font-weight: 700.
+  display: flex.
+  align-items: center.
+  justify-content: center.
+  gap: var(--space-2).
+}
+
+.btn-success {
+  background: #22c55e.
+  color: #040806.
+}
+
+.btn-success:hover {
+  background: #16a34a.
+}
+
+.btn-loading {
+  opacity: 0.8.
+  cursor: wait.
+}
+
+.btn-loading .spin-anim {
+  animation: spin 1s linear infinite.
+}
+
+/* ============================================================
+   PDF PROGRESS OVERLAY
+   ============================================================ */
+.pdf-progress-overlay {
+  position: fixed.
+  inset: 0.
+  background: rgba(0, 0, 0, 0.6).
+  backdrop-filter: blur(4px).
+  display: flex.
+  align-items: center.
+  justify-content: center.
+  z-index: 200.
+  animation: fadeIn var(--transition-smooth) ease-out.
+}
+
+.pdf-progress-modal {
+  background: var(--card-bg).
+  backdrop-filter: blur(16px).
+  -webkit-backdrop-filter: blur(16px).
+  border: 1px solid var(--card-border).
+  border-radius: var(--radius-xl).
+  box-shadow: var(--shadow-xl).
+  padding: var(--space-6).
+  min-width: 280px.
+  max-width: 90vw.
+  animation: scaleIn var(--transition-spring) ease-out.
+}
+
+.pdf-progress-header {
+  display: flex.
+  align-items: center.
+  justify-content: space-between.
+  margin-bottom: var(--space-4).
+}
+
+.pdf-progress-title {
+  font-size: 16px.
+  font-weight: 700.
+  color: var(--primary).
+}
+
+.pdf-progress-percent {
+  font-size: 16px.
+  font-weight: 700.
+  color: var(--primary).
+  min-width: 48px.
+  text-align: right.
+}
+
+.pdf-progress-bar {
+  width: 100%.
+  height: 8px.
+  background: var(--bg-tertiary).
+  border-radius: var(--radius-pill).
+  overflow: hidden.
+}
+
+.pdf-progress-fill {
+  height: 100%.
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%).
+  border-radius: var(--radius-pill).
+  transition: width var(--transition-smooth).
+}
+
+.pdf-progress-status {
+  margin-top: var(--space-3).
+  font-size: 13px.
+  color: var(--text-tertiary).
+  text-align: center.
+}
+
+/* ============================================================
+   PDF ERROR TOAST
+   ============================================================ */
+.pdf-error-toast {
+  position: fixed.
+  bottom: calc(var(--bottom-nav-height) + var(--space-4)).
+  left: var(--space-4).
+  right: var(--space-4).
+  max-width: 400px.
+  margin: 0 auto.
+  display: flex.
+  align-items: center.
+  gap: var(--space-3).
+  padding: var(--space-3) var(--space-4).
+  background: var(--card-bg).
+  backdrop-filter: blur(16px).
+  -webkit-backdrop-filter: blur(16px).
+  border: 1px solid var(--color-danger).
+  border-radius: var(--radius-lg).
+  box-shadow: var(--shadow-lg).
+  z-index: 100.
+  animation: slideUp var(--transition-spring) ease-out.
+}
+
+.toast-content {
+  display: flex.
+  align-items: center.
+  gap: var(--space-3).
+  flex: 1.
+}
+
+.toast-dismiss {
+  width: 32px.
+  height: 32px.
+  border-radius: var(--radius-md).
+  background: transparent.
+  border: 1px solid var(--border-color).
+  color: var(--text-tertiary).
+  cursor: pointer.
+  display: flex.
+  align-items: center.
+  justify-content: center.
+  transition: var(--transition-fast).
+  flex-shrink: 0.
+}
+
+.toast-dismiss:hover {
+  background: var(--bg-tertiary).
+  color: var(--text-primary).
+}
+
+/* ============================================================
+   NETWORK STATUS TOAST
+   ============================================================ */
+.network-toast {
+  position: fixed.
+  bottom: calc(var(--bottom-nav-height) + var(--space-4)).
+  left: var(--space-4).
+  right: var(--space-4).
+  max-width: 400px.
+  margin: 0 auto.
+  display: flex.
+  align-items: center.
+  gap: var(--space-3).
+  padding: var(--space-3) var(--space-4).
+  background: var(--card-bg).
+  backdrop-filter: blur(16px).
+  -webkit-backdrop-filter: blur(16px).
+  border: 1px solid var(--accent).
+  border-radius: var(--radius-lg).
+  box-shadow: var(--shadow-lg).
+  z-index: 100.
+  animation: slideUp var(--transition-spring) ease-out.
+}
+
+.network-toast WifiOff {
+  color: #f59e0b.
+  flex-shrink: 0.
+}
+
+/* ============================================================
+   OFFLINE BANNER (for Scan page)
+   ============================================================ */
+.offline-banner {
+  display: flex.
+  align-items: center.
+  gap: var(--space-3).
+  padding: var(--space-3) var(--space-4).
+  background: var(--color-warning-light).
+  border: 1px solid var(--color-warning).
+  border-radius: var(--radius-lg).
+  color: var(--color-warning).
+  font-size: 13px.
+  font-weight: 500.
+  animation: slideDown var(--transition-smooth) ease-out.
+  margin-bottom: var(--space-4).
+}
+
+.offline-banner WifiOff {
+  color: #f59e0b.
+  flex-shrink: 0.
+}
+
+/* ============================================================
+   BOTTOM ACTIONS - ENHANCED
+   ============================================================ */
+.reveal-bottom-actions {
+  position: fixed.
+  bottom: 0.
+  left: 0.
+  right: 0.
+  display: flex.
+  gap: var(--space-3).
+  padding: var(--space-4).
+  background: linear-gradient(to top, rgba(11, 18, 9, 0.98), transparent).
+  z-index: 50.
+  padding-bottom: env(safe-area-inset-bottom, var(--space-4)).
+}
+
+.action-btn {
+  flex: 1.
+  min-height: var(--touch-comfortable).
+  font-size: 14px.
+  font-weight: 700.
+  display: flex.
+  align-items: center.
+  justify-content: center.
+  gap: var(--space-2).
+}
+
+.btn-success {
+  background: #22c55e.
+  color: #040806.
+}
+
+.btn-success:hover {
+  background: #16a34a.
+}
+
+.btn-loading {
+  opacity: 0.8.
+  cursor: wait.
+}
+
+.btn-loading .spin-anim {
+  animation: spin 1s linear infinite.
+}
+
+/* ============================================================
+   PDF PROGRESS OVERLAY
+   ============================================================
+   .pdf-progress-overlay {
+     position: fixed.
+     inset: 0.
+     background: rgba(0, 0, 0, 0.6).
+     backdrop-filter: blur(4px).
+     display: flex.
+     align-items: center.
+     justify-content: center.
+     z-index: 200.
+     animation: fadeIn var(--transition-smooth) ease-out.
+   }
+   .pdf-progress-modal {
+     background: var(--card-bg).
+     backdrop-filter: blur(16px).
+     -webkit-backdrop-filter: blur(16px).
+     border: 1px solid var(--card-border).
+     border-radius: var(--radius-xl).
+     box-shadow: var(--shadow-xl).
+     padding: var(--space-6).
+     min-width: 280px.
+     max-width: 90vw.
+     animation: scaleIn var(--transition-spring) ease-out.
+   }
+   .pdf-progress-header {
+     display: flex.
+     align-items: center.
+     justify-content: space-between.
+     margin-bottom: var(--space-4).
+   }
+   .pdf-progress-title {
+     font-size: 16px.
+     font-weight: 700.
+     color: var(--primary).
+   }
+   .pdf-progress-percent {
+     font-size: 16px.
+     font-weight: 700.
+     color: var(--primary).
+     min-width: 48px.
+     text-align: right.
+   }
+   .pdf-progress-bar {
+     width: 100%.
+     height: 8px.
+     background: var(--bg-tertiary).
+     border-radius: var(--radius-pill).
+     overflow: hidden.
+   }
+   .pdf-progress-fill {
+     height: 100%.
+     background: linear-gradient(90deg, var(--primary) 0%, var(--primary-hover) 100%).
+     border-radius: var(--radius-pill).
+     transition: width var(--transition-smooth).
+   }
+   .pdf-progress-status {
+     margin-top: var(--space-3).
+     font-size: 13px.
+     color: var(--text-tertiary).
+     text-align: center.
+   }
+*/
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

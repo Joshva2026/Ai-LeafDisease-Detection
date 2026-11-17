@@ -13,6 +13,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [generatingPDF, setGeneratingPDF] = useState(false);
   const [pdfError, setPdfError] = useState(null);
+  const [pdfProgress, setPdfProgress] = useState(0);
   const [networkStatus, setNetworkStatus] = useState(navigator.onLine ? 'online' : 'offline');
   
   // Cache the normalized JSON reports to allow instant switching
@@ -139,7 +140,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
       console.error("[AI Report] Request error:", e.message || e);
       setReportStatus("error");
     }
-  }, [prediction, cachedReports, lang ]);
+  }, [prediction, cachedReports, lang]);
 
   const normalizeStructuredReport = (structured) => {
     if (!structured) return null;
@@ -157,12 +158,11 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     return result;
   };
 
-  const handleLangToggle = (newLang) => {
-    newLang = newLang || "ta";
+  const handleLangToggle = useCallback((newLang = "ta") => {
     setReportLang(newLang);
     setAudioLang(newLang);
     fetchAiReport(newLang);
-  }, [newLang ]);
+  }, [fetchAiReport]);
 
   // ============================================================
   // GRAD-CAM SLIDER DRAG HANDLERS
@@ -322,6 +322,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   const [generatingPDF, setGeneratingPDF] = useState(false);
   const [pdfError, setPdfError] = useState(null);
   const [pdfProgress, setPdfProgress] = useState(0);
+  const [networkStatus, setNetworkStatus] = useState(navigator.onLine ? 'online' : 'offline');
 
   const handleDownloadPDF = async () => {
     if (generatingPDF) return;
@@ -347,6 +348,182 @@ function Diagnosis({ prediction, onViewChange, lang }) {
         lang: reportLang,
       });
       setPdfProgress(80);
+
+      // Create filename
+      const diseaseName = prediction.disease_formatted || prediction.disease || 'Unknown';
+      const safeName = diseaseName.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `LeafGuard_${safeName}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      // Download
+      downloadPDF(pdfBlob, filename);
+      setPdfProgress(100);
+    } catch (e) {
+      console.error('PDF generation failed:', e);
+      const errorMsg = e.message || 'Failed to generate PDF. Please try again.';
+      setPdfError(errorMsg);
+      alert(t('pdfError', lang) || errorMsg);
+    } finally {
+      setGeneratingPDF(false);
+      setTimeout(() => setPdfProgress(0), 500);
+    }
+  };
+
+  // Copy message to clipboard
+  const copyMessage = (text) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  // Network status monitoring
+  const [networkStatus, setNetworkStatus] = useState(navigator.onLine ? 'online' : 'offline');
+  useEffect(() => {
+    const handleOnline = () => setNetworkStatus('online');
+    const handleOffline = () => setNetworkStatus('offline');
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // ============================================================
+  // GUARD CLAUSES
+  // ============================================================
+  if (!prediction) {
+    return (
+      <div className="diag-empty-wrapper slide-section fade-in-section animate-slide-up">
+        <div className="card card-glass diag-empty-card">
+          <Sprout size={48} color="#9ca3af" style={{ marginBottom: '16px' }} />
+          <p style={{ fontSize: '18px', marginBottom: '20px' }}>{t("noDiagnosisData", lang)}</p>
+          <button className="btn btn-hero" onClick={() => onViewChange("scan")} style={{ width: '100%' }}>
+            <Camera size={20} />
+            <span>{t("goToScanPage", lang)}</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const details = mapClassName(prediction.disease || "Unknown");
+  const isHealthy = details.isHealthy;
+  const originalUrl = getMediaUrl(prediction.original_url);
+  const gradcamUrl = prediction.gradcam_url ? getMediaUrl(prediction.gradcam_url) : null;
+  const aiStructured = cachedReports[reportLang];
+  
+  const handleSave = () => setSaved(true);
+
+  // PDF Download Handler
+  const handleDownloadPDF = async () => {
+    if (generatingPDF) return;
+    setGeneratingPDF(true);
+    setPdfError(null);
+    setPdfProgress(0);
+    
+    try {
+      setPdfProgress(10);
+      // Load images as data URLs for PDF embedding
+      const [imageDataUrl, gradcamDataUrl] = await Promise.all([
+        originalUrl ? loadImageAsDataUrl(originalUrl) : Promise.resolve(null),
+        gradcamUrl ? loadImageAsDataUrl(gradcamUrl) : Promise.resolve(null),
+      ]);
+      setPdfProgress(30);
+
+      // Generate PDF with current report and images
+      const pdfBlob = await generateScanPDF({
+        prediction,
+        report: cachedReports[reportLang],
+        imageDataUrl,
+        gradcamDataUrl,
+        lang: reportLang,
+      });
+
+      // Create filename
+      const diseaseName = prediction.disease_formatted || prediction.disease || 'Unknown';
+      const safeName = diseaseName.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `LeafGuard_${safeName}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      // Download
+      downloadPDF(pdfBlob, filename);
+      setPdfProgress(100);
+    } catch (e) {
+      console.error('PDF generation failed:', e);
+      const errorMsg = e.message || 'Failed to generate PDF. Please try again.';
+      setPdfError(errorMsg);
+      alert(t('pdfError', lang) || errorMsg);
+    } finally {
+      setGeneratingPDF(false);
+      setTimeout(() => setPdfProgress(0), 500);
+    }
+  };
+
+  // Copy message to clipboard
+  const copyMessage = (text) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  // Network status monitoring
+  const [networkStatus, setNetworkStatus] = useState(navigator.onLine ? 'online' : 'offline');
+  useEffect(() => {
+    const handleOnline = () => setNetworkStatus('online');
+    const handleOffline = () => setNetworkStatus('offline');
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // ============================================================
+  // GUARD CLAUSES
+  // ============================================================
+  if (!prediction) {
+    return (
+      <div className="diag-empty-wrapper slide-section fade-in-section animate-slide-up">
+        <div className="card card-glass diag-empty-card">
+          <Sprout size={48} color="#9ca3af" style={{ marginBottom: '16px' }} />
+          <p style={{ fontSize: '18px', marginBottom: '20px' }}>{t("noDiagnosisData", lang)}</p>
+          <button className="btn btn-hero" onClick={() => onViewChange("scan")} style={{ width: '100%' }}>
+            <Camera size={20} />
+            <span>{t("goToScanPage", lang)}</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const details = mapClassName(prediction.disease || "Unknown");
+  const isHealthy = details.isHealthy;
+  const originalUrl = getMediaUrl(prediction.original_url);
+  const gradcamUrl = prediction.gradcam_url ? getMediaUrl(prediction.gradcam_url) : null;
+  const aiStructured = cachedReports[reportLang];
+  
+  const handleSave = () => setSaved(true);
+
+  // PDF Download Handler
+  const handleDownloadPDF = async () => {
+    if (generatingPDF) return;
+    setGeneratingPDF(true);
+    setPdfError(null);
+    setPdfProgress(0);
+    
+    try {
+      setPdfProgress(10);
+      // Load images as data URLs for PDF embedding
+      const [imageDataUrl, gradcamDataUrl] = await Promise.all([
+        originalUrl ? loadImageAsDataUrl(originalUrl) : Promise.resolve(null),
+        gradcamUrl ? loadImageAsDataUrl(gradcamUrl) : Promise.resolve(null),
+      ]);
+      setPdfProgress(30);
+
+      // Generate PDF with current report and images
+      const pdfBlob = await generateScanPDF({
+        prediction,
+        report: cachedReports[reportLang],
+        imageDataUrl,
+        gradcamDataUrl,
+        lang: reportLang,
+      });
 
       // Create filename
       const diseaseName = prediction.disease_formatted || prediction.disease || 'Unknown';
@@ -452,6 +629,14 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           <button className="toast-dismiss" onClick={() => setPdfError(null)} aria-label={t("dismiss", lang)}>
             <X size={20} />
           </button>
+        </div>
+      )}
+
+      {/* Network Status Toast */}
+      {networkStatus === 'offline' && (
+        <div className="network-toast card card-glass animate-slide-up" role="alert">
+          <WifiOff size={20} color="#f59e0b" />
+          <span>{t("offlineMode", lang) || "You're offline. Some features may be limited."}</span>
         </div>
       )}
 
@@ -763,7 +948,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     <p style={{ marginTop: '12px', fontSize: '16px' }}>{t("generatingAiReport", lang)}</p>
                   </div>
                 ) : reportStatus === "error" ? (
-                  <div className="ai-report-error card card-glass">
+                  <div className="ai-report-error">
                     <AlertTriangle size={36} color="#fca5a5" />
                     <p style={{ marginTop: '12px', fontSize: '16px' }}>{t("aiUnavailable", lang)}</p>
                     <button className="btn btn-secondary" onClick={() => fetchAiReport(reportLang)} style={{ marginTop: '16px' }}>
