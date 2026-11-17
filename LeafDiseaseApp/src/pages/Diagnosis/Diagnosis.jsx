@@ -139,7 +139,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
       console.error("[AI Report] Request error:", e.message || e);
       setReportStatus("error");
     }
-  }, [prediction, cachedReports, lang]);
+  }, [prediction, cachedReports, lang ]);
 
   const normalizeStructuredReport = (structured) => {
     if (!structured) return null;
@@ -162,7 +162,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     setReportLang(newLang);
     setAudioLang(newLang);
     fetchAiReport(newLang);
-  }, [newLang]);
+  }, [newLang ]);
 
   // ============================================================
   // GRAD-CAM SLIDER DRAG HANDLERS
