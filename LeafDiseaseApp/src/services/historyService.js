@@ -194,7 +194,12 @@ function getScansFromCapacitor(username) {
       try {
         var scans = JSON.parse(result.value);
         return Array.isArray(scans)
-          ? scans.sort(function(a, b) { return new Date(b.timestamp) - new Date(a.timestamp); }).slice(0, MAX_ENTRIES)
+          ? scans.sort(function(a, b) { return new Date(b.timestamp) - new Date(a.timestamp); }).slice(0, MAX_ENTRIES).map(function(scan) {
+              // Normalize: map capacitorId to id for consistent API
+              // Backward compat: assign capacitorId if missing (legacy scans)
+              var capacitorId = scan.capacitorId || scan.id || generateScanId();
+              return Object.assign({}, scan, { id: capacitorId, capacitorId: capacitorId });
+            })
           : [];
       } catch (e) {
         console.warn('Failed to load history from Capacitor:', e);
@@ -241,7 +246,8 @@ function deleteScanFromCapacitor(id) {
 
     return getScansFromCapacitor(username).then(function(scans) {
       var filtered = scans.filter(function(scan) {
-        return scan.capacitorId !== id;
+        // Match by capacitorId (new) or id (legacy normalized)
+        return scan.capacitorId !== id && scan.id !== id;
       });
       
       if (filtered.length === scans.length) {
