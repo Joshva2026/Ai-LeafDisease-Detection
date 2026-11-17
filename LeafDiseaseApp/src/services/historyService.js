@@ -25,6 +25,45 @@ function getPreferences() {
   });
 }
 
+// Unified username getter: checks localStorage (web) then Capacitor Preferences (Android/iOS)
+function getCurrentUsername() {
+  // 1. Check localStorage (web)
+  try {
+    var userStr = localStorage.getItem('user');
+    if (userStr) {
+      var user = JSON.parse(userStr);
+      if (user && user.username) {
+        return Promise.resolve(user.username);
+      }
+    }
+  } catch (e) {
+    // Ignore localStorage errors
+  }
+
+  // 2. Check Capacitor Preferences (Android/iOS native)
+  if (isCapacitor()) {
+    return getPreferences().then(function(Preferences) {
+      if (!Preferences) return 'guest';
+      return Preferences.get({ key: 'user' }).then(function(result) {
+        if (result && result.value) {
+          try {
+            var user = JSON.parse(result.value);
+            if (user && user.username) {
+              return user.username;
+            }
+          } catch (e) {
+            // Ignore parse errors
+          }
+        }
+        return 'guest';
+      });
+    });
+  }
+
+  // 3. Fallback
+  return Promise.resolve('guest');
+}
+
 // Simple UUID generator for Capacitor scans
 function generateScanId() {
   return 'scan_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -229,34 +268,24 @@ function addScanToCapacitor(scan) {
 }
 
 function deleteScanFromCapacitor(id) {
-  return getPreferences().then(function(Preferences) {
-    if (!Preferences) return Promise.resolve(false);
-    
-    // Get current username from localStorage
-    var username = 'guest';
-    try {
-      var userStr = localStorage.getItem('user');
-      if (userStr) {
-        var user = JSON.parse(userStr);
-        username = user.username;
-      }
-    } catch (e) {
-      username = 'guest';
-    }
-
-    return getScansFromCapacitor(username).then(function(scans) {
-      var filtered = scans.filter(function(scan) {
-        // Match by capacitorId (new) or id (legacy normalized)
-        return scan.capacitorId !== id && scan.id !== id;
+  return getCurrentUsername().then(function(username) {
+    return getPreferences().then(function(Preferences) {
+      if (!Preferences) return Promise.resolve(false);
+      
+      return getScansFromCapacitor(username).then(function(scans) {
+        var filtered = scans.filter(function(scan) {
+          // Match by capacitorId (new) or id (legacy normalized)
+          return scan.capacitorId !== id && scan.id !== id;
+        });
+        
+        if (filtered.length === scans.length) {
+          // Scan not found
+          return false;
+        }
+        
+        var updated = filtered.slice(0, MAX_ENTRIES);
+        return Preferences.set({ key: 'history_' + username, value: JSON.stringify(updated) }).then(function() { return true; });
       });
-      
-      if (filtered.length === scans.length) {
-        // Scan not found
-        return false;
-      }
-      
-      var updated = filtered.slice(0, MAX_ENTRIES);
-      return Preferences.set({ key: 'history_' + username, value: JSON.stringify(updated) }).then(function() { return true; });
     });
   });
 }
@@ -270,23 +299,21 @@ function clearHistoryFromCapacitor(username) {
 
 var historyService = {
   getScans: function(username) {
-    if (!username) {
-      try {
-        var userStr = localStorage.getItem('user');
-        if (userStr) {
-          var user = JSON.parse(userStr);
-          username = user.username;
-        }
-      } catch (e) {
-        username = 'guest';
+    if (username) {
+      if (isCapacitor()) {
+        return getScansFromCapacitor(username);
+      } else {
+        return getScansFromIndexedDB(username);
       }
     }
-
-    if (isCapacitor()) {
-      return getScansFromCapacitor(username);
-    } else {
-      return getScansFromIndexedDB(username);
-    }
+    // No username provided: resolve from unified source
+    return getCurrentUsername().then(function(resolvedUsername) {
+      if (isCapacitor()) {
+        return getScansFromCapacitor(resolvedUsername);
+      } else {
+        return getScansFromIndexedDB(resolvedUsername);
+      }
+    });
   },
 
   addScan: function(scan) {
@@ -295,7 +322,11 @@ var historyService = {
     });
 
     if (isCapacitor()) {
-      return addScanToCapacitor(scanToSave);
+      // Ensure scan has username from unified source
+      return getCurrentUsername().then(function(username) {
+        var scanWithUser = Object.assign({}, scanToSave, { username: username });
+        return addScanToCapacitor(scanWithUser);
+      });
     } else {
       return addScanToIndexedDB(scanToSave).then(function() { return true; }).catch(function(e) {
         console.error('Failed to add scan to IndexedDB:', e);
@@ -316,26 +347,27 @@ var historyService = {
   },
 
   clearHistory: function(username) {
-    if (!username) {
-      try {
-        var userStr = localStorage.getItem('user');
-        if (userStr) {
-          var user = JSON.parse(userStr);
-          username = user.username;
-        }
-      } catch (e) {
-        username = 'guest';
+    if (username) {
+      if (isCapacitor()) {
+        return clearHistoryFromCapacitor(username);
+      } else {
+        return clearHistoryFromIndexedDB(username).then(function() { return true; }).catch(function(e) {
+          console.error('Failed to clear history from IndexedDB:', e);
+          return false;
+        });
       }
     }
-
-    if (isCapacitor()) {
-      return clearHistoryFromCapacitor(username);
-    } else {
-      return clearHistoryFromIndexedDB(username).then(function() { return true; }).catch(function(e) {
-        console.error('Failed to clear history from IndexedDB:', e);
-        return false;
-      });
-    }
+    // No username provided: resolve from unified source
+    return getCurrentUsername().then(function(resolvedUsername) {
+      if (isCapacitor()) {
+        return clearHistoryFromCapacitor(resolvedUsername);
+      } else {
+        return clearHistoryFromIndexedDB(resolvedUsername).then(function() { return true; }).catch(function(e) {
+          console.error('Failed to clear history from IndexedDB:', e);
+          return false;
+        });
+      }
+    });
   },
 
   isNative: function() { return isCapacitor(); }

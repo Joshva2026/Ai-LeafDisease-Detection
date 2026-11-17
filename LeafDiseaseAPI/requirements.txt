@@ -8,6 +8,7 @@ numpy==2.3.2
 h5py==3.14.0
 pillow
 opencv-python-headless
+matplotlib==3.11.1
 
 # Web Framework
 flask
