@@ -1,41 +1,40 @@
 {
-  "diagnosis": "Spider mite infestation (Two-spotted spider mite) in Tomato",
-  "summary": "Tiny arachnids sucking sap from leaves, causing stippling and webbing. Hot, dry conditions have triggered this 87.3% confidence infestation.",
-  "symptoms": [
-    "Stippling (tiny yellow/white dots) on leaves",
-    "Fine webbing on the underside of leaves",
-    "Leaves turning bronze or yellow and drying up"
-  ],
-  "causes": [
-    "Hot, dry conditions favoring mite reproduction",
-    "Plant stress from water deficiency",
-    "Possible introduction from nearby infested plants or wind dispersal"
-  ],
-  "immediate_actions": [
-    "Isolate affected plants to prevent spread",
-    "Strong water spray to dislodge mites from leaf undersides",
-    "Remove and destroy heavily infested leaves"
-  ],
-  "treatment": [
-    "Apply insecticidal soap or horticultural oil to leaf undersides",
-    "Use approved miticides if infestation is severe, following label instructions",
-    "Repeat applications every 5-7 days to break the life cycle"
-  ],
-  "prevention": [
-    "Maintain adequate plant hydration to reduce stress",
-    "Increase humidity around plants if conditions are very dry",
-    "Encourage natural predators like ladybugs and predatory mites",
-    "Regularly inspect plants, especially undersides of leaves"
-  ],
-  "monitoring": [
-    "Check leaf undersides weekly for early stippling and webbing",
-    "Use a hand lens to confirm mite presence and estimate population density",
-    "Track weather conditions - treat proactively if hot, dry spells are forecast"
-  ],
-  "farmer_advice": [
-    "Act quickly - spider mites reproduce rapidly in hot, dry weather",
-    "Focus spray coverage on leaf undersides where mites feed",
-    "Avoid broad-spectrum insecticides that kill beneficial predators",
-    "Consider biological control releases for long-term management in greenhouse settings"
-  ]
+   "diagnosis": "Spider mites Two-spotted spider mite",
+   "summary": "Two-spotted spider mites are tiny arachnids infesting tomato plants, sucking sap from leaves and thriving in hot, dry conditions. They cause stippling and webbing, leading to leaf damage and reduced plant vigor.",
+   "symptoms": [
+      "Stippling (tiny yellow/white dots) on leaves",
+      "Fine webbing on the underside of leaves",
+      "Leaves turn bronze or yellow and dry up"
+   ],
+   "causes": [
+      "Hot, dry conditions favor mite population growth",
+      "Plant stress from water deficiency",
+      "Low humidity environments"
+   ],
+   "immediate_actions": [
+      "Spray water on leaves to dislodge mites, especially undersides",
+      "Apply insecticidal soap or horticultural oil according to label directions",
+      "Remove and destroy heavily infested leaves to prevent spread"
+   ],
+   "treatment": [
+      "Use approved miticides or horticultural oils targeting spider mites",
+      "Apply insecticidal soap to kill mites on contact",
+      "Ensure thorough coverage of leaf undersides where mites reside"
+   ],
+   "prevention": [
+      "Keep plants well-watered to reduce plant stress",
+      "Increase humidity around plants if growing in dry conditions",
+      "Encourage natural predators like ladybugs and predatory mites"
+   ],
+   "monitoring": [
+      "Inspect leaf undersides weekly for early webbing and stippling",
+      "Use a hand lens to detect tiny mites moving on leaf surfaces",
+      "Track humidity levels and adjust irrigation to avoid dry stress"
+   ],
+   "farmer_advice": [
+      "Act quickly when first signs appear to prevent rapid population buildup",
+      "Avoid broad-spectrum insecticides that kill beneficial predators",
+      "Rotate treatment methods if mites develop resistance",
+      "Maintain overall plant health through proper watering and nutrition"
+   ]
 }
