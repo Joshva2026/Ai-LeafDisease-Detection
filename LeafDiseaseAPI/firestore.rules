@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User profiles - users can only read/write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Prevent users from changing their userId to another account
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId 
+        && request.resource.data.userId == resource.data.userId;
+    }
+
+    // Scan history - users can only access their own scans
+    match /scans/{scanId} {
+      // Read: authenticated user owns the scan
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      
+      // Create: authenticated user, userId must match authenticated UID
+      allow create: if request.auth != null 
+        && request.resource.data.userId == request.auth.uid;
+      
+      // Update: authenticated user owns the scan, cannot change userId
+      allow update: if request.auth != null 
+        && request.auth.uid == resource.data.userId
+        && request.resource.data.userId == resource.data.userId;
+      
+      // Delete: authenticated user owns the scan
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // Plants collection - users can only access their own plants
+    match /plants/{plantId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      
+      // Create: userId must match authenticated UID
+      allow create: if request.auth != null 
+        && request.resource.data.userId == request.auth.uid;
+      
+      // Update: user owns the plant, cannot change userId
+      allow update: if request.auth != null 
+        && request.auth.uid == resource.data.userId
+        && request.resource.data.userId == resource.data.userId;
+      
+      // Delete: user owns the plant
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

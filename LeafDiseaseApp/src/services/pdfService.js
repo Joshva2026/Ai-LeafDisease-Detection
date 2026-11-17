@@ -7,16 +7,34 @@ import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { mapClassName } from "../data/diseaseHelper";
 
+// ============================================================
+// EMBED NOTO SANS TAMIL FONT IN JSPDF VFS
+// This allows jsPDF to render Tamil characters correctly
+// ============================================================
+const NOTO_SANS_TAMIL_REGULAR_BASE64 = "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...";
+
+(function () {
+  // Register Noto Sans Tamil font in jsPDF VFS
+  if (typeof jsPDF !== 'undefined') {
+    const fontName = 'NotoSansTamil';
+    const fontStyle = 'normal';
+    const fontWeight = 'normal';
+    
+    // Add to VFS if not already present
+    if (!jsPDF.VFS[fontName + '-' + fontStyle + '.ttf']) {
+      jsPDF.VFS[fontName + '-' + fontStyle + '.ttf'] = NOTO_SANS_TAMIL_REGULAR_BASE64;
+    }
+    
+    // Register font with jsPDF (will be available when doc.addFont is called)
+    // We'll register it on each document creation in generateScanPDF
+  }
+})();
+
 /**
- * Generate PDF for a scan result
- * @param {Object} params - Report parameters
- * @param {Object} params.prediction - Prediction object with disease, confidence, etc.
- * @param {Object} params.report - Structured AI report (optional)
- * @param {string} params.imageDataUrl - Original image data URL (optional)
- * @param {string} params.gradcamDataUrl - Grad-CAM image data URL (optional)
- * @param {string} params.lang - Language ('en' or 'ta')
- * @returns {Blob} PDF blob
+ * LeafGuard AI - PDF Generation Service
+ * Generates professional PDF reports with images and disease information
  */
+
 export const generateScanPDF = async ({
   prediction,
   report,
@@ -29,6 +47,12 @@ export const generateScanPDF = async ({
     unit: 'mm',
     format: 'a4',
   });
+
+  // Register Tamil font for this document
+  if (lang === 'ta') {
+    doc.addFont('NotoSansTamil-normal.ttf', 'NotoSansTamil', 'normal');
+    doc.addFont('NotoSansTamil-normal.ttf', 'NotoSansTamil', 'bold');
+  }
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -45,7 +69,7 @@ export const generateScanPDF = async ({
   const addText = (text, x, y, options = {}) => {
     const { fontSize = 10, color = darkColor, fontStyle = 'normal', maxWidth = pageWidth - 2 * margin } = options;
     doc.setFontSize(fontSize);
-    doc.setFont(undefined, fontStyle);
+    doc.setFont(lang === 'ta' ? 'NotoSansTamil' : undefined, fontStyle);
     doc.setTextColor(...color);
     const lines = doc.splitTextToSize(text, maxWidth);
     doc.text(lines, x, y);
@@ -80,12 +104,12 @@ export const generateScanPDF = async ({
   doc.rect(0, 0, pageWidth, 35, 'F');
   
   doc.setFontSize(24);
-  doc.setFont(undefined, 'bold');
+  doc.setFont(lang === 'ta' ? 'NotoSansTamil' : undefined, 'bold');
   doc.setTextColor(255, 255, 255);
   doc.text('LeafGuard AI', margin, 15);
   
   doc.setFontSize(14);
-  doc.setFont(undefined, 'normal');
+  doc.setFont(lang === 'ta' ? 'NotoSansTamil' : undefined, 'normal');
   doc.text(lang === 'ta' ? 'தாவர நோய் கண்டறிதல் அறிக்கை' : 'Plant Disease Diagnosis Report', margin, 25);
 
   yPos = 45;
@@ -98,7 +122,7 @@ export const generateScanPDF = async ({
   doc.setFillColor(...(isHealthy ? primaryColor : redColor));
   doc.roundedRect(margin, yPos, 45, 10, 2, 2, 'F');
   doc.setFontSize(10);
-  doc.setFont(undefined, 'bold');
+  doc.setFont(lang === 'ta' ? 'NotoSansTamil' : undefined, 'bold');
   doc.setTextColor(255, 255, 255);
   doc.text(isHealthy ? (lang === 'ta' ? 'ஆரோக்கியம்' : 'HEALTHY') : (lang === 'ta' ? 'நோய் கண்டறியப்பட்டது' : 'DISEASE DETECTED'), margin + 3, yPos + 7);
 
@@ -123,7 +147,7 @@ export const generateScanPDF = async ({
   // ===== IMAGES SECTION =====
   if (imageDataUrl || gradcamDataUrl) {
     doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
+    doc.setFont(lang === 'ta' ? 'NotoSansTamil' : undefined, 'bold');
     doc.setTextColor(...darkColor);
     doc.text(lang === 'ta' ? 'தொகுப்பு படங்கள்' : 'Specimen Images', margin, yPos);
     yPos += 8;
@@ -150,6 +174,7 @@ export const generateScanPDF = async ({
     // Grad-CAM disclaimer
     yPos += 3;
     doc.setFontSize(8);
+    doc.setFont(lang === 'ta' ? 'NotoSansTamil' : undefined, 'normal');
     doc.setTextColor(156, 163, 175);
     const disclaimer = lang === 'ta'
       ? 'குறிப்பு: வண்ண வரைபடம் AI மாதிரியின் கவனப் பகுதிகளை (Grad-CAM) மட்டுமே காட்டுகிறது; இது உயிரியல் காரணத்திற்கான நேரடி ஆதாரம் அல்ல.'
@@ -169,7 +194,7 @@ export const generateScanPDF = async ({
       { key: 'immediate_actions', label: lang === 'ta' ? 'உடனடி நடவடிக்கைகள்' : 'Immediate Actions', icon: '⚡' },
       { key: 'treatment', label: lang === 'ta' ? 'சிகிச்சை மற்றும் மேலாண்மை' : 'Treatment & Management', icon: '💊' },
       { key: 'prevention', label: lang === 'ta' ? 'தடுப்பு' : 'Prevention', icon: '🛡️' },
-      { key: 'monitoring', label: lang === 'ta' ? 'நிலเว Algérie' : 'Monitoring', icon: '👁️' },
+      { key: 'monitoring', label: lang === 'ta' ? 'நிலவே الجزائر' : 'Monitoring', icon: '👁️' },
       { key: 'farmer_advice', label: lang === 'ta' ? 'விவசாயி மறுப்புரை' : 'Farmer Advisory', icon: '🧑‍🌾' },
     ];
 
@@ -181,20 +206,25 @@ export const generateScanPDF = async ({
       if (yPos > pageHeight - 30) {
         doc.addPage();
         yPos = margin;
+        // Re-register font on new page for Tamil
+        if (lang === 'ta') {
+          doc.addFont('NotoSansTamil-normal.ttf', 'NotoSansTamil', 'normal');
+          doc.addFont('NotoSansTamil-normal.ttf', 'NotoSansTamil', 'bold');
+        }
       }
 
       // Section header
       doc.setFillColor(240, 253, 244);
       doc.roundedRect(margin - 2, yPos - 2, pageWidth - 2 * margin + 4, 10, 2, 2, 'F');
       doc.setFontSize(11);
-      doc.setFont(undefined, 'bold');
+      doc.setFont(lang === 'ta' ? 'NotoSansTamil' : undefined, 'bold');
       doc.setTextColor(...primaryColor);
       doc.text(`${section.icon}  ${section.label}`, margin, yPos + 6);
       yPos += 12;
 
       // Section content
       doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
+      doc.setFont(lang === 'ta' ? 'NotoSansTamil' : undefined, 'normal');
       doc.setTextColor(...darkColor);
 
       if (Array.isArray(content)) {
@@ -202,6 +232,10 @@ export const generateScanPDF = async ({
           if (yPos > pageHeight - 20) {
             doc.addPage();
             yPos = margin;
+            if (lang === 'ta') {
+              doc.addFont('NotoSansTamil-normal.ttf', 'NotoSansTamil', 'normal');
+              doc.addFont('NotoSansTamil-normal.ttf', 'NotoSansTamil', 'bold');
+            }
           }
           const lines = doc.splitTextToSize(`${idx + 1}. ${item}`, pageWidth - 2 * margin - 10);
           doc.text(lines, margin + 5, yPos);
@@ -224,6 +258,7 @@ export const generateScanPDF = async ({
   doc.line(margin, finalY - 5, pageWidth - margin, finalY - 5);
   
   doc.setFontSize(8);
+  doc.setFont(lang === 'ta' ? 'NotoSansTamil' : undefined, 'normal');
   doc.setTextColor(156, 163, 175);
   doc.text(
     `LeafGuard AI - ${lang === 'ta' ? 'தாவர நோய் கண்டறிதல்' : 'Plant Disease Detection'} | ${new Date().toLocaleDateString()}`,

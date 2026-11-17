@@ -127,6 +127,7 @@ function Scan({ onPredictionSuccess, lang }) {
   }, []);
 
   const capturePhoto = async () => {
+    let rawDataUrl = null;
     if (videoRef.current) {
       if (typeof navigator !== "undefined" && navigator.vibrate) {
         navigator.vibrate([35, 25, 35]);
@@ -138,7 +139,7 @@ function Scan({ onPredictionSuccess, lang }) {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-      const rawDataUrl = canvas.toDataURL("image/jpeg", 0.9);
+      rawDataUrl = canvas.toDataURL("image/jpeg", 0.9);
       stopCamera();
       setUseCamera(false);
 
@@ -163,6 +164,12 @@ function Scan({ onPredictionSuccess, lang }) {
   const handleFileChange = async (e) => {
     setErrorMsg("");
     setCompressStats(null);
+    
+    // Clean up previous image if it's a blob URL
+    if (image && image.startsWith("blob:")) {
+      URL.revokeObjectURL(image);
+    }
+    
     const selected = e.target.files[0];
     if (selected) {
       if (selected.size > 20 * 1024 * 1024) {
@@ -189,6 +196,10 @@ function Scan({ onPredictionSuccess, lang }) {
   };
 
   const clearSelection = () => {
+    // Revoke object URL if it's a blob URL to prevent memory leaks
+    if (image && image.startsWith("blob:")) {
+      URL.revokeObjectURL(image);
+    }
     setImage(null);
     setFile(null);
     setCompressStats(null);
@@ -260,11 +271,16 @@ function Scan({ onPredictionSuccess, lang }) {
 
       setLoading(false);
       setIsWakingUp(false);
+    } finally {
+      // Clean up the image object URL if it's a blob URL
+      if (image && image.startsWith("blob:")) {
+        URL.revokeObjectURL(image);
+      }
     }
   };
 
   return (
-    <div className="field-scan-container fade-in-section">
+    <div className="field-scan-container fade-in-section animate-slide-up">
       {/* Header */}
       <header className="field-header">
         <div className="field-badge">
@@ -278,8 +294,8 @@ function Scan({ onPredictionSuccess, lang }) {
       </header>
 
       {errorMsg && (
-        <div className="field-error-banner glass-card" role="alert">
-          <AlertCircle size={22} color="#ef4444" />
+        <div className="field-error-banner card card-interactive" role="alert">
+          <AlertCircle size={22} color="var(--color-danger)" />
           <span>{errorMsg}</span>
           <button className="error-close" onClick={() => setErrorMsg("")}>
             <X size={18} />
@@ -290,16 +306,16 @@ function Scan({ onPredictionSuccess, lang }) {
       {/* Main Action Area */}
       <div className="scan-main-viewport">
         {!image && !useCamera ? (
-          <div className="scan-init-card glass-card">
+          <div className="scan-init-card card card-glass">
             <div className="upload-options">
-              <button className="scan-primary-btn btn-hero" onClick={() => startCamera()}>
+              <button className="scan-primary-btn btn btn-hero" onClick={() => startCamera()}>
                 <Camera size={26} />
                 <span>{t("takePhotoAction", lang)}</span>
               </button>
               <div className="scan-divider">
                 <span>{t("or", lang)}</span>
               </div>
-              <button className="scan-secondary-btn btn-hero" onClick={triggerFileUpload}>
+              <button className="scan-secondary-btn btn btn-secondary" onClick={triggerFileUpload}>
                 <UploadCloud size={22} />
                 <span>{t("uploadImageAction", lang)}</span>
               </button>
@@ -314,21 +330,21 @@ function Scan({ onPredictionSuccess, lang }) {
 
             <div className="scan-tips-grid">
               <div className="tip-item">
-                <div className="tip-dot green"></div>
+                <div className="tip-dot" style={{ background: "var(--color-healthy)" }}></div>
                 <span>{t("tipVisible", lang)}</span>
               </div>
               <div className="tip-item">
-                <div className="tip-dot yellow"></div>
+                <div className="tip-dot" style={{ background: "var(--accent)" }}></div>
                 <span>{t("tipLighting", lang)}</span>
               </div>
               <div className="tip-item">
-                <div className="tip-dot red"></div>
+                <div className="tip-dot" style={{ background: "var(--color-danger)" }}></div>
                 <span>{t("tipBlur", lang)}</span>
               </div>
             </div>
           </div>
         ) : useCamera ? (
-          <div className="camera-viewfinder glass-card">
+          <div className="camera-viewfinder card card-glass">
             {cameraStatus === "requesting" && (
               <div className="camera-loading">
                 <Loader2 size={34} className="spin-anim" />
@@ -338,7 +354,7 @@ function Scan({ onPredictionSuccess, lang }) {
 
             {cameraStatus === "denied" && (
               <div className="camera-error">
-                <AlertCircle size={44} color="#ef4444" />
+                <AlertCircle size={44} color="var(--color-danger)" />
                 <p>{t("cameraDenied", lang) || "Camera access permission was denied. Please allow camera permissions in browser/app settings."}</p>
                 <button className="btn btn-secondary" onClick={clearSelection} minHeight={48}>
                   {t("goBack", lang)}
@@ -348,7 +364,7 @@ function Scan({ onPredictionSuccess, lang }) {
 
             {cameraStatus === "unavailable" && (
               <div className="camera-error">
-                <AlertCircle size={44} color="#ef4444" />
+                <AlertCircle size={44} color="var(--color-danger)" />
                 <p>Camera not available on this device. You can upload an image instead.</p>
                 <button className="btn btn-secondary" onClick={triggerFileUpload} minHeight={48}>
                   <UploadCloud size={18} />
@@ -408,7 +424,7 @@ function Scan({ onPredictionSuccess, lang }) {
             </div>
           </div>
         ) : (
-          <div className="scan-preview-card glass-card">
+          <div className="scan-preview-card card card-glass animate-scale-in">
             <div className="preview-image-wrapper">
               <img src={image} alt="Leaf preview" />
               {loading && (
@@ -425,7 +441,7 @@ function Scan({ onPredictionSuccess, lang }) {
             </div>
 
             {compressStats && compressStats.compressionRatio > 0 && (
-              <div className="compression-pill-badge">
+              <div className="compression-pill-badge badge badge-primary">
                 <ShieldCheck size={14} color="#22c55e" />
                 <span>
                   {lang === "ta"
@@ -437,7 +453,7 @@ function Scan({ onPredictionSuccess, lang }) {
 
             <div className="preview-actions">
               <button
-                className="btn btn-primary btn-hero analyze-cta-btn"
+                className="btn btn-hero analyze-cta-btn"
                 onClick={handleAnalyze}
                 disabled={loading || compressing}
                 minHeight={56}

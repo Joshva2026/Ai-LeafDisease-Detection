@@ -1,24 +1,91 @@
 /* =====================================================
    DESIGN SYSTEM VARIABLE TOKENS
-   LeafGuard AI — Village-Friendly Theme (High Contrast, Large Targets)
+   LeafGuard AI — Modern Premium Agricultural Theme
+   High Contrast, Large Targets, Village-Friendly
    ===================================================== */
 
 :root {
+  /* ── Color Palette ──
+       Modern premium green with warm earthy undertones.
+       High contrast for outdoor sunlight visibility.
+       Warm earthy tones that resonate with farming communities.  */
+  --color-green-50: #f0fdf4;
+  --color-green-100: #dcfce7;
+  --color-green-200: #bbf7d0;
+  --color-green-300: #86efac;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-green-800: #166534;
+  --color-green-900: #14532d;
+  --color-green-950: #052e16;
+
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-200: #fecaca;
+  --color-red-300: #fca5a5;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
+  --color-red-900: #7f1d1d;
+
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+
   /* ── Village-Friendly Colors ──
        High contrast for outdoor sunlight visibility.
        Warm earthy tones that resonate with farming communities.  */
-  --bg-primary: #0b1209;        /* Deep earth black — low glare in sunlight */
-  --bg-secondary: #141f12;      /* Slightly lighter earth */
-  --primary: #22c55e;           /* Vibrant leaf green — high visibility */
+  --bg-primary: #0b1209;           /* Deep earth black — low glare in sunlight */
+  --bg-secondary: #141f12;         /* Slightly lighter earth */
+  --bg-tertiary: #1c2d1e;          /* Card backgrounds */
+  --bg-elevated: #243826;          /* Elevated surfaces */
+
+  --primary: #22c55e;              /* Vibrant leaf green — high visibility */
   --primary-hover: #16a34a;
+  --primary-active: #15803d;
   --primary-light: rgba(34, 197, 94, 0.15);
-  --primary-dark: #14532d;      /* Deep green for text on light */
+  --primary-dark: #14532d;         /* Deep green for text on light */
+  --primary-glow: rgba(34, 197, 94, 0.4);
+
   --secondary: #6b7280;
-  --accent: #f59e0b;            /* Amber — attention/warmth */
+  --accent: #f59e0b;               /* Amber — attention/warmth */
+  --accent-hover: #d97706;
   --accent-light: rgba(245, 158, 11, 0.15);
   --accent-dark: #7c3aed;
-  --card-bg: rgba(16, 26, 16, 0.85);
-  --card-hover-bg: rgba(22, 40, 22, 0.9);
+
+  --card-bg: rgba(20, 32, 20, 0.9);
+  --card-hover-bg: rgba(28, 44, 28, 0.95);
+  --card-border: rgba(110, 142, 126, 0.2);
+  --card-border-hover: rgba(110, 142, 126, 0.4);
+
+  /* ── Glass Morphism ── */
+  --glass-bg: rgba(16, 26, 16, 0.7);
+  --glass-border: rgba(110, 142, 126, 0.15);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 
   /* ── Status Colors ── */
   --color-healthy: #22c55e;
@@ -27,89 +94,248 @@
   --color-warning-light: rgba(245, 158, 11, 0.12);
   --color-danger: #ef4444;
   --color-danger-light: rgba(239, 68, 68, 0.12);
+  --color-info: #3b82f6;
+  --color-info-light: rgba(59, 130, 246, 0.12);
 
   /* ── Typography Colors ── */
-  --text-primary: #ffffff;      /* Pure white — maximum contrast */
-  --text-secondary: #d1d5db;    /* Light gray */
-  --text-light: #9ca3af;        /* Muted */
+  --text-primary: #ffffff;          /* Pure white — maximum contrast */
+  --text-secondary: #d1d5db;        /* Light gray */
+  --text-tertiary: #9ca3af;         /* Muted */
+  --text-muted: #6b7280;            /* Very muted */
   --text-white: #ffffff;
-  --text-on-primary: #064e3b;   /* Dark text on green buttons */
+  --text-on-primary: #064e3b;       /* Dark text on green buttons */
+  --text-on-dark: #f3f4f6;          /* Light text on dark backgrounds */
 
   /* ── Borders ── */
-  --border-color: rgba(110, 142, 126, 0.25);
+  --border-color: rgba(110, 142, 126, 0.2);
   --border-color-hover: rgba(110, 142, 126, 0.4);
-  --border-style: 2px solid var(--border-color);  /* Thicker borders for visibility */
+  --border-color-strong: rgba(110, 142, 126, 0.6);
+  --border-style: 2px solid var(--border-color);
+  --border-style-strong: 2px solid var(--border-color-strong);
 
   /* ── Shadows ── */
-  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.3);
-  --shadow-medium: 0 16px 40px rgba(0, 0, 0, 0.4);
-  --shadow-pill: 0 6px 20px rgba(34, 197, 94, 0.2);
-  --shadow-active: 0 10px 28px rgba(34, 197, 94, 0.25);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 24px rgba(34, 197, 94, 0.3);
+  --shadow-glow-strong: 0 0 48px rgba(34, 197, 94, 0.4);
+  --shadow-pill: 0 6px 20px rgba(34, 197, 94, 0.25);
+  --shadow-active: 0 10px 28px rgba(34, 197, 94, 0.3);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
 
   /* ── Fonts ──
        System fonts for maximum compatibility on low-end devices.
        No external web fonts — critical for slow rural connections.  */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
   /* ── Border Radii ──
        Large, friendly rounded corners.  */
-  --radius-xs: 10px;
-  --radius-sm: 16px;
-  --radius-md: 22px;
-  --radius-lg: 30px;
-  --radius-xl: 38px;
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
   --radius-pill: 999px;
 
   /* ── Touch Targets ──
-       Minimum 44px for easy tapping with thick fingers / gloves.  */
+       Minimum 48px for easy tapping with thick fingers / gloves.  */
   --touch-min: 48px;
   --touch-comfortable: 56px;
+  --touch-large: 64px;
+
+  /* ── Spacing ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
 
   /* ── Transitions ── */
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bounce: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-slow: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
   /* ── Layout ── */
-  --header-height: 70px;
-  --bottom-nav-height: 80px;
-  --page-max-width: 900px;
+  --header-height: 64px;
+  --bottom-nav-height: 72px;
+  --page-max-width: 1000px;
+  --content-max-width: 800px;
+
+  /* ── Z-Index Scale ── */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal-backdrop: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-tooltip: 600;
+  --z-toast: 700;
+  --z-nav: 800;
+}
+
+/* ── Light Theme Overrides ──
+   For users who prefer light mode.  */
+@media (prefers-color-scheme: light) {
+  :root:not(.theme-dark) {
+    --bg-primary: #f0fdf4;
+    --bg-secondary: #dcfce7;
+    --bg-tertiary: #bbf7d0;
+    --bg-elevated: #ffffff;
+    --primary: #16a34a;
+    --primary-hover: #15803d;
+    --primary-active: #166534;
+    --primary-light: rgba(22, 163, 74, 0.15);
+    --primary-dark: #14532d;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --card-hover-bg: rgba(240, 253, 244, 0.95);
+    --card-border: rgba(110, 142, 126, 0.3);
+    --card-border-hover: rgba(110, 142, 126, 0.5);
+    --text-primary: #064e3b;
+    --text-secondary: #166534;
+    --text-tertiary: #166534;
+    --text-muted: #4ade80;
+    --text-on-dark: #064e3b;
+    --border-color: rgba(110, 142, 126, 0.3);
+    --border-color-hover: rgba(110, 142, 126, 0.5);
+    --border-color-strong: rgba(110, 142, 126, 0.7);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --card-hover-bg: rgba(240, 253, 244, 0.95);
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-sm: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.18);
+  }
 }
 
 /* ── Dark Theme Overrides ──
    Reduced brightness for night-time field use.  */
 .theme-dark {
-  --bg-primary: #070c06;
-  --bg-secondary: #0d160c;
+  --bg-primary: #051209;
+  --bg-secondary: #0c1a0f;
+  --bg-tertiary: #142815;
+  --bg-elevated: #1c321d;
   --primary: #4ade80;
   --primary-hover: #22c55e;
-  --primary-light: rgba(74, 222, 128, 0.12);
+  --primary-active: #22c55e;
+  --primary-light: rgba(74, 222, 128, 0.15);
   --primary-dark: #a7f3d0;
+  --primary-glow: rgba(74, 222, 128, 0.5);
   --card-bg: rgba(12, 20, 12, 0.9);
   --card-hover-bg: rgba(18, 32, 18, 0.95);
+  --card-border: rgba(110, 142, 126, 0.15);
+  --card-border-hover: rgba(110, 142, 126, 0.3);
   --text-primary: #f3f4f6;
   --text-secondary: #a7f3d0;
-  --text-light: #6b7280;
-  --border-color: rgba(110, 142, 126, 0.2);
-  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-medium: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --text-tertiary: #6b7280;
+  --text-muted: #4ade80;
+  --text-on-dark: #ecfdf5;
+  --border-color: rgba(110, 142, 126, 0.15);
+  --border-color-hover: rgba(110, 142, 126, 0.3);
+  --border-color-strong: rgba(110, 142, 126, 0.5);
+  --card-bg: rgba(12, 20, 12, 0.9);
+  --card-hover-bg: rgba(18, 32, 18, 0.95);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(74, 222, 128, 0.35);
+  --shadow-glow-strong: 0 0 48px rgba(74, 222, 128, 0.45);
+}
+
+/* ── Explicit Light/Dark Theme Classes ── */
+.theme-light {
+  --bg-primary: #f0fdf4;
+  --bg-secondary: #dcfce7;
+  --bg-tertiary: #bbf7d0;
+  --bg-elevated: #ffffff;
+  --primary: #16a34a;
+  --primary-hover: #15803d;
+  --primary-active: #166534;
+  --primary-light: rgba(22, 163, 74, 0.15);
+  --primary-dark: #14532d;
+  --primary-glow: rgba(22, 163, 74, 0.3);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --card-hover-bg: rgba(240, 253, 244, 0.95);
+  --card-border: rgba(110, 142, 126, 0.3);
+  --card-border-hover: rgba(110, 142, 126, 0.5);
+  --text-primary: #064e3b;
+  --text-secondary: #166534;
+  --text-tertiary: #166534;
+  --text-muted: #4ade80;
+  --text-on-dark: #064e3b;
+  --border-color: rgba(110, 142, 126, 0.3);
+  --border-color-hover: rgba(110, 142, 126, 0.5);
+  --border-color-strong: rgba(110, 142, 126, 0.7);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --card-hover-bg: rgba(240, 253, 244, 0.95);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.18);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* ── High Contrast / Accessibility ──
    For users with visual impairments or bright sunlight.  */
 @media (prefers-contrast: high) {
   :root {
-    --border-color: rgba(255, 255, 255, 0.4);
+    --border-color: rgba(255, 255, 255, 0.5);
+    --border-color-hover: rgba(255, 255, 255, 0.7);
     --text-secondary: #ffffff;
-    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --text-tertiary: #e5e7eb;
+    --text-muted: #d1d5db;
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.7);
+  }
+  .theme-dark {
+    --border-color: rgba(255, 255, 255, 0.5);
+    --border-color-hover: rgba(255, 255, 255, 0.7);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
   }
 }
 
 /* ── Reduce Motion ── */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Focus Visible ── */
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: var(--primary-light);
+  color: var(--text-on-primary);
+}
+
+/* ── Print Styles ── */
+@media print {
+  .no-print {
+    display: none !important;
   }
 }

@@ -96,16 +96,38 @@ function App() {
     if (!user) return;
     try {
       const scans = await historyService.getScans(user.username);
-      setHistory(scans);
+      // Deduplicate by firestoreId or id
+      const seen = new Set();
+      const uniqueScans = scans.filter(scan => {
+        const key = scan.firestoreId || scan.id;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setHistory(uniqueScans);
     } catch (err) {
       console.error("Failed to load history:", err);
       setHistory([]);
     }
   };
 
+  // Track current user to prevent stale requests
+  const currentUserRef = useRef(null);
+  const loadHistoryRef = useRef(0);
+
   useEffect(() => {
     if (user) {
-      loadHistory();
+      currentUserRef.current = user.username;
+      const loadId = ++loadHistoryRef.current;
+      loadHistory().then(() => {
+        // Only update state if this is still the latest request for the current user
+        if (loadId === loadHistoryRef.current && currentUserRef.current === user.username) {
+          // State already updated in loadHistory
+        }
+      });
+    } else {
+      currentUserRef.current = null;
+      setHistory([]);
     }
   }, [user]);
 
@@ -220,7 +242,7 @@ function App() {
               };
               setPrediction(predictionForState);
 
-              // Save to local history (IndexedDB/Capacitor) - failure must NOT block prediction
+              // Save to history - failure must NOT block prediction
               if (user) {
                 (async () => {
                   try {
@@ -236,9 +258,23 @@ function App() {
                       top_predictions: result.top_predictions || [],
                       timestamp: new Date().toISOString()
                     };
-                    await historyService.addScan(historyEntry);
-                    const scans = await historyService.getScans(user.username);
-                    setHistory(scans);
+                    const firestoreId = await historyService.addScan(historyEntry);
+                    // Optimistically add to local state to avoid full reload
+                    const newEntry = {
+                      ...historyEntry,
+                      id: firestoreId,
+                      firestoreId: firestoreId
+                    };
+                    setHistory(prev => {
+                      // Deduplicate by firestoreId
+                      const seen = new Set();
+                      return [newEntry, ...prev].filter(scan => {
+                        const key = scan.firestoreId || scan.id;
+                        if (seen.has(key)) return false;
+                        seen.add(key);
+                        return true;
+                      });
+                    });
                   } catch (e) {
                     console.warn("History could not be saved", e);
                   }

@@ -143,8 +143,6 @@ function Diagnosis({ prediction, onViewChange, lang }) {
     return result;
   };
 
-  const aiStructured = cachedReports[reportLang];
-
   const handleLangToggle = (newLang) => {
     setReportLang(newLang);
     setAudioLang(newLang);
@@ -278,8 +276,8 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
   if (!prediction) {
     return (
-      <div className="diag-empty-wrapper slide-section fade-in-section">
-        <div className="glass-card diag-empty-card">
+      <div className="diag-empty-wrapper slide-section fade-in-section animate-slide-up">
+        <div className="card card-glass diag-empty-card">
           <Sprout size={48} color="#9ca3af" style={{ marginBottom: '16px' }} />
           <p style={{ fontSize: '18px', marginBottom: '20px' }}>{t("noDiagnosisData", lang)}</p>
           <button className="btn btn-hero" onClick={() => onViewChange("scan")} style={{ width: '100%' }}>
@@ -335,11 +333,10 @@ function Diagnosis({ prediction, onViewChange, lang }) {
   };
 
   return (
-    <div className="disease-reveal-container fade-in-section">
-      
+    <div className="disease-reveal-container fade-in-section animate-slide-up">
       {/* Top Header Navigation */}
       <div className="reveal-top-bar">
-        <button className="btn-back-scan" onClick={() => onViewChange("scan")} aria-label={t("backToScan", lang)}>
+        <button className="btn btn-ghost" onClick={() => onViewChange("scan")} aria-label={t("backToScan", lang)}>
           <ArrowLeft size={20} />
           <span>{t("backToScan", lang)}</span>
         </button>
@@ -350,7 +347,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
       </div>
 
       {/* HERO REVEAL SECTION */}
-      <section className="reveal-hero-section glass-card">
+      <section className="reveal-hero-section card card-elevated animate-slide-up">
         <div className="hero-reveal-header">
           <h1 className="reveal-disease-title">
             {prediction.disease_formatted || details.displayName}
@@ -378,9 +375,9 @@ function Diagnosis({ prediction, onViewChange, lang }) {
         </div>
 
         {/* AUDIO READOUT ACCESSIBILITY TOOLBAR */}
-        <div className="tts-accessibility-bar glass-card">
+        <div className="tts-accessibility-bar card card-glass">
           <div className="tts-title-info">
-            <Volume2 size={20} color="#22c55e" />
+            <Volume2 size={20} color="var(--color-healthy)" />
             <span className="tts-label">
               {lang === "ta" ? "குரல் வழிகாட்டல் (TTS)" : "Voice Audio Advisory"}
             </span>
@@ -405,17 +402,17 @@ function Diagnosis({ prediction, onViewChange, lang }) {
             </div>
 
             {!isSpeaking ? (
-              <button className="tts-action-btn play" onClick={handlePlayTTS} title={lang === "ta" ? "கேட்கவும்" : "Listen"} aria-label={lang === "ta" ? "தமிழில் வாசிக்கவும்" : "Read in English"}>
+              <button className="tts-action-btn btn btn-primary" onClick={handlePlayTTS} title={lang === "ta" ? "கேட்கவும்" : "Listen"} aria-label={lang === "ta" ? "தமிழில் வாசிக்கவும்" : "Read in English"}>
                 <Play size={18} />
                 <span>{lang === "ta" ? "கேட்கவும்" : "Listen"}</span>
               </button>
             ) : (
               <>
-                <button className="tts-action-btn pause" onClick={handlePauseTTS} title="Pause" aria-label="Pause">
+                <button className="tts-action-btn btn btn-secondary" onClick={handlePauseTTS} title="Pause" aria-label="Pause">
                   <Pause size={18} />
                   <span>{lang === "ta" ? "நிறுத்து" : "Pause"}</span>
                 </button>
-                <button className="tts-action-btn stop" onClick={handleStopTTS} title="Stop" aria-label="Stop">
+                <button className="tts-action-btn btn btn-danger" onClick={handleStopTTS} title="Stop" aria-label="Stop">
                   <VolumeX size={18} />
                   <span>{lang === "ta" ? "முடி" : "Stop"}</span>
                 </button>
@@ -425,7 +422,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
         </div>
 
         {ttsNotice && (
-          <div className="tts-notice-pill">
+          <div className="tts-notice-pill badge badge-warning">
             <span>{ttsNotice}</span>
           </div>
         )}
@@ -457,7 +454,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
         {/* VIEW 1: INTERACTIVE GRAD-CAM SPLIT COMPARISON SLIDER */}
         {viewMode === "slider" && gradcamUrl && !origImgError && !camImgError ? (
-          <div className="interactive-slider-container">
+          <div className="interactive-slider-container animate-fade-in">
             <div 
               className="split-slider-viewport"
               ref={sliderRef}
@@ -540,14 +537,14 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           /* VIEW 2: STANDARD SIDE-BY-SIDE GRID */
           <div className="reveal-visual-grid">
             {/* ORIGINAL IMAGE */}
-            <div className="reveal-image-box">
+            <div className="reveal-image-box card card-interactive">
               <div className="reveal-image-header">
                 <Eye size={18} />
                 <span>{t("originalImage", lang)}</span>
               </div>
               <div className="reveal-img-wrapper" onClick={() => !origImgError && setFullscreenImage(originalUrl)}>
                 {origImgError ? (
-                  <div className="no-heatmap error-state">
+                  <div className="no-heatmap error-state card card-glass">
                     <ImageOff size={28} color="#ef4444" />
                     <span>{t("imageLoadFailed", lang)}</span>
                   </div>
@@ -565,18 +562,18 @@ function Diagnosis({ prediction, onViewChange, lang }) {
             </div>
 
             {/* GRAD-CAM HEATMAP */}
-            <div className="reveal-image-box heatmap-box">
+            <div className="reveal-image-box heatmap-box card card-interactive">
               <div className="reveal-image-header">
                 <Activity size={18} color="#fbbf24" />
                 <span>{t("attentionMap", lang)}</span>
               </div>
               <div className="reveal-img-wrapper" onClick={() => gradcamUrl && !camImgError && setFullscreenImage(gradcamUrl)}>
                 {!gradcamUrl ? (
-                  <div className="no-heatmap">
+                  <div className="no-heatmap card card-glass">
                     <span>{t("mapUnavailable", lang)}</span>
                   </div>
                 ) : camImgError ? (
-                  <div className="no-heatmap error-state">
+                  <div className="no-heatmap error-state card card-glass">
                     <ImageOff size={28} color="#ef4444" />
                     <span>{t("imageLoadFailed", lang)}</span>
                   </div>
@@ -597,9 +594,9 @@ function Diagnosis({ prediction, onViewChange, lang }) {
       </section>
 
       {/* FARMER AI ADVISORY REPORT SECTION */}
-      <section className="farmer-report-section fade-in-up" style={{ animationDelay: "0.3s" }}>
+      <section className="farmer-report-section fade-in-section animate-slide-up" style={{ animationDelay: "0.2s" }}>
         {!showReport ? (
-          <div className="report-toggle-card glass-card" style={{ padding: '20px', textAlign: 'center', marginTop: '16px' }}>
+          <div className="report-toggle-card card card-glass" style={{ padding: '20px', textAlign: 'center', marginTop: '16px' }}>
             <button className="btn btn-hero ai-reveal-btn" style={{ width: '100%', justifyContent: 'center' }} onClick={() => setShowReport(true)}>
               <Bot size={24} />
               <span>{t("needFullAiReport", lang)}</span>
@@ -607,7 +604,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
           </div>
         ) : (
           <>
-            <div className="report-header-banner">
+            <div className="report-header-banner card card-glass">
               <div className="report-title">
                 <Bot size={28} color="#22c55e" />
                 <h2>{t("nvidiaFarmerAdvisory", lang)}</h2>
@@ -632,7 +629,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
               </div>
             </div>
 
-            <div className="report-content-body glass-card min-h-report">
+            <div className="report-content-body card card-glass min-h-report">
               <ErrorBoundary 
                 inline={true} 
                 lang={lang} 
@@ -654,10 +651,10 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     </button>
                   </div>
                 ) : reportStatus === "success" && aiStructured ? (
-                  <div className="structured-report">
+                  <div className="structured-report animate-fade-in">
                     {/* 1. Diagnosis */}
                     {aiStructured.diagnosis && (
-                      <div className="report-block highlight-block">
+                      <div className="report-block card card-glass highlight-block">
                         <h3>{t("diagnosis", lang)}</h3>
                         <p>{aiStructured.diagnosis}</p>
                       </div>
@@ -665,7 +662,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     
                     {/* 2. Summary */}
                     {aiStructured.summary && (
-                      <div className="report-block">
+                      <div className="report-block card card-glass">
                         <h3>{t("summary", lang)}</h3>
                         <p>{aiStructured.summary}</p>
                       </div>
@@ -673,7 +670,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
                     {/* 3. Symptoms */}
                     {Array.isArray(aiStructured.symptoms) && aiStructured.symptoms.length > 0 && (
-                      <div className="report-block">
+                      <div className="report-block card card-glass">
                         <h3>{t("symptoms", lang)}</h3>
                         <ul>{aiStructured.symptoms.map((s, i) => <li key={i}>{s}</li>)}</ul>
                       </div>
@@ -681,7 +678,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     
                     {/* 4. Causes */}
                     {Array.isArray(aiStructured.causes) && aiStructured.causes.length > 0 && (
-                      <div className="report-block">
+                      <div className="report-block card card-glass">
                         <h3>{t("causes", lang)}</h3>
                         <ul>{aiStructured.causes.map((c, i) => <li key={i}>{c}</li>)}</ul>
                       </div>
@@ -689,7 +686,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
                     {/* 5. Immediate Actions */}
                     {Array.isArray(aiStructured.immediate_actions) && aiStructured.immediate_actions.length > 0 && (
-                      <div className="report-block action-block">
+                      <div className="report-block card card-glass action-block">
                         <h3><AlertTriangle size={20} color="#ef4444" /> {t("immediateActions", lang)}</h3>
                         <ul>
                           {aiStructured.immediate_actions.map((act, i) => <li key={i}>{act}</li>)}
@@ -699,7 +696,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
 
                     {/* 6. Treatment & Management */}
                     {Array.isArray(aiStructured.treatment) && aiStructured.treatment.length > 0 && (
-                      <div className="report-block treatment-block">
+                      <div className="report-block card card-glass treatment-block">
                         <h3>{t("treatmentManagement", lang)}</h3>
                         <ul>
                           {aiStructured.treatment.map((t_item, i) => <li key={i}>{t_item}</li>)}
@@ -709,7 +706,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     
                     {/* 7. Prevention */}
                     {Array.isArray(aiStructured.prevention) && aiStructured.prevention.length > 0 && (
-                      <div className="report-block prevention-block">
+                      <div className="report-block card card-glass prevention-block">
                         <h3><ShieldCheck size={20} color="#22c55e" /> {t("prevention", lang)}</h3>
                         <ul>
                           {aiStructured.prevention.map((p_item, i) => <li key={i}>{p_item}</li>)}
@@ -719,7 +716,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     
                     {/* 8. Monitoring */}
                     {Array.isArray(aiStructured.monitoring) && aiStructured.monitoring.length > 0 && (
-                      <div className="report-block">
+                      <div className="report-block card card-glass">
                         <h3>{t("monitoring", lang)}</h3>
                         <ul>{aiStructured.monitoring.map((m, i) => <li key={i}>{m}</li>)}</ul>
                       </div>
@@ -727,7 +724,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
                     
                     {/* 9. Farmer Advice */}
                     {Array.isArray(aiStructured.farmer_advice) && aiStructured.farmer_advice.length > 0 && (
-                      <div className="report-block highlight-block" style={{ marginTop: '16px', background: 'rgba(34, 197, 94, 0.1)' }}>
+                      <div className="report-block card card-glass highlight-block" style={{ marginTop: '16px', background: 'rgba(34, 197, 94, 0.1)' }}>
                         <h3>{t("farmerAdvice", lang) || "Farmer Advice"}</h3>
                         <ul>{aiStructured.farmer_advice.map((advice, i) => <li key={i}>{advice}</li>)}</ul>
                       </div>
@@ -749,7 +746,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
       </section>
 
       {/* FIXED BOTTOM ACTION BAR */}
-      <div className="reveal-bottom-actions glass-panel">
+      <div className="reveal-bottom-actions card card-glass">
         <button className="btn btn-secondary action-btn" onClick={() => onViewChange("scan")} style={{ flex: 1 }}>
           <Camera size={20} />
           <span>{t("scanAnother", lang)}</span>
@@ -776,7 +773,7 @@ function Diagnosis({ prediction, onViewChange, lang }) {
       </div>
 
       {fullscreenImage && (
-        <div className="fullscreen-image-modal" onClick={() => setFullscreenImage(null)} role="dialog" aria-modal="true" aria-label="Fullscreen image">
+        <div className="fullscreen-image-modal animate-fade-in" onClick={() => setFullscreenImage(null)} role="dialog" aria-modal="true" aria-label="Fullscreen image">
           <button className="close-fs-btn" onClick={() => setFullscreenImage(null)} aria-label="Close">
             <X size={26} />
           </button>

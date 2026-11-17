@@ -17,7 +17,7 @@
       "details": "Remembers first question context: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context for **Tomato___Early_blight**, here are the recommended treatment steps:\n\n**1. Fungicide Application:**\n*   **Timing:** Apply fungicides **preventatively** or at the very "
+      "response_preview": "Based on the disease context for **Tomato Early Blight**, the recommended treatment is:\n\n*   **Apply fungicides preventatively or at the very first sign of disease.**\n\nAs noted in previous responses, "
     },
     {
       "name": "Chat Q1: What are the symptoms of early blight on...",
@@ -33,7 +33,7 @@
       "details": "Provider: nvidia_ai, Fallback: False, Repetitive: False",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided for **Tomato___Bacterial_spot**, the recommended treatment is:\n\n*   **Copper sprays** can suppress the spread of the disease, though complete eradication is diffi"
+      "response_preview": "Based on the disease context provided, here is the information for **Bacterial Spot on Peppers**:\n\n*   **Symptoms:** Small, dark, water-soaked spots on leaves that eventually cause yellowing and leaf "
     },
     {
       "name": "Chat Q3: How can I prevent late blight on potatoe...",
@@ -41,7 +41,7 @@
       "details": "Provider: nvidia_ai, Fallback: False, Repetitive: False",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided for **Tomato___Late_blight**, here are the prevention strategies for potatoes:\n\n*   **Avoid planting near tomatoes:** Since the pathogen affects both crops, do no"
+      "response_preview": "Based on the disease context provided for **Tomato Late Blight**, here are the prevention strategies applicable to potatoes, as they are highly susceptible to the same pathogen:\n\n*   **Avoid proximity"
     },
     {
       "name": "Chat Q4: What causes tomato yellow leaf curl viru...",
@@ -49,7 +49,7 @@
       "details": "Provider: nvidia_ai, Fallback: False, Repetitive: False",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided, **Tomato Yellow Leaf Curl Virus (TYLCV)** is caused by infection transmitted by the **silverleaf whitefly (Bemisia tabaci)**.\n\nThe virus is not soil-borne or see"
+      "response_preview": "Based on the disease context provided, **Tomato Yellow Leaf Curl Virus (TYLCV)** is caused by an infection transmitted by the **silverleaf whitefly** (*Bemisia tabaci*).\n\nThe virus is not spread throu"
     },
     {
       "name": "Chat Q5: How does late blight spread between plan...",
@@ -57,7 +57,7 @@
       "details": "Provider: nvidia_ai, Fallback: False, Repetitive: False",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided for **Tomato___Late_blight**, here is how the disease spreads:\n\n*   **Wind-Dispersed Spores:** The pathogen produces massive amounts of spores (sporangia) that ar"
+      "response_preview": "Based on the disease context provided for **Tomato Late Blight**, the disease spreads primarily through two mechanisms:\n\n1.  **Wind-Dispersed Spores:** The pathogen produces vast quantities of sporang"
     },
     {
       "name": "Chat Q6: Can I use neem oil for spider mites on t...",
@@ -65,7 +65,7 @@
       "details": "Provider: nvidia_ai, Fallback: False, Repetitive: False",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided for **Tomato___Late_blight**, neem oil is not recommended for this specific disease.\n\nLate blight is caused by a fungus-like organism (*Phytophthora infestans*) t"
+      "response_preview": "Based on the disease context provided for **Tomato___healthy**, the plant is currently healthy with no symptoms.\n\nRegarding your question about neem oil for spider mites: While neem oil is a common or"
     },
     {
       "name": "Chat Q7: What's the difference between early blig...",
@@ -73,7 +73,7 @@
       "details": "Provider: nvidia_ai, Fallback: False, Repetitive: False",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the provided disease contexts, here are the key differences between Early Blight and Late Blight on tomatoes:\n\n**1. Visual Symptoms (Key Identifier):**\n*   **Early Blight:** Causes **concentr"
+      "response_preview": "Based on the provided disease contexts, here are the key differences between Early Blight and Late Blight on tomatoes:\n\n**Early Blight (The provided context):**\n*   **Symptoms:** Causes concentric rin"
     },
     {
       "name": "Chat Q8: How often should I water my tomato plant...",
@@ -81,7 +81,7 @@
       "details": "Provider: nvidia_ai, Fallback: False, Repetitive: False",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided for **Tomato___Early_blight** and **Tomato___Late_blight**, here is the guidance on watering to prevent disease:\n\n**1. Prevent Early Blight (Soil Splash):**\nTo pr"
+      "response_preview": "Based on the disease context for **Tomato Early Blight**, here is the specific advice regarding watering to prevent disease:\n\n*   **Avoid Overhead Watering:** To prevent Early Blight, water at the bas"
     },
     {
       "name": "Chat Q9: Is copper fungicide approved for organic...",
@@ -89,7 +89,7 @@
       "details": "Provider: nvidia_ai, Fallback: False, Repetitive: False",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided for **Tomato___Early_blight**, here is the information regarding copper fungicides:\n\n**Yes, copper-based fungicides are generally approved for organic farming** a"
+      "response_preview": "Based on the disease context for **Tomato Early Blight**, copper-based fungicides are commonly used in organic farming as a preventative tool to manage fungal diseases.\n\nHowever, **I cannot provide sp"
     },
     {
       "name": "Chat Q10: My tomato plant has yellow leaves with b...",
@@ -97,7 +97,7 @@
       "details": "Provider: nvidia_ai, Fallback: False, Repetitive: False",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided for **Tomato___Early_blight**, the symptoms you describe—yellow leaves with brown spots—strongly suggest **Early Blight**.\n\nHere is how to identify it and what to"
+      "response_preview": "Based on the disease context for **Tomato Early Blight**, the symptoms you are describing—yellow leaves with brown spots—align closely with this specific disease.\n\n**Key indicators from the context:**"
     },
     {
       "name": "Report: Bacterial Disease",
@@ -105,7 +105,7 @@
       "details": "Provider: nvidia_ai, Diagnosis: Tomato Bacterial Spot, AllSections: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "{\n  \"causes\": [\n    \"Bacterial pathogen entering through leaf pores or wounds\",\n    \"Warm and humid weather conditions\",\n    \"Water splash dispersal during rain or irrigation\"\n  ],\n  \"diagnosis\": \"Tomato Bacterial Spot\",\n  \"farmer_advice\": [\n    \"Act quickly - bacterial spot spreads fast in humidity\",\n    \"Remove all affected leaves and fruit promptly\",\n    \"Maintain good air circulation between plants\",\n    \"Consider soil solarization for future seasons if problem persists\"\n  ],\n  \"immediate_ac"
+      "response_preview": "{\n  \"causes\": [\n    \"Bacterial pathogen entering through leaf pores and wounds\",\n    \"Warm temperatures between 25-30\\u00b0C\",\n    \"High humidity and prolonged leaf wetness\",\n    \"Water splash dispersing bacteria from soil to plant\"\n  ],\n  \"diagnosis\": \"Tomato Bacterial Spot\",\n  \"farmer_advice\": [\n    \"Act fast - bacterial spot spreads quickly once established\",\n    \"Copper sprays only stop new infections, cannot heal old spots\",\n    \"Focus on preventing water splash as primary transmission rout"
     },
     {
       "name": "Report: Fungal Disease",
@@ -113,7 +113,7 @@
       "details": "Provider: nvidia_ai, Diagnosis: Tomato Late blight, AllSections: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "{\n  \"causes\": [\n    \"Fungal pathogen (Phytophthora infestans)\",\n    \"High humidity and wet conditions\",\n    \"Poor air circulation around plants\",\n    \"Proximity to potato crops which harbor the pathogen\"\n  ],\n  \"diagnosis\": \"Tomato Late blight\",\n  \"farmer_advice\": [\n    \"Act quickly - late blight spreads extremely fast under wet conditions\",\n    \"Do not compost infected plant material - destroy by burning or deep burial\",\n    \"If infection is widespread, consider removing the entire affected are"
+      "response_preview": "{\n  \"causes\": [\n    \"Infection by the fungus Phytophthora infestans\",\n    \"High humidity and wet leaf surfaces for extended periods\",\n    \"Cool temperatures combined with rain or dew\",\n    \"Spread via wind-borne spores, especially from nearby potato crops\"\n  ],\n  \"diagnosis\": \"Tomato Late blight\",\n  \"farmer_advice\": [\n    \"Act quickly - late blight spreads rapidly and can destroy a field in days\",\n    \"Start fungicide protection before symptoms appear if weather conditions are favorable\",\n    \"R"
     },
     {
       "name": "Report: Viral Disease",
@@ -121,7 +121,7 @@
       "details": "Provider: nvidia_ai, Diagnosis: Tomato Yellow Leaf Curl Virus (TYLCV), AllSections: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "{\n  \"causes\": [\n    \"Transmission by silverleaf whitefly vector\",\n    \"Introduction of virus into healthy plants by whiteflies\",\n    \"Systemic viral infection with no chemical cure\"\n  ],\n  \"diagnosis\": \"Tomato Yellow Leaf Curl Virus (TYLCV)\",\n  \"farmer_advice\": [\n    \"Act quickly: remove and destroy infected plants without delay\",\n    \"Focus on vector control: whiteflies spread this virus rapidly\",\n    \"For future seasons, prioritize planting TYLCV-resistant varieties\",\n    \"Maintain strict fiel"
+      "response_preview": "{\n  \"causes\": [\n    \"Infection by Tomato Yellow Leaf Curl Virus (TYLCV)\",\n    \"Transmission by silverleaf whitefly (vector)\",\n    \"Introduction of virus into healthy plants via whitefly feeding\"\n  ],\n  \"diagnosis\": \"Tomato Yellow Leaf Curl Virus (TYLCV)\",\n  \"farmer_advice\": [\n    \"Act quickly: remove and destroy infected plants to protect the rest of your crop\",\n    \"Focus on whitefly control as the primary defense since there is no cure for the virus\",\n    \"Consider replanting with resistant va"
     },
     {
       "name": "Report: Healthy Leaf",
@@ -129,7 +129,7 @@
       "details": "Provider: nvidia_ai, Diagnosis: Tomato healthy, HealthyCorrect: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "{\n  \"causes\": [\n    \"No disease present. Plant health is maintained through proper cultural practices including adequate water, nutrients, and spacing.\"\n  ],\n  \"diagnosis\": \"Tomato healthy\",\n  \"farmer_advice\": [\n    \"The tomato plants are healthy. Continue with standard good agricultural practices. Ensure proper irrigation, nutrition, and field sanitation. Regular scouting will help maintain plant health and detect any issues early if they arise.\"\n  ],\n  \"immediate_actions\": [\n    \"Continue regu"
+      "response_preview": "{\n  \"causes\": [\n    \"Plant is healthy with no disease pressure present\"\n  ],\n  \"diagnosis\": \"Tomato healthy\",\n  \"farmer_advice\": [\n    \"Your tomato plants are healthy. Continue with your current preventive care routine. Regular monitoring will help ensure they remain productive and healthy throughout the growing season.\"\n  ],\n  \"immediate_actions\": [\n    \"Continue current farming practices\"\n  ],\n  \"monitoring\": [\n    \"Inspect plants weekly for any symptom development\",\n    \"Check soil moisture l"
     },
     {
       "name": "Report: Mite/Pest Disease",
@@ -137,7 +137,7 @@
       "details": "Provider: nvidia_ai, Diagnosis: Spider mites Two-spotted spider mite, AllSections: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "{\n  \"causes\": [\n    \"Hot and dry environmental conditions\",\n    \"Plant stress from water deficiency\",\n    \"Low humidity favoring mite reproduction\"\n  ],\n  \"diagnosis\": \"Spider mites Two-spotted spider mite\",\n  \"farmer_advice\": [\n    \"Act quickly when first signs appear to prevent rapid spread\",\n    \"Avoid broad-spectrum insecticides that kill beneficial insects\",\n    \"Maintain good garden hygiene by removing plant debris\",\n    \"Consider releasing predatory mites in greenhouse conditions\"\n  ],\n  "
+      "response_preview": "{\n  \"causes\": [\n    \"Hot and dry environmental conditions favor rapid mite reproduction\",\n    \"Plant stress from water deficiency\",\n    \"Low humidity levels in the growing area\"\n  ],\n  \"diagnosis\": \"Spider mites Two-spotted spider mite\",\n  \"farmer_advice\": [\n    \"Act quickly at first sign of stippling to prevent population explosion\",\n    \"Avoid broad-spectrum insecticides that kill beneficial predators\",\n    \"Wash hands and tools after handling infested plants to avoid spreading mites\"\n  ],\n  \""
     },
     {
       "name": "Context Priority: Scan=Early Blight, Question=Bacterial Spot",
@@ -153,7 +153,7 @@
       "details": "Source: question, Disease: Tomato___Tomato_Yellow_Leaf_Curl_Virus, UsesViral: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "**Cause:** Tomato Yellow Leaf Curl Virus (TYLCV) is caused by a **begomovirus** transmitted exclusively by the **silverleaf whitefly** (*Bemisia tabaci*).\n\nThe virus is not soil-borne or seed-borne; i"
+      "response_preview": "**Cause:** Tomato yellow leaf curl virus (TYLCV) is caused by a **virus**, specifically a begomovirus. It is not caused by bacteria, fungi, or nematodes.\n\n**Transmission:** The virus is exclusively tr"
     },
     {
       "name": "Context Priority: Scan=Early Blight, Self-Reference",
@@ -161,7 +161,7 @@
       "details": "Source: scan, Disease: Tomato___Early_blight, UsesScan: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided (Tomato Early Blight), here is the practical treatment advice:\n\n**Immediate Treatment:**\n*   **Fungicide Application:** Apply a registered fungicide containing **"
+      "response_preview": "Based on the disease context provided (Tomato Early Blight), here is the practical treatment approach:\n\n**Immediate Action:**\n*   **Fungicide Application:** Apply a registered fungicide containing chl"
     },
     {
       "name": "Context Priority: No Scan, Question=Late Blight",
@@ -169,7 +169,7 @@
       "details": "Source: question, Disease: Tomato___Late_blight, UsesLateBlight: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "Based on the disease context provided, here are the symptoms of Late Blight on potatoes:\n\n*   **Leaves and Stems:** Irregular, water-soaked spots that rapidly turn brown. In wet conditions, a white, f"
+      "response_preview": "Based on the disease context provided for Tomato Late Blight, the symptoms on potatoes are nearly identical due to the same pathogen (*Phytophthora infestans*).\n\n**Key symptoms on potatoes include:**\n"
     },
     {
       "name": "Context Priority: History=Early Blight, Scan=Late Blight, Follow-up",
@@ -177,7 +177,7 @@
       "details": "Source: history, Disease: Tomato___Early_blight, UsesEarlyBlight: True",
       "http_status": 200,
       "provider": "nvidia_ai",
-      "response_preview": "For Early Blight on tomatoes, apply a fungicide containing chlorothalonil or mancozeb as soon as you first see the characteristic concentric ring spots on older leaves. Spray according to the product "
+      "response_preview": "For Tomato Early blight, apply a fungicide containing chlorothalonil or mancozeb at the first sign of symptoms. Spray thoroughly, ensuring coverage of the lower leaf surfaces where spots first appear."
     }
   ]
 }
