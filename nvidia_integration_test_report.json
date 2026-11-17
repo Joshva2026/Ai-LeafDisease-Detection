@@ -1,7 +1,7 @@
 {
   "total": 21,
-  "passed": 19,
-  "failed": 2,
+  "passed": 21,
+  "failed": 0,
   "results": [
     {
       "name": "Health Check",
@@ -23,8 +23,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 4.112133264541626,
-      "response_preview": "Based on the disease context provided, the symptoms of Early Blight in tomatoes are:\n\n*   **Spots:** Brown or black spots with target-like concentric rings.\n*   **Location:** Typically appear on older, lower leaves first.\n*   **Progression:** Surrounding leaf tissue turns yellow.\n\nThis disease usual",
+      "response_time": 4.398970127105713,
+      "response_preview": "Based on the disease context provided, the symptoms of Early Blight in tomatoes are:\n\n*   **Spots:** Brown or black spots with target-like concentric rings.\n*   **Location:** Typically appear on older, lower leaves first.\n*   **Progression:** Surrounding leaf tissue turns yellow.\n\nThis disease is fu",
       "error": ""
     },
     {
@@ -35,8 +35,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 4.475447177886963,
-      "response_preview": "Based on the disease context provided, here is the practical advice for treating bacterial spot on your tomatoes:\n\n*   **Chemical Control:** Copper-based bactericides are the standard recommendation to suppress the spread of the disease. However, please note that **complete eradication is difficult*",
+      "response_time": 4.630219221115112,
+      "response_preview": "Based on the disease context provided, here is the practical advice for treating bacterial spot on your tomatoes:\n\n**Treatment:**\n*   **Copper-based fungicides:** These are the standard recommendation to suppress the spread of the bacteria. However, please note that **complete eradication is difficu",
       "error": ""
     },
     {
@@ -47,8 +47,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 3.887728214263916,
-      "response_preview": "To prevent Late blight in your tomato field, focus on these four key strategies:\n\n1.  **Remove Host Plants:** Destroy any volunteer potato plants nearby, as they serve as a primary source of infection.\n2.  **Manage Airflow & Moisture:** Prune lower leaves and stake or cage plants to improve airflow.",
+      "response_time": 3.7104709148406982,
+      "response_preview": "To prevent Late blight in your tomato field, focus on these four key strategies:\n\n1.  **Remove Host Plants:** Destroy any volunteer potato plants nearby, as they serve as a primary source of infection.\n2.  **Manage Airflow & Moisture:** Prune lower leaves and stake plants to ensure excellent airflow",
       "error": ""
     },
     {
@@ -59,8 +59,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 3.7889723777770996,
-      "response_preview": "**Cause:** Tomato Yellow Leaf Curl Virus (TYLCV) is caused by a **begomovirus** transmitted exclusively by the **silverleaf whitefly** (*Bemisia tabaci*).\n\nThe virus is not soil-borne or seed-borne; it must be vectored by the insect. Once a plant is infected, it remains infected for life and cannot ",
+      "response_time": 3.490265369415283,
+      "response_preview": "**Cause:** Tomato Yellow Leaf Curl Virus (TYLCV) is caused by a **begomovirus**. It is not a fungus or bacteria; it is a viral pathogen.\n\n**Transmission:** The virus is exclusively transmitted by the **silverleaf whitefly** (*Bemisia tabaci*). The whitefly acquires the virus while feeding on an infe",
       "error": ""
     },
     {
@@ -71,8 +71,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 8.579697370529175,
-      "response_preview": "As an AI plant doctor, I must clarify that **neem oil is not an effective treatment for spider mites**.\n\nWhile neem oil can suppress some fungal spores and repel certain insects, spider mites are arachnids, not insects, and neem oil often fails to control heavy infestations. In some cases, neem oil ",
+      "response_time": 3.3729560375213623,
+      "response_preview": "Yes, neem oil can be used to manage spider mites. It acts as both a repellent and an antifeedant, disrupting their feeding and growth cycles.\n\nSince you are managing Early Blight in your tomatoes, keep in mind that neem oil is primarily an antifungal agent. While it has some insecticidal properties,",
       "error": ""
     },
     {
@@ -83,8 +83,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "ta",
-      "response_time": 5.168905735015869,
-      "response_preview": "தக்காளி செடியில் **Early Blight (எர்லி ைட்)** நோய் வருவதால் கீழ் பக்கத்தில் உள்ள பட்டிகளில் கருப்பு அல்லது கருப்பு-செங்கல் நிறம் கொண்ட சirkles (circles) உருவாகும். இந்த சirkles கீழ் மையத்தில் ஒன்று மட்டும் இல்லாமல், மெதிய மாதிரி concentric rings (முழு மையத்துடன் வரும் பல வரிகள்) வடிவமைப்பில் தோன்றும",
+      "response_time": 6.2340545654296875,
+      "response_preview": "தக்காளி செடியில் **Early Blight (எர்லி பைட்)** நோய் வருவதற்கும், அதற்கும் அறிகுறிகளைriconnaissance செய்யும் உதவியை வழங்குகிறேன்.\n\n### Early Blight நோயின் அறிகுறிகள் (Symptoms):\n\n1. **சூழலமுள்ள புள்ளிகள்:** முதலில் செடியின் கீழ் பக்கத்தில் (older leaves) கருப்பு அல்லது கருப்பு-சிவப்பு நிறத்தில் சிறிய",
       "error": ""
     },
     {
@@ -95,8 +95,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "ta",
-      "response_time": 14.266120910644531,
-      "response_preview": "வணக்கம்! உங்கள் கேள்விக்கு பதில் அளிக்கும் முன், உங்கள்_scan_context_ (Early blight) மற்றும் கேள்விக்கு (Bacterial spot) வேறுபாட்டை தெளிவாகக் காட்டி வரும்.\n\n**Scan Context:** Early blight (Fungal disease)\n**Your Question:** Bacterial spot (Bacterial disease)\n\nஇரண்டு நோயும் Tamil Nadu-ல் பரவலான nhng,",
+      "response_time": 10.160135269165039,
+      "response_preview": "வணக்கம்! உங்கள் காய்கல்வியில் டோமேட்டோ பைரசியல் நோய் (Bacterial Spot) ஏற்படியுள்ளது. இந்த நோய் Tamil Nadu-யில் சூழல் மiqua (warm, humid)conditions vuoksi விரிவாக பரவுகிறது.\n\nஉங்கள் கேள்வியின் பதில் Tamil Nadu Agricultural University ( TNAU) மற்றும் கி துறை ஆலோசனைகளின் அடிப்படையில்:\n\n**1. Tamil Name ",
       "error": ""
     },
     {
@@ -107,8 +107,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "ta",
-      "response_time": 15.009678840637207,
-      "response_preview": "வணக்கம் நமக்குத் தெரியும். உங்கள் கேள்விக்கு பதில் Tamil Nadu Agricultural University-ம் மற்றும் Plant Protection Department-ம் ஆவியுள்ள அறிவை அடிப்படையாகக் கொண்டு பதில் அளிக்கிறேன்.\n\n**Tomato Late Blight நோய் தடுப்பு வழிமுறைகள்:**\n\n1. **ஒழியும் இடம் சுத்தம் செய்யவும்:**\n * பயிர் வரைசை, பாதிக்கப்பட்",
+      "response_time": 6.8057496547698975,
+      "response_preview": "வணக்கம் நண்பரே! உங்கள் கேள்விக்கு பதில் Tamil Nadu Agricultural University-யில் கிடைக்கும் சரியான தகவல்களேட Grundlage.\n\n**Tomato Late Blight (முட்டை நோய்) தடுப்பு வழிகள்:**\n\n1. **பொருத்து தடை:** பட்டாணி (Potato) பயிர் அருகில் பயிர் செய்ய வேண்டாம். பட்டாணி மற்றும் மட்டரி ஆகியோடு சேர்ந்து நோய் விரசரிக",
       "error": ""
     },
     {
@@ -119,8 +119,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "ta",
-      "response_time": 7.578456401824951,
-      "response_preview": "தக்காளி செடியில் மஞ்சள் இலைகள் வரும் காரணம் பலவிதமானவை இருக்கலாம், ஆனால் உங்கள் கேள்வியின் சூடாக **Early Blight (மூச்சு நோய்)** என்ற நோய் சாத்தியமுள்ளது.\n\n**அவசரம்:**\nஉங்கள் தக்காளி செடியில் கீழ் பக்கத்தில் மஞ்சள்ilighting (மஞ்சள் மாறும்) மற்றும் concentric rings (வட்டamaddu) போன்ற சுட்டுகள் தோன்றின",
+      "response_time": 6.5589423179626465,
+      "response_preview": "தக்காளி செடியில் மஞ்சள் இலைகள் வருவதற்கான முக்கிய காரணங்கள் இ suivantes:\n\n1. **வீரங்கள் (Fungal Diseases):** ஆரம்ப (Early Blight) போன்ற வீரங்கள் Tamil Nadu-ல் மிகவும் பரவியம். உங்கள் கேட்கும் சூழலுக்கு பொருத்தமானம்.\n2. **ப தng deficit:**particularly **நைட்ரஜன் (Nitrogen)** deficiency. செடி வளர்க்கும",
       "error": ""
     },
     {
@@ -131,8 +131,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "ta",
-      "response_time": 10.04596471786499,
-      "response_preview": "சிலந்திப் பூச்சிகள் (Spider Mites) தtojjala பயிரில் பரவும் சிறு பூச்சிகள். இவை பூச்சி வகை ஆகும், hence அவற்றில் சிலந்தி வகை பூச்சிகள் போன்றவையாகவும் தோன்றலாம். இவை இசை போன்றவையாக இசை சுவை செய்து இசை தின்னும் வகையில் இசை தின்னும் பூச்சிகள். அவை பியின் கீழ் பகுதியில் மட்டும் வாழும் மற்றும் பியை வெள்ளை",
+      "response_time": 6.236065149307251,
+      "response_preview": "சிலந்தி பூச்சிகள் (Spider Mites) தடியில் பரவும் சிறு பூச்சிகள். இவை பூக்களை சசித்து பூச்சி எண்ணிக்கையை அதிகரிக்கும். இவை குளிர், குன் வayu மற்றும் குறைந்த ஈரப்பரப்பு நிலையில் விரிவாக பரவுகின்றன.\n\n**ஒரு இயற்கையான முறை:**\n\n1. **நீமோயா எண்ணெய் (Neem Oil):** இது சிறந்த இயற்கamycin. 5ml நீமோயா எண்ணெய் + ",
       "error": ""
     },
     {
@@ -143,8 +143,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 17.265549659729004,
-      "response_preview": "{\n  \"causes\": [\n    \"Bacterial pathogen entering through leaf pores or wounds\",\n    \"Warm and humid environmental conditions\",\n    \"Water splash dispersing bacteria between plants\"\n  ],\n  \"diagnosis\": \"Tomato Bacterial Spot\",\n  \"farmer_advice\": [\n    \"Act quickly - bacterial spot spreads fast once established\",\n    \"Sanitize tools between plants to avoid cross-contamination\",\n    \"Consider resistant tomato varieties for future plantings\"\n  ],\n  \"immediate_actions\": [\n    \"Remove and destroy infe",
+      "response_time": 4.647643089294434,
+      "response_preview": "{\n  \"causes\": [\n    \"Bacterial pathogen entering through wounds or natural openings\",\n    \"Warm and humid environmental conditions\",\n    \"Water splash dispersing bacteria between plants\",\n    \"Infected seeds or transplants introducing the disease\"\n  ],\n  \"diagnosis\": \"Tomato Bacterial Spot\",\n  \"farmer_advice\": [\n    \"Act quickly at first sign of spots to prevent widespread damage\",\n    \"Rotate tomato plots annually to break the disease cycle\",\n    \"Start with clean seed to avoid introducing the ",
       "error": ""
     },
     {
@@ -155,8 +155,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 10.889013051986694,
-      "response_preview": "{\n  \"causes\": [\n    \"Fungal pathogen (Phytophthora infestans)\",\n    \"High humidity and wet conditions\",\n    \"Poor air circulation around plants\",\n    \"Proximity to potato crops which harbor the pathogen\"\n  ],\n  \"diagnosis\": \"Tomato Late Blight\",\n  \"farmer_advice\": [\n    \"Act quickly - late blight spreads rapidly and can devastate a field in days\",\n    \"Coordinate with neighboring farmers, as the disease can spread between fields\",\n    \"If the disease has spread widely, consider early harvest of ",
+      "response_time": 5.128623723983765,
+      "response_preview": "{\n  \"causes\": [\n    \"Fungal pathogen (Phytophthora infestans)\",\n    \"High humidity and wet conditions\",\n    \"Poor air circulation around plants\",\n    \"Proximity to potato crops which harbor the pathogen\"\n  ],\n  \"diagnosis\": \"Tomato Late blight\",\n  \"farmer_advice\": [\n    \"Act quickly - late blight spreads extremely fast under wet conditions\",\n    \"If more than 20% of plants are infected, consider removing the entire crop\",\n    \"Sanitize tools and footwear between fields to avoid spreading spores\"",
       "error": ""
     },
     {
@@ -167,20 +167,20 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 5.344621896743774,
-      "response_preview": "{\n  \"causes\": [\n    \"Transmission by silverleaf whitefly (vector)\",\n    \"Introduction of virus into healthy plants by whiteflies\",\n    \"No cure available for infected plants\"\n  ],\n  \"diagnosis\": \"Tomato Yellow Leaf Curl Virus (TYLCV)\",\n  \"farmer_advice\": [\n    \"Act quickly: remove and burn infected plants to prevent spread\",\n    \"Prioritize planting resistant varieties in the next season\",\n    \"Maintain strict whitefly control throughout the growing cycle\",\n    \"Consult local agricultural extens",
+      "response_time": 4.792065143585205,
+      "response_preview": "{\n  \"causes\": [\n    \"Transmission by silverleaf whitefly vector\",\n    \"Introduction of virus into healthy plants by insects\",\n    \"Systemic infection throughout the plant\"\n  ],\n  \"diagnosis\": \"Tomato Yellow Leaf Curl Virus (TYLCV)\",\n  \"farmer_advice\": [\n    \"Prioritize resistant varieties for future plantings\",\n    \"Maintain strict field sanitation to break virus cycle\",\n    \"Manage whitefly vectors aggressively using approved methods\",\n    \"Consult local agricultural extension for region-specif",
       "error": ""
     },
     {
       "name": "Report EN: Healthy Leaf",
-      "passed": false,
-      "details": "Provider: nvidia_ai, Model: , Sections: 8/9, DiagnosisOK: True, HealthyOK: True",
+      "passed": true,
+      "details": "Provider: nvidia_ai, Model: , Sections: 9/9, DiagnosisOK: True, HealthyOK: True",
       "http_status": 200,
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 7.134145259857178,
-      "response_preview": "{\n  \"causes\": [\n    \"No disease present. Plant is functioning normally.\"\n  ],\n  \"diagnosis\": \"Tomato healthy\",\n  \"farmer_advice\": [\n    \"Plant appears healthy. Continue standard cultural practices for tomato production. No immediate concerns detected.\"\n  ],\n  \"immediate_actions\": [\n    \"Continue regular monitoring of plant health\"\n  ],\n  \"monitoring\": [\n    \"Inspect plants weekly for any changes\",\n    \"Check leaf color and texture regularly\",\n    \"Monitor fruit development and quality\"\n  ],\n  \"p",
+      "response_time": 3.6794092655181885,
+      "response_preview": "{\n  \"causes\": [\n    \"No disease present. Plant is growing normally.\"\n  ],\n  \"diagnosis\": \"Tomato healthy\",\n  \"farmer_advice\": [\n    \"Plant appears healthy. Continue standard preventive care practices. No immediate action required beyond routine monitoring.\"\n  ],\n  \"immediate_actions\": [\n    \"Continue regular monitoring of plant health\",\n    \"Maintain current care practices\"\n  ],\n  \"monitoring\": [\n    \"Weekly visual inspection of leaves and stems\",\n    \"Check for any color changes or wilting\",\n  ",
       "error": ""
     },
     {
@@ -191,8 +191,8 @@
       "provider": "nvidia_ai",
       "model": "",
       "language": "en",
-      "response_time": 11.091440439224243,
-      "response_preview": "{\n  \"causes\": [\n    \"Hot and dry environmental conditions favor rapid mite reproduction\",\n    \"Low humidity stress weakens plant defenses\",\n    \"Possible introduction via new plants or wind dispersal\"\n  ],\n  \"diagnosis\": \"Spider mite infestation (Two-spotted spider mite)\",\n  \"farmer_advice\": [\n    \"Act quickly - spider mites reproduce rapidly in warm, dry weather\",\n    \"Focus spray efforts on the undersides of leaves where mites feed\",\n    \"Avoid broad-spectrum insecticides that kill beneficial ",
+      "response_time": 5.755656719207764,
+      "response_preview": "{\n  \"causes\": [\n    \"Hot and dry environmental conditions\",\n    \"Low humidity stressing the plants\",\n    \"Possible introduction via wind, clothing, or other plants\",\n    \"Ant use that protects mites from natural predators\"\n  ],\n  \"diagnosis\": \"Spider mite infestation (Two-spotted spider mite) in Tomato\",\n  \"farmer_advice\": [\n    \"Act quickly at the first sign of stippling to prevent widespread damage\",\n    \"Focus water and nutrient management on reducing plant stress\",\n    \"Conserve beneficial i",
       "error": ""
     },
     {
@@ -203,8 +203,8 @@
       "provider": "google_translate",
       "model": "",
       "language": "ta",
-      "response_time": 43.75435400009155,
-      "response_preview": "{\n  \"causes\": [\n    \"பாக்டீரியா நோய்க்கிருமி (சாந்தோமோனாஸ்) தொற்று\",\n    \"சூடான மற்றும் ஈரப்பதமான சுற்றுச்சூழல் நிலைமைகள்\",\n    \"மழை அல்லது பாசனத்தின் போது நீர் தெறித்தல் பரவல்\",\n    \"அசுத்தமான விதைகள், கருவிகள் அல்லது தாவர குப்பைகள்\"\n  ],\n  \"diagnosis\": \"தக்காளி பாக்டீரியா ஸ்பாட்\",\n  \"farmer_advice\": [\n    \"பரவலைக் கட்டுப்படுத்த புள்ளிகளின் முதல் அறிகுறிகளில் விரைவாகச் செயல்படவும்\",\n    \"காப்பர் ஸ்ப்ரேக்கள் முதன்மை மேலாண்மை கருவியாகும்\",\n    \"பயிர் சுழற்சி மூலம் எதிர்கால பருவங்களுக்கான தடுப்புக",
+      "response_time": 33.66331672668457,
+      "response_preview": "{\n  \"causes\": [\n    \"காயங்கள் அல்லது இயற்கை திறப்புகள் வழியாக பாக்டீரியா நோய்க்கிருமி நுழைகிறது\",\n    \"சூடான மற்றும் ஈரப்பதமான சுற்றுச்சூழல் நிலைமைகள்\",\n    \"தாவரங்களுக்கு இடையில் பாக்டீரியாவை சிதறடிக்கும் நீர்\",\n    \"பாதிக்கப்பட்ட விதைகள் அல்லது இடமாற்றங்கள் நோயை அறிமுகப்படுத்துகின்றன\"\n  ],\n  \"diagnosis\": \"தக்காளி பாக்டீரியா ஸ்பாட்\",\n  \"farmer_advice\": [\n    \"விரைவாக செயல்படுங்கள் - சூடான, ஈரப்பதமான வானிலையில் பாக்டீரியா புள்ளி வேகமாக பரவுகிறது\",\n    \"காப்பர் ஸ்ப்ரேக்கள் பரவுவதை அடக்கலாம் ஆனால்",
       "error": ""
     },
     {
@@ -215,8 +215,8 @@
       "provider": "google_translate",
       "model": "",
       "language": "ta",
-      "response_time": 44.36323833465576,
-      "response_preview": "{\n  \"causes\": [\n    \"பூஞ்சை நோய்க்கிருமி (பைட்டோபதோரா இன்ஃபெஸ்டன்ஸ்)\",\n    \"அதிக ஈரப்பதம் மற்றும் ஈரமான நிலைமைகள்\",\n    \"தாவரங்களைச் சுற்றி மோசமான காற்று சுழற்சி\",\n    \"தொற்று ஆதாரமாக செயல்படக்கூடிய உருளைக்கிழங்கு பயிர்களுக்கு அருகாமை\"\n  ],\n  \"diagnosis\": \"தாமதமான ப்ளைட்\",\n  \"farmer_advice\": [\n    \"விரைவாக செயல்படவும் - தாமதமான ப்ளைட்டின் ஈரமான சூழ்நிலையில் வேகமாக பரவுகிறது\",\n    \"பாதிக்கப்பட்ட செடிகளை பைகளை அகற்றி வயலில் இருந்து அப்புறப்படுத்தவும்\",\n    \"நோய் ஏற்படும் முன் பூஞ்சைக் கொல்லிகளைக் ",
+      "response_time": 42.91959309577942,
+      "response_preview": "{\n  \"causes\": [\n    \"பூஞ்சை நோய்க்கிருமி (பைட்டோபதோரா இன்ஃபெஸ்டன்ஸ்)\",\n    \"அதிக ஈரப்பதம் மற்றும் ஈரமான நிலைமைகள்\",\n    \"தாவரங்களைச் சுற்றி மோசமான காற்று சுழற்சி\",\n    \"உருளைக்கிழங்கு பயிர்களுக்கு அருகாமை\"\n  ],\n  \"diagnosis\": \"தக்காளி லேட் ப்ளைட்\",\n  \"farmer_advice\": [\n    \"விரைவாக செயல்பட - தாமதமான ப்ளைட்டின் ஈரமான வானிலையில் வேகமாக பரவுகிறது\",\n    \"பாதிக்கப்பட்ட தாவரப் பொருட்களை உரமாக்க வேண்டாம்\",\n    \"பாதிக்கப்பட்ட பகுதிகளில் பணிபுரிந்த பிறகு கருவிகள் மற்றும் உபகரணங்களை சுத்தம் செய்யவும்\",\n  ",
       "error": ""
     },
     {
@@ -227,20 +227,20 @@
       "provider": "google_translate",
       "model": "",
       "language": "ta",
-      "response_time": 40.1189239025116,
-      "response_preview": "{\n  \"causes\": [\n    \"சில்வர்லீஃப் வைட்ஃபிளை (திசையன்) மூலம் பரவுதல்\",\n    \"வெள்ளை ஈக்கள் மூலம் ஆரோக்கியமான தாவரங்களில் வைரஸ் அறிமுகம்\",\n    \"பாதிக்கப்பட்ட தாவரங்களுக்கு முறையான சிகிச்சை இல்லை\"\n  ],\n  \"diagnosis\": \"தக்காளி மஞ்சள் இலை சுருட்டை வைரஸ் (TYLCV)\",\n  \"farmer_advice\": [\n    \"வேகமாக செயல்படவும்: பாதிக்கப்பட்ட செடிகளை தாமதமின்றி அகற்றி அழிக்கவும்\",\n    \"வெள்ளை ஈக்களை நிறுத்துவதில் கவனம் செலுத்துங்கள், வைரஸைக் குணப்படுத்தவில்லை\",\n    \"அடுத்த பருவத்திற்கு, உடனடியாக எதிர்ப்புத் திறன் கொண்ட வக",
+      "response_time": 45.41094946861267,
+      "response_preview": "{\n  \"causes\": [\n    \"சில்வர்லீஃப் வைட்ஃபிளை (திசையன்) மூலம் பரவுதல்\",\n    \"வெள்ளை ஈ உணவளிப்பதன் மூலம் ஆரோக்கியமான தாவரங்களில் வைரஸ் அறிமுகம்\",\n    \"தொடர்ச்சியான பயிர் மற்றும் களை புரவலன்கள் வைரஸ் நீர்த்தேக்கங்களாக செயல்படுகின்றன\",\n    \"வெதுவெதுப்பான ஈரப்பதமான சூழ்நிலைகள் வெள்ளை ஈக்களின் எண்ணிக்கையை அதிகரிக்கச் செய்கின்றன\"\n  ],\n  \"diagnosis\": \"தக்காளி மஞ்சள் இலை சுருட்டை வைரஸ் (TYLCV)\",\n  \"farmer_advice\": [\n    \"வேகமாக செயல்படவும்: மீதமுள்ள பயிர்களை காப்பாற்ற தாமதமின்றி பாதிக்கப்பட்ட செடிகளை அகற்",
       "error": ""
     },
     {
       "name": "Report TA: Healthy Leaf",
-      "passed": false,
-      "details": "Provider: google_translate, Model: , Sections: 8/9, TamilOK: True",
+      "passed": true,
+      "details": "Provider: google_translate, Model: , Sections: 9/9, TamilOK: True",
       "http_status": 200,
       "provider": "google_translate",
       "model": "",
       "language": "ta",
-      "response_time": 17.156367301940918,
-      "response_preview": "{\n  \"causes\": [\n    \"நோய் அழுத்தங்கள் இல்லை. தாவர ஆரோக்கியம் சாதாரண வளரும் நிலைமைகள் மூலம் பராமரிக்கப்படுகிறது.\"\n  ],\n  \"diagnosis\": \"தக்காளி ஆரோக்கியமானது\",\n  \"farmer_advice\": [\n    \"தக்காளி செடிகள் ஆரோக்கியமானவை. உங்கள் வழக்கமான பராமரிப்பு வழக்கத்தைத் தொடரவும். தாவரங்களை இந்த வீரியமான நிலையில் வைத்திருக்க உகந்த வளரும் நிலைமைகளை பராமரிப்பதில் கவனம் செலுத்துங்கள்.\"\n  ],\n  \"immediate_actions\": [\n    \"நிலையான கலாச்சார நடைமுறைகளைத் தொடரவும்\"\n  ],\n  \"monitoring\": [\n    \"இலைகள் மற்றும் பழங்களின் வழக்",
+      "response_time": 17.541146278381348,
+      "response_preview": "{\n  \"causes\": [\n    \"நோய் அழுத்தங்கள் கண்டறியப்படவில்லை. தாவர ஆரோக்கியம் சாதாரண வளரும் நிலைமைகள் மூலம் பராமரிக்கப்படுகிறது.\"\n  ],\n  \"diagnosis\": \"தக்காளி ஆரோக்கியமானது\",\n  \"farmer_advice\": [\n    \"ஆலை ஆரோக்கியமானதாக தோன்றுகிறது. நிலையான கலாச்சார நடைமுறைகளைத் தொடரவும். உடனடி தலையீடு தேவையில்லை. எதிர்கால ஒப்பீட்டிற்காக இந்த ஆரோக்கியமான நிலையை ஆவணப்படுத்தவும்.\"\n  ],\n  \"immediate_actions\": [\n    \"தற்போதைய பராமரிப்பு நடைமுறைகளைத் தொடரவும்\",\n    \"தாவர தோற்றத்தில் ஏதேனும் மாற்றங்களைக் கண்காணிக்கவும்\"\n  ",
       "error": ""
     },
     {
@@ -251,8 +251,8 @@
       "provider": "google_translate",
       "model": "",
       "language": "ta",
-      "response_time": 45.94705677032471,
-      "response_preview": "{\n  \"causes\": [\n    \"சூடான மற்றும் வறண்ட சுற்றுச்சூழல் நிலைமைகள்\",\n    \"குறைந்த ஈரப்பதம் தாவரங்களுக்கு அழுத்தம் கொடுக்கிறது\",\n    \"அருகிலுள்ள பாதிக்கப்பட்ட பயிர்கள் அல்லது களைகளிலிருந்து சாத்தியமான அறிமுகம்\"\n  ],\n  \"diagnosis\": \"தக்காளியில் சிலந்திப் பூச்சி தொற்று (இரண்டு புள்ளிகள் கொண்ட சிலந்திப் பூச்சி).\",\n  \"farmer_advice\": [\n    \"விரைவாக செயல்படுங்கள் - சிலந்திப் பூச்சிகள் வெப்பமான, வறண்ட காலநிலையில் விரைவாக இனப்பெருக்கம் செய்கின்றன\",\n    \"பூச்சிகள் உண்ணும் இலைகளின் அடிப்பகுதியில் தெளிப்புத்",
+      "response_time": 32.45586562156677,
+      "response_preview": "{\n  \"causes\": [\n    \"வெப்பமான, வறண்ட நிலைகள் பூச்சி இனப்பெருக்கத்திற்கு சாதகமானவை\",\n    \"தண்ணீர் பற்றாக்குறை இருந்து தாவர அழுத்தம்\",\n    \"அருகிலுள்ள பாதிக்கப்பட்ட தாவரங்களிலிருந்து சாத்தியமான அறிமுகம் அல்லது காற்று பரவல்\"\n  ],\n  \"diagnosis\": \"தக்காளியில் ஸ்பைடர் மைட் தொற்று (இரண்டு புள்ளிகள் கொண்ட சிலந்திப் பூச்சி).\",\n  \"farmer_advice\": [\n    \"விரைவாக செயல்படுங்கள் - சிலந்திப் பூச்சிகள் வெப்பமான, வறண்ட காலநிலையில் விரைவாக இனப்பெருக்கம் செய்கின்றன\",\n    \"பூச்சிகள் உண்ணும் இலையின் அடிப்பகுதியில் த",
       "error": ""
     }
   ]

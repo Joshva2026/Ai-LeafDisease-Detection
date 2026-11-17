@@ -15,6 +15,32 @@ from utils.disease_data import DISEASE_DATA
 
 ai_bp = Blueprint("ai_bp", __name__)
 
+# Required sections for a valid farmer report
+REQUIRED_REPORT_SECTIONS = [
+    "diagnosis", "summary", "symptoms", "causes",
+    "immediate_actions", "treatment", "prevention",
+    "monitoring", "farmer_advice"
+]
+
+def ensure_complete_report(structured_report, plant, disease, confidence):
+    """
+    Ensure all required sections are present in the structured report.
+    If any section is missing or empty, fill it from the offline fallback.
+    """
+    if not isinstance(structured_report, dict):
+        return generate_offline_structured_report(plant, disease, confidence)
+    
+    offline_report = generate_offline_structured_report(plant, disease, confidence)
+    
+    complete_report = dict(structured_report)
+    for section in REQUIRED_REPORT_SECTIONS:
+        value = complete_report.get(section)
+        if not value or (isinstance(value, list) and len(value) == 0):
+            complete_report[section] = offline_report.get(section, [])
+    
+    return complete_report
+
+
 def generate_offline_structured_report(plant, disease, confidence):
     """
     Tier-3 Deterministic Agricultural Advisory Fallback.
@@ -103,6 +129,11 @@ def generate_offline_structured_report(plant, disease, confidence):
             "Check leaf undersides daily for mite activity and webbing.",
             "Monitor for bronzing or stippling on new growth."
         ]
+    elif "healthy" in disease_lower:
+        monitoring = [
+            "Continue regular crop scouting for early disease detection.",
+            "Monitor soil moisture and nutrient levels monthly."
+        ]
     else:
         monitoring = [
             "Inspect the underside of leaves weekly during humid or rainy weather.",
@@ -140,25 +171,25 @@ def generate_disease_specific_offline_reply(disease, disease_info, is_tamil=Fals
     disease_lower = disease.lower()
     if "bacterial" in disease_lower:
         if is_tamil:
-            return "பாக்டீரியா நோய் கண்டறியப்பட்டது. உடனடியாக: 1) பாதிக்கப்பட்ட இலைகளை நீக்கி அழிக்கவும். 2) ஓவர் ஹெட் ஈரிகেশন தவிர்த்து டிரிப் ஈரிகেশন பயன்படுத்தவும். 3) கருவிகளை 10% ப்ளீச் படர 아무도 mês마다 정화하십시오. துல்லியமான மருந்து பரிந்துரைக்கு உங்கள் வட்டார வேளாண்மை அலுவலரை தொடர்பு கொள்ளவும்."
+            return "பாக்டீரியா நோய் கண்டறியப்பட்டது. உடனடியாக: 1) பாதிக்கப்பட்ட இலைகளை நீக்கி அழிக்கவும். 2) ஓவர் ஹெட் ஈரிகেশন தவிர்த்து டிரிப் ஈரிகேசன் பயன்படுத்தவும். 3) கருவிகளை 10% ப்ளீச் மூலம் தூய்மையாக்கவும். துல்லியமான மருந்து பரிந்துரைக்கு உங்கள் வட்டார வேளாண்மை அலுவலரை தொடர்பு கொள்ளவும்."
         else:
             return "Bacterial disease detected. Immediately: 1) Remove and destroy infected plant parts. 2) Switch from overhead to drip irrigation. 3) Sanitize tools with 10% bleach solution. Contact your local extension officer for specific bactericide recommendations."
     
     if "virus" in disease_lower or "mosaic" in disease_lower or "curl" in disease_lower:
         if is_tamil:
-            return "வைரஸ் நோய் கண்டறியப்பட்டது. உடனடி நடவடிக்கைகள்: 1) பாதிக்கப்பட்ட தாவரங்களை உடனே நீக்கி அழிக்கவும். 2) வெயில்கள், அఫிட்கள் போன்ற powierzchிகள் கட்டுப்படுத்தவும். 3) கருவிகளை துப்பக்கிய செய்து மறுப்பரவும். துல்லியமான மருந்து பரிந்துரைக்கு உங்கள் வட்டார வேளாண்மை உதவி இயக்குநரை அணுகவும்."
+            return "வைரஸ் நோய் கண்டறியப்பட்டது. உடனடி நடவடிக்கைகள்: 1) பாதிக்கப்பட்ட தாவரங்களை உடனே நீக்கி அழிக்கவும். 2) வெயில்கள், அஃபிட்கள் போன்ற powierzchிகள் கட்டுப்படுத்தவும். 3) கருவிகளை தூய்மையாக்கவும். துல்லியமான மருந்து பரிந்துரைக்கு உங்கள் வட்டார வேளாண்மை உதவி இயக்குநரை அணுகவும்."
         else:
             return "Viral disease detected. Immediate actions: 1) Remove and destroy infected plants immediately. 2) Control vectors (aphids, whiteflies). 3) Disinfect tools to prevent mechanical spread. Contact your local extension officer for vector management."
     
     if "mite" in disease_lower or "spider" in disease_lower:
         if is_tamil:
-            return "சிலந்தி மைட் கண்டறியப்பட்டது. உடனடி: 1) தாவரங்களுக்கும் சுற்று ஈரப்பதம் அதிகரிக்கவும். 2) வலுவான தண்ணீரின் sıra 타고 குட்டிகள் அகற்றவும். 3) வேப்ப எண்ணெய் அல்லது קיטிசிடல் சோப்பு பயன்படுத்தவும். துல்லியமான மருந்து பரிந்துரைக்கு வேளாண்மை அலுவலரை அணுகவும்."
+            return "சிலந்தி மைட் கண்டறியப்பட்டது. உடனடி: 1) தாவரங்களுக்கும் சுற்று ஈரப்பதம் அதிகரிக்கவும். 2) வலுவான தண்ணீரின் sıra 타고 குட்டிகள் அகற்றவும். 3) வேப்ப எண்ணெய் அல்லது கிளிசிடல் சோப்பு பயன்படுத்தவும். துல்லியமான மருந்து பரிந்துரைக்கு வேளாண்மை அலுவலரை அணுகவும்."
         else:
             return "Spider mites detected. Immediate: 1) Increase humidity around plants. 2) Spray strong water stream to dislodge mites. 3) Apply neem oil or insecticidal soap. Contact extension officer for miticide options."
     
     # Default fungal
     if is_tamil:
-        return f"பூஞ்சை நோய் கண்டறியப்பட்டது ({disease.replace('___', ' → ').replace('_', ' ')}). உடனடி: 1) பாதிக்கப்பட்ட இலைகளை நீக்கி அழிக்கவும். 2) இலைப்பகுதியில் தண்ணீர் விழாதவாறு வேர்ப்பகுதியில் ஈரிகেশন. 3) பூஞ்சணக் கொல்லி பரிந்துரைக்கு வேளாண்மை அலுவலரை அணுகவும்."
+        return f"பூஞ்சை நோய் கண்டறியப்பட்டது ({disease.replace('___', ' → ').replace('_', ' ')}). உடனடி: 1) பாதிக்கப்பட்ட இலைகளை நீக்கி அழிக்கவும். 2) இலைப்பகுதியில் தண்ணீர் விழாதவாறு வேர்ப்பகுதியில் ஈரிகேசன். 3) பூஞ்சணக் கொல்லி பரிந்துரைக்கு வேளாண்மை அலுவலரை அணுகவும்."
     else:
         return f"Fungal disease detected ({disease.replace('___', ' → ').replace('_', ' ')}). Immediate: 1) Remove and destroy infected leaves. 2) Water at base - avoid overhead irrigation. 3) Apply appropriate fungicide per extension officer guidance."
 
@@ -255,13 +286,15 @@ def farmer_report():
             if parsed:
                 is_fact_valid, _ = validate_agricultural_facts(parsed, disease, disease_meta)
                 if is_fact_valid:
-                    structured_report = parsed
+                    structured_report = ensure_complete_report(parsed, plant, disease, confidence)
                     provider_used = "gemini_ai"
 
     # --- TIER 3: Curated Offline Agricultural Database (Guaranteed Fallback) ---
     if not structured_report:
         structured_report = generate_offline_structured_report(plant, disease, confidence)
         provider_used = "offline_knowledge_base"
+    else:
+        structured_report = ensure_complete_report(structured_report, plant, disease, confidence)
 
     return jsonify({
         "success": True,
@@ -432,9 +465,7 @@ def chat():
     context_str = f"{disease_context_str}\n{conversation_context}\n\nFarmer question: {user_msg}"
 
     # Tier 1: NVIDIA NIM
-    print(f"[DEBUG] Calling NVIDIA for lang={'ta' if is_ta else 'en'}, context_source={context_source}, resolved_disease={resolved_disease}")
-    ai_reply, err = call_nvidia_ai_service(context_str, system_prompt, temperature=0.3, max_tokens=800, timeout=30)
-    print(f"[DEBUG] NVIDIA result: reply={'YES' if ai_reply else 'NO'}, error={err}")
+    ai_reply, err = call_nvidia_ai_service(context_str, system_prompt, temperature=0.3, max_tokens=800, timeout=20)
     if ai_reply:
         if is_ta:
             ai_reply = clean_tamil_text(ai_reply)
@@ -465,7 +496,7 @@ def chat():
     intents = classify_intent(user_msg)
     offline_reply = generate_contextual_response(
         user_msg, 
-        resolved_disease,  # Use resolved disease, not scan context
+        resolved_disease, 
         disease_info, 
         intents, 
         conversation_history,
@@ -480,3 +511,7 @@ def chat():
         "context_source": context_source,
         "resolved_disease": resolved_disease
     })
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000, debug=False)

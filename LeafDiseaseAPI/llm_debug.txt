@@ -1,1 +1,41 @@
-For Tomato Early blight, apply a fungicide containing chlorothalonil or mancozeb at the first sign of symptoms. Spray thoroughly, ensuring coverage of the lower leaf surfaces where spots first appear. Repeat applications according to the product label intervals (typically every 7-14 days) while conditions remain favorable for disease development (warm, humid weather).
+{
+  "diagnosis": "Spider mite infestation (Two-spotted spider mite) in Tomato",
+  "summary": "Tiny arachnids sucking sap from leaves, causing stippling and webbing. Hot, dry conditions have triggered this 87.3% confidence infestation.",
+  "symptoms": [
+    "Stippling (tiny yellow/white dots) on leaves",
+    "Fine webbing on the underside of leaves",
+    "Leaves turning bronze or yellow and drying up"
+  ],
+  "causes": [
+    "Hot, dry conditions favoring mite reproduction",
+    "Plant stress from water deficiency",
+    "Possible introduction from nearby infested plants or wind dispersal"
+  ],
+  "immediate_actions": [
+    "Isolate affected plants to prevent spread",
+    "Strong water spray to dislodge mites from leaf undersides",
+    "Remove and destroy heavily infested leaves"
+  ],
+  "treatment": [
+    "Apply insecticidal soap or horticultural oil to leaf undersides",
+    "Use approved miticides if infestation is severe, following label instructions",
+    "Repeat applications every 5-7 days to break the life cycle"
+  ],
+  "prevention": [
+    "Maintain adequate plant hydration to reduce stress",
+    "Increase humidity around plants if conditions are very dry",
+    "Encourage natural predators like ladybugs and predatory mites",
+    "Regularly inspect plants, especially undersides of leaves"
+  ],
+  "monitoring": [
+    "Check leaf undersides weekly for early stippling and webbing",
+    "Use a hand lens to confirm mite presence and estimate population density",
+    "Track weather conditions - treat proactively if hot, dry spells are forecast"
+  ],
+  "farmer_advice": [
+    "Act quickly - spider mites reproduce rapidly in hot, dry weather",
+    "Focus spray coverage on leaf undersides where mites feed",
+    "Avoid broad-spectrum insecticides that kill beneficial predators",
+    "Consider biological control releases for long-term management in greenhouse settings"
+  ]
+}
